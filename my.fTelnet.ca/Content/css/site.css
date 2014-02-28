@@ -9,7 +9,7 @@ body {
   margin-bottom: 60px;
 }
 body > .container {
-  padding: 30px 15px 0;
+  padding: 60px 15px 0;
 }
 #footer {
   position: absolute;
@@ -21,4 +21,10 @@ body > .container {
 }
 #footer .text-muted {
   margin: 20px 0;
+}
+
+/* Override bootstrap .hidden to jquery .show() works */
+.hidden {
+    display: none !important;
+    visibility: visible !important;
 }

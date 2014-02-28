@@ -1,0 +1,184 @@
+::selection {
+    background-color: none;
+    color: inherit;
+}
+
+.keyboard {
+    font-family: sans-serif;
+    width: 755px;
+    height: 255px;
+    background-color: #111;
+    margin: 0px auto;
+    border-radius: 5px;
+    padding: 5px;
+    color: #eee;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    margin-top: 5px;
+}
+
+    .keyboard * {
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+    }
+
+.key {
+    width: 40px;
+    height: 40px;
+    display: block;
+    background-color: #333;
+    text-align: left;
+    padding-left: 8px;
+    line-height: 29px;
+    border-radius: 2px;
+    float: left;
+    margin-left: 2px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    transition: box-shadow 0.7s ease;
+}
+
+.section-a {
+    width: 625px;
+    height: 260px;
+    float: left;
+}
+
+.section-b {
+    width: 130px;
+    height: 260px;
+    float: left;
+}
+
+.function {
+    font-size: 12px;
+    width: 30px;
+    height: 30px;
+    margin-bottom: 15px;
+}
+
+.small {
+    font-size: 10px;
+    line-height: 13px;
+    text-align: center;
+    padding: 0 5px;
+    padding-top: 2px;
+    height: 28px !important;
+}
+
+.space1 {
+    margin-right: 43px !important;
+}
+
+.space2 {
+    margin-right: 25px !important;
+}
+
+.dual {
+    font-size: 14px;
+    line-height: 20px;
+    width: 30px;
+}
+
+.backspace {
+    width: 84px;
+    font-size: 12px;
+}
+
+.tab {
+    width: 50px;
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.letter {
+    width: 30px;
+}
+
+.slash {
+    width: 64px;
+}
+
+.caps {
+    width: 70px;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.enter {
+    width: 92px;
+    line-height: 40px;
+    text-align: center;
+    padding-left: 0;
+}
+
+.shift.left {
+    width: 90px;
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.shift.right {
+    width: 104px;
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.ctrl {
+    width: 50px;
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.win {
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.alt {
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.menu {
+    line-height: 40px;
+    font-size: 13px;
+}
+
+.space {
+    width: 234px;
+}
+
+.arrows {
+    position: relative;
+    top: 42px;
+}
+
+.sec-func .key {
+    width: 32px;
+    font-size: 10px;
+    text-align: left;
+    line-height: 40px;
+    float: left;
+}
+
+.sec-func div.dual {
+    line-height: 20px;
+}
+
+.arrows .key {
+    text-align: center;
+    padding-left: 7px;
+    margin-left: 2px;
+}
+
+.vis-hidden {
+    visibility: hidden;
+}
+
+.key:hover {
+    box-shadow: 0px 0px 10px #14B524;
+    z-index: 1000;
+}

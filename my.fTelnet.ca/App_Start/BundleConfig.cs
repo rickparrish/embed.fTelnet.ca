@@ -13,10 +13,15 @@ namespace my.fTelnet.ca
         {
             bundles.Add(new StyleBundle("~/bundles/css").Include(
                 "~/Content/css/bootstrap.min.css",
-                "~/Content/css/site.css"));
+                "~/Content/css/site.css",
+                "~/HtmlTerm/VirtualKeyboard.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
-                "~/Scripts/site.js"));
+                "~/Scripts/site.js",
+                "~/HtmlTerm/HtmlTerm.compiled.js",
+                "~/HtmlTerm/HtmlTerm.font2.js",
+                "~/HtmlTerm/ClientVars.js",
+                "~/HtmlTerm/VirtualKeyboard.js"));
         }
     }
 }
