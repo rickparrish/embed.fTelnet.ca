@@ -40,7 +40,7 @@ function VK_Init() {
     VK_CharCodes[191] = { Normal: 47, Shifted: 63 }; // /
 
     // Handle click events for all keys
-    var Keys = document.getElementsByClassName("key");
+    var Keys = document.getElementsByClassName("vk_key");
     for (var i = 0; i < Keys.length; i++) {
         if (Keys[i].addEventListener) {  // all browsers except IE before version 9
             var KeyCode = Keys[i].getAttribute("data-keycode");
@@ -131,8 +131,8 @@ function VK_OnKeyCode(e) {
 }
 
 function VK_ReDrawSpecialKeys() {
-    VK_HighlightKey("caps", VK_CapsLockEnabled);
-    VK_HighlightKey("shift", VK_ShiftPressed);
-    VK_HighlightKey("ctrl", VK_CtrlPressed);
-    VK_HighlightKey("alt", VK_AltPressed);
+    VK_HighlightKey("vk_caps", VK_CapsLockEnabled);
+    VK_HighlightKey("vk_shift", VK_ShiftPressed);
+    VK_HighlightKey("vk_ctrl", VK_CtrlPressed);
+    VK_HighlightKey("vk_alt", VK_AltPressed);
 }
