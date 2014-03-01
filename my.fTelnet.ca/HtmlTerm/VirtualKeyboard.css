@@ -1,9 +1,4 @@
-::selection {
-    background-color: none;
-    color: inherit;
-}
-
-.keyboard {
+.vk_keyboard {
     font-family: sans-serif;
     width: 755px;
     height: 255px;
@@ -18,13 +13,23 @@
     margin-top: 5px;
 }
 
-    .keyboard * {
+    .vk_keyboard * {
         -webkit-box-sizing: content-box;
         -moz-box-sizing: content-box;
         box-sizing: content-box;
     }
 
-.key {
+    .vk_keyboard ::selection {
+        background-color: none;
+        color: inherit;
+    }
+    .vk_keyboard ::-moz-selection {
+        background-color: none;
+        color: inherit;
+    }
+
+
+.vk_key {
     width: 40px;
     height: 40px;
     display: block;
@@ -40,26 +45,26 @@
     transition: box-shadow 0.7s ease;
 }
 
-.section-a {
+.vk_left_half {
     width: 625px;
     height: 260px;
     float: left;
 }
 
-.section-b {
+.vk_right_half {
     width: 130px;
     height: 260px;
     float: left;
 }
 
-.function {
+.vk_function {
     font-size: 12px;
     width: 30px;
     height: 30px;
     margin-bottom: 15px;
 }
 
-.small {
+.vk_small {
     font-size: 10px;
     line-height: 13px;
     text-align: center;
@@ -68,95 +73,95 @@
     height: 28px !important;
 }
 
-.space1 {
+.vk_space1 {
     margin-right: 43px !important;
 }
 
-.space2 {
+.vk_space2 {
     margin-right: 25px !important;
 }
 
-.dual {
+.vk_dual {
     font-size: 14px;
     line-height: 20px;
     width: 30px;
 }
 
-.backspace {
+.vk_backspace {
     width: 84px;
     font-size: 12px;
 }
 
-.tab {
+.vk_tab {
     width: 50px;
     line-height: 40px;
     font-size: 13px;
 }
 
-.letter {
+.vk_letter {
     width: 30px;
 }
 
-.slash {
+.vk_slash {
     width: 64px;
 }
 
-.caps {
+.vk_caps {
     width: 70px;
     font-size: 12px;
     line-height: 18px;
 }
 
-.enter {
+.vk_enter {
     width: 92px;
     line-height: 40px;
     text-align: center;
     padding-left: 0;
 }
 
-.shift.left {
+.vk_shift.vk_left {
     width: 90px;
     line-height: 40px;
     font-size: 13px;
 }
 
-.shift.right {
+.vk_shift.vk_right {
     width: 104px;
     line-height: 40px;
     font-size: 13px;
 }
 
-.ctrl {
+.vk_ctrl {
     width: 50px;
     line-height: 40px;
     font-size: 13px;
 }
 
-.win {
+.vk_win {
     line-height: 40px;
     font-size: 13px;
 }
 
-.alt {
+.vk_alt {
     line-height: 40px;
     font-size: 13px;
 }
 
-.menu {
+.vk_menu {
     line-height: 40px;
     font-size: 13px;
 }
 
-.space {
+.vk_space {
     width: 234px;
 }
 
-.arrows {
+.vk_arrows {
     position: relative;
     top: 42px;
 }
 
-.sec-func .key {
+.vk_nav_keys .vk_key {
     width: 32px;
     font-size: 10px;
     text-align: left;
@@ -164,21 +169,21 @@
     float: left;
 }
 
-.sec-func div.dual {
+.vk_nav_keys .vk_dual {
     line-height: 20px;
 }
 
-.arrows .key {
+.vk_arrows .vk_key {
     text-align: center;
     padding-left: 7px;
     margin-left: 2px;
 }
 
-.vis-hidden {
+.vk_hidden {
     visibility: hidden;
 }
 
-.key:hover {
+.vk_key:hover {
     box-shadow: 0px 0px 10px #14B524;
     z-index: 1000;
 }

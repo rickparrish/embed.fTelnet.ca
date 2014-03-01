@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     HtmlTerm.Init("HtmlTermContainer", ClientVars);
-    VirtualKeyboard_Init();
+    VK_Init();
 });
 
 function OpenPanel(id) {
