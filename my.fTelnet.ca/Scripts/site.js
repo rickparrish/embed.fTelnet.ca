@@ -1,8 +1,13 @@
 ﻿var SiteInitted = false;
 
 $(document).ready(function () {
+    // Init HtmlTerm
     SetBestFontSize();
     HtmlTerm.Init("HtmlTermContainer", ClientVars);
+    Crt.Window(1, 1, 80, 24);
+    Crt.FastWrite(" Not connected                                                                  ", 1, 25, new TCharInfo(' ', 31, false, false), true);
+
+    // Init Virtual Keyboard
     VK_Init();
 
     SiteInitted = true;
