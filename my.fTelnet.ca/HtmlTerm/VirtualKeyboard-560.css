@@ -1,19 +1,19 @@
 .vk_keyboard {
-    width: 470px;
+    width: 550px;
     height: 350px;
 }
 
 .vk_key {
-    width: 30px;
+    width: 40px;
 }
 
 .vk_left_half {
-    width: 470px;
+    width: 550px;
 }
 
 .vk_right_half {
     border-top: 2px dashed #333333;
-    width: 470px;
+    width: 550px;
     height: 85px;
     padding-top: 5px;
 }
@@ -21,22 +21,23 @@
 .vk_function {
     text-align: center;
     padding-left: 0;
+    width: 35px;
 }
 
 .vk_space1 {
-    margin-right: 18px !important;
+    margin-right: 23px !important;
 }
 
 .vk_space2 {
-    margin-right: 18px !important;
+    margin-right: 21px !important;
 }
 
 .vk_dual {
-    width: 22px;
+    width: 26px;
 }
 
 .vk_backspace {
-    width: 44px;
+    width: 68px;
 }
 
 .vk_tab {
@@ -44,46 +45,46 @@
 }
 
 .vk_letter {
-    width: 22px;
+    width: 26px;
 }
 
 .vk_slash {
-    width: 22px;
+    width: 50px;
 }
 
 .vk_caps {
-    width: 48px;
+    width: 54px;
 }
 
 .vk_enter {
-    width: 58px;
+    width: 84px;
 }
 
 .vk_shift.vk_left {
-    width: 65px;
+    width: 83px;
 }
 
 .vk_shift.vk_right {
-    width: 65px;
+    width: 83px;
 }
 
 .vk_ctrl {
-    width: 30px;
+    width: 40px;
 }
 
 .vk_space {
-    width: 180px;
+    width: 186px;
 }
 
 .vk_arrow_keys {
     float: left;
     top: 0px;
-    width: 117px;
+    width: 147px;
 }
 
 .vk_nav_keys {
     float: left;
-    margin-right: 45px;
+    margin-right: 70px;
     width: 126px;
 }
 
@@ -98,5 +99,5 @@
 .vk_special_keys
 {
     float: left;
-    margin-right: 50px;
+    margin-right: 75px;
 }
