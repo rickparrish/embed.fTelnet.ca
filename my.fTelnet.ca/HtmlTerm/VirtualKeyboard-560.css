@@ -78,7 +78,6 @@
 
 .vk_arrow_keys {
     float: left;
-    top: 0px;
     width: 147px;
 }
 
@@ -87,10 +86,6 @@
     margin-right: 70px;
     width: 126px;
 }
-
-/*.vk_nav_keys .vk_key {
-    line-height: 50px;
-}*/
 
 .vk_newrow {
     clear: left;

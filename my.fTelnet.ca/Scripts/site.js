@@ -36,6 +36,9 @@ function SetFontSize(width, height, force) {
             ClientVars.FontWidth = width;
             ClientVars.FontHeight = height;
         }
+
+        $('link#VK_CSS').attr('href', VK_CSS_Url.replace("{size}", width * 80));
+
         return true;
     }
 

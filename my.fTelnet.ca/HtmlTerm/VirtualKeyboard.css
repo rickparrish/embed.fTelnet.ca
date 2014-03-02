@@ -1,7 +1,5 @@
 .vk_keyboard {
     font-family: sans-serif;
-    width: 755px;
-    height: 255px;
     background-color: #111;
     margin: 0px auto;
     border-radius: 5px;
@@ -30,7 +28,6 @@
 
 
 .vk_key {
-    width: 40px;
     height: 40px;
     display: block;
     background-color: #333;
@@ -46,20 +43,16 @@
 }
 
 .vk_left_half {
-    width: 625px;
     height: 260px;
     float: left;
 }
 
 .vk_right_half {
-    width: 130px;
-    height: 260px;
     float: left;
 }
 
 .vk_function {
     font-size: 12px;
-    width: 30px;
     height: 30px;
     margin-bottom: 15px;
 }
@@ -73,66 +66,42 @@
     height: 28px !important;
 }
 
-.vk_space1 {
-    margin-right: 43px !important;
-}
-
-.vk_space2 {
-    margin-right: 25px !important;
-}
-
 .vk_dual {
     font-size: 14px;
     line-height: 20px;
-    width: 30px;
 }
 
 .vk_backspace {
-    width: 84px;
     font-size: 12px;
 }
 
 .vk_tab {
-    width: 50px;
     line-height: 40px;
     font-size: 13px;
 }
 
-.vk_letter {
-    width: 30px;
-}
-
-.vk_slash {
-    width: 64px;
-}
-
 .vk_caps {
-    width: 70px;
     font-size: 12px;
     line-height: 18px;
 }
 
 .vk_enter {
-    width: 92px;
     line-height: 40px;
     text-align: center;
     padding-left: 0;
 }
 
 .vk_shift.vk_left {
-    width: 90px;
     line-height: 40px;
     font-size: 13px;
 }
 
 .vk_shift.vk_right {
-    width: 104px;
     line-height: 40px;
     font-size: 13px;
 }
 
 .vk_ctrl {
-    width: 50px;
     line-height: 40px;
     font-size: 13px;
 }
@@ -150,15 +119,6 @@
 .vk_menu {
     line-height: 40px;
     font-size: 13px;
-}
-
-.vk_space {
-    width: 234px;
-}
-
-.vk_arrow_keys {
-    position: relative;
-    top: 42px;
 }
 
 .vk_nav_keys .vk_key {
@@ -186,4 +146,8 @@
 .vk_key:hover {
     box-shadow: 0px 0px 10px #eee;
     z-index: 1000;
+}
+
+.vk_newrow {
+    clear: left;
 }

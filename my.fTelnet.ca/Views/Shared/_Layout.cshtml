@@ -10,6 +10,10 @@
     <title>@ViewBag.Title</title>
 
     @Styles.Render("~/bundles/css")
+    <link href="~/HtmlTerm/VirtualKeyboard-720.css" rel="stylesheet" id="VK_CSS">
+    <script type="text/javascript">
+        var VK_CSS_Url = '@Url.Content("~/HtmlTerm/VirtualKeyboard-{size}.css")';
+    </script>
 </head>
 <body>
     <!-- Fixed navbar -->
