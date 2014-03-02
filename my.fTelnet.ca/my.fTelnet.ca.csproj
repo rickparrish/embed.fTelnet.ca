@@ -104,6 +104,7 @@
     <Content Include="HtmlTerm\HtmlTerm.font-437.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-amiga.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-atari.js" />
+    <Content Include="HtmlTerm\VirtualKeyboard-640.css" />
     <Content Include="HtmlTerm\VirtualKeyboard-560.css" />
     <Content Include="HtmlTerm\VirtualKeyboard-480.css" />
     <Content Include="HtmlTerm\VirtualKeyboard.css" />
