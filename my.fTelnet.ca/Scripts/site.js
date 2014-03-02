@@ -10,6 +10,12 @@ $(document).ready(function () {
     // Init Virtual Keyboard
     VK_Init();
 
+    // See if we should skip the About panel
+    if (localStorage["SkipAbout"] && (localStorage["SkipAbout"] == "true")) {
+        $('#chkSkipAbout').prop('checked', true);
+        OpenPanel('HtmlTerm');
+    }
+
     SiteInitted = true;
 });
 
@@ -18,8 +24,10 @@ $(window).resize(function () {
 });
 
 function OpenPanel(id) {
-    $('.panel').hide('slow');
-    $('#pnl' + id).show('slow');
+    if (!$('#pnl' + id).is(":visible")) {
+        $('div[id^="pnl"]').hide('slow');
+        $('#pnl' + id).show('slow');
+    }
 }
 
 function SetBestFontSize() {
@@ -29,7 +37,7 @@ function SetBestFontSize() {
 function SetFontSize(width, height, force) {
     if (typeof force === 'undefined') force = false;
 
-    if (force || (($(window).width() >= (width * 80)) && (($(window).height() - 60) >= (height * 25)))) { // -60 for top nav
+    if (force || ((($(window).width() - 30) >= (width * 80)) && (($(window).height() - 60) >= (height * 25)))) { // -60 for top nav
         if (SiteInitted) {
             Crt.SetFont(437, width, height);
         } else {
@@ -43,4 +51,12 @@ function SetFontSize(width, height, force) {
     }
 
     return false;
+}
+
+function SetSkipAbout() {
+    if ($('#chkSkipAbout').is(':checked')) {
+        localStorage["SkipAbout"] = "true";
+    } else {
+        localStorage["SkipAbout"] = "false";
+    }
 }

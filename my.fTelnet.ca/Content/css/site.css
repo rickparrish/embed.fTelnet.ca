@@ -23,6 +23,10 @@ body > .container {
   margin: 20px 0;
 }
 
+#pnlHtmlTerm {
+    margin-bottom: 20px;
+}
+
 /* Override bootstrap .hidden to jquery .show() works */
 .hidden {
     display: none !important;

@@ -121,7 +121,6 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Scripts\jquery-1.11.0.min.map" />
-    <Content Include="Views\Shared\_Welcome.cshtml" />
     <Content Include="Views\Shared\_DialingDirectory.cshtml" />
     <Content Include="Views\Shared\_HtmlTerm.cshtml" />
     <Content Include="Views\Shared\_Help.cshtml" />
