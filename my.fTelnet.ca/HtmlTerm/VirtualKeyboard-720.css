@@ -1,0 +1,63 @@
+.vk_keyboard {
+    width: 710px;
+}
+
+.vk_left_half {
+    width: 580px;
+}
+
+.vk_function {
+    width: 26px;
+}
+
+.vk_small {
+    width: 30px;
+}
+
+.vk_space1 {
+    margin-right: 35px !important;
+}
+
+.vk_dual {
+    width: 26px;
+}
+
+.vk_backspace {
+    width: 75px;
+}
+
+.vk_letter {
+    width: 26px;
+}
+
+.vk_slash {
+    width: 51px;
+}
+
+.vk_caps {
+    width: 60px;
+}
+
+.vk_enter {
+    width: 85px;
+}
+
+.vk_shift.vk_left {
+    width: 80px;
+}
+
+.vk_shift.vk_right {
+    width: 93px;
+}
+
+.vk_space {
+    width: 173px;
+}
+
+.vk_arrow_keys .vk_key {
+    width: 32px;
+}
+
+.vk_newrow {
+    clear: left;
+}
