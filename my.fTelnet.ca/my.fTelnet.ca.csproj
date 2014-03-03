@@ -98,12 +98,12 @@
     <Content Include="Content\css\site.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="HtmlTerm\ClientVars.js" />
     <Content Include="HtmlTerm\HtmlTerm.compiled.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-intl.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-437.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-amiga.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-atari.js" />
+    <Content Include="HtmlTerm\HtmlTerm.js" />
     <Content Include="HtmlTerm\VirtualKeyboard-800.css" />
     <Content Include="HtmlTerm\VirtualKeyboard-960.css" />
     <Content Include="HtmlTerm\VirtualKeyboard-720.css" />

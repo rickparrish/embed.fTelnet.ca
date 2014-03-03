@@ -18,8 +18,7 @@ namespace my.fTelnet.ca
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
                 "~/Scripts/site.js",
-                "~/HtmlTerm/ClientVars.js",
-                "~/HtmlTerm/HtmlTerm.compiled.js",
+                "~/HtmlTerm/HtmlTerm.js", // TODO compiled before release
                 "~/HtmlTerm/HtmlTerm.font-437.js",
                 "~/HtmlTerm/VirtualKeyboard.js"));
         }

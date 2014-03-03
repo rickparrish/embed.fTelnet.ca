@@ -3,9 +3,7 @@
 $(document).ready(function () {
     // Init HtmlTerm
     SetBestFontSize();
-    HtmlTerm.Init("HtmlTermContainer", ClientVars);
-    Crt.Window(1, 1, 80, 24);
-    Crt.FastWrite(" Not connected                                                                  ", 1, 25, new TCharInfo(' ', 31, false, false), true);
+    HtmlTerm.Init("HtmlTermContainer");
 
     // Init Virtual Keyboard
     VK_Init();
@@ -22,6 +20,61 @@ $(document).ready(function () {
 $(window).resize(function () {
     if (SiteInitted) SetBestFontSize();
 });
+
+function AddToRecent(newEntry) {
+    // TODO Add to recent array, local store, and file menu
+}
+
+function Connect() {
+    var Hostname = $('#txtHostname').val();
+    var Port = parseInt($('#txtPort').val(), 10);
+    var Proxy = $('#chkProxy').is(':checked');
+
+    // Validate form
+    if (Hostname == "") {
+        alert("Enter a hostname");
+        return;
+    }
+    if (Proxy) {
+        if (Port != 23) {
+            alert("Port can only be 23 when proxy is used");
+            return;
+        }
+    } else {
+        if ((Port < 1) || (Port > 65535)) {
+            alert("Port must be between 1 and 65535");
+            return;
+        }
+    }
+
+    // Hides the drop down Connect menu
+    $("body").trigger("click");
+
+    // Confirms new connection if already connected
+    if (HtmlTerm.Connected()) {
+        if (confirm("This will disconnect your existing session -- continue?")) {
+            HtmlTerm.Disconnect();
+        } else {
+            return;
+        }
+    }
+
+    // Add to recent menu / local storage
+    AddToRecent({
+        'Hostname': Hostname,
+        'Port': Port,
+        'Proxy': Proxy
+    });
+
+    // Setup new values
+    HtmlTerm.ServerName = Hostname;
+    HtmlTerm.Hostname = Hostname;
+    HtmlTerm.Port = Port;
+    HtmlTerm.ProxyHostname = (Proxy ? "proxy.ftelnet.ca" : "");
+
+    // And connect
+    HtmlTerm.Connect();
+}
 
 function OpenPanel(id) {
     if (!$('#pnl' + id).is(":visible")) {
@@ -41,8 +94,8 @@ function SetFontSize(width, height, force) {
         if (SiteInitted) {
             Crt.SetFont(437, width, height);
         } else {
-            ClientVars.FontWidth = width;
-            ClientVars.FontHeight = height;
+            HtmlTerm.FontWidth = width;
+            HtmlTerm.FontHeight = height;
         }
 
         $('link#VK_CSS').attr('href', VK_CSS_Url.replace("{size}", width * 80));
