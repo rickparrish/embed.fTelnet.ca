@@ -1,90 +1,82 @@
-.vk_keyboard {
-    width: 790px;
-    height: 255px;
+#vk-keyboard {
+  background-color: black;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  height: 299px;
+  width: 800px;
 }
-
-.vk_key {
-    width: 40px;
+#vk-keyboard * {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
-.vk_left_half {
-    width: 654px;
+#vk-keyboard ::selection {
+  background-color: none;
+  color: inherit;
 }
-
-.vk_right_half {
-    width: 136px;
-    height: 260px;
+#vk-keyboard ::-moz-selection {
+  background-color: none;
+  color: inherit;
 }
-
-.vk_function {
-    width: 30px;
+#vk-keyboard .vk-row > :first-child {
+  margin-left: 0 !important;
 }
-
-.vk_small {
-    width: 32px;
+#vk-keyboard .vk-row .vk-key {
+  background-color: #444;
+  border-radius: 2px;
+  cursor: pointer;
+  color: #eee;
+  font: normal 15px sans-serif;
+  float: left;
+  height: 49px;
+  line-height: 22px;
+  margin: 1px 0 0 1px;
+  padding: 2px 0 0 7px;
+  transition: background-color 0.2s ease;
+  width: 49px;
 }
-
-.vk_space1 {
-    margin-right: 35px !important;
+#vk-keyboard .vk-row .vk-key:hover {
+  background-color: #eee;
+  color: #333;
+  font-weight: bold;
+  z-index: 1000;
 }
-
-.vk_space2 {
-    margin-right: 25px !important;
+#vk-keyboard .vk-row .vk-backslash {
+  width: 75px;
 }
-
-.vk_dual {
-    width: 30px;
+#vk-keyboard .vk-row .vk-backspace {
+  width: 100px;
 }
-
-.vk_backspace {
-    width: 75px;
+#vk-keyboard .vk-row .vk-capslock {
+  width: 85px;
 }
-
-.vk_tab {
-    width: 50px;
+#vk-keyboard .vk-row .vk-ctrl {
+  width: 63px;
 }
-
-.vk_letter {
-    width: 30px;
+#vk-keyboard .vk-row .vk-enter {
+  width: 114px;
 }
-
-.vk_slash {
-    width: 55px;
+#vk-keyboard .vk-row .vk-lshift {
+  width: 113px;
 }
-
-.vk_caps {
-    width: 60px;
+#vk-keyboard .vk-row .vk-rshift {
+  width: 86px;
 }
-
-.vk_enter {
-    width: 93px;
+#vk-keyboard .vk-row .vk-spacebar {
+  width: 322px;
 }
-
-.vk_shift.vk_left {
-    width: 80px;
+#vk-keyboard .vk-row .vk-tab {
+  width: 74px;
 }
-
-.vk_shift.vk_right {
-    width: 105px;
+#vk-keyboard .vk-function .vk-key {
+  height: 49px;
+  margin-top: 0;
+  width: 46px;
 }
-
-.vk_ctrl {
-    width: 60px;
+#vk-keyboard .vk-function .vk-esc {
+  width: 48px;
 }
-
-.vk_space {
-    width: 205px;
+#vk-keyboard .vk-function .vk-spid {
+  width: 46px;
 }
-
-.vk_arrow_keys {
-    position: relative;
-    top: 42px;
-}
-
-.vk_nav_keys .vk_key {
-    width: 34px;
-}
-
-.vk_arrow_keys .vk_key {
-    width: 34px;
-}
-

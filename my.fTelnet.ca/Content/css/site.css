@@ -27,6 +27,10 @@ body > .container {
     margin-bottom: 20px;
 }
 
+#vk-keyboard {
+    margin: auto;
+}
+
 /* Override bootstrap .hidden to jquery .show() works */
 .hidden {
     display: none !important;

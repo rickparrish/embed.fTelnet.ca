@@ -1,299 +1,99 @@
-﻿<!--
-    Original layout by Attila Hajzer http://codepen.io/attilahajzer/
-    Originally downloaded from: http://codepen.io/attilahajzer/pen/kydqJ
-
-    Javascript and data keycodes added by Rick Parrish http://www.rickparrish.ca
--->
-<div class="vk_keyboard">
-    <div class="vk_left_half">
-        <div class="vk_key vk_function vk_newrow vk_space1" data-keycode="27">
-            Esc
-        </div>
-
-        <div class="vk_key vk_function" data-keycode="112">
-            F1
-        </div>
-        <div class="vk_key vk_function" data-keycode="113">
-            F2
-        </div>
-        <div class="vk_key vk_function" data-keycode="114">
-            F3
-        </div>
-
-        <div class="vk_key vk_function vk_space2" data-keycode="115">
-            F4
-        </div>
-        <div class="vk_key vk_function" data-keycode="116">
-            F5
-        </div>
-        <div class="vk_key vk_function" data-keycode="117">
-            F6
-        </div>
-        <div class="vk_key vk_function" data-keycode="118">
-            F7
-        </div>
-        <div class="vk_key vk_function vk_space2" data-keycode="119">
-            F8
-        </div>
-
-        <div class="vk_key vk_function" data-keycode="120">
-            F9
-        </div>
-        <div class="vk_key vk_function" data-keycode="121">
-            F10
-        </div>
-        <div class="vk_key vk_function" data-keycode="122">
-            F11
-        </div>
-        <div class="vk_key vk_function" data-keycode="123">
-            F12
-        </div>
-        <!--END FUNCTION KEYS -->
-
-        <div class="vk_key vk_num vk_newrow vk_dual" data-keycode="192">
-            ~<br>`
-        </div>
-
-        <div class="vk_key vk_num vk_dual" data-keycode="49">
-            !<br>1
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="50">
-            @@<br>2
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="51">
-            #<br>3
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="52">
-            $<br>4
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="53">
-            %<br>5
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="54">
-            ^<br>6
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="55">
-            &<br>7
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="56">
-            *<br>8
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="57">
-            (<br>9
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="48">
-            )<br>0
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="173">
-            _<br>-
-        </div>
-        <div class="vk_key vk_num vk_dual" data-keycode="61">
-            +<br>=
-        </div>
-        <div class="vk_key vk_backspace" data-keycode="8">
-            Backspace
-        </div>
-        <!--END NUMBER KEYS -->
-
-        <div class="vk_key vk_tab vk_newrow" data-keycode="9">
-            Tab
-        </div>
-        <div class="vk_key vk_letter" data-keycode="81">
-            Q
-        </div>
-        <div class="vk_key vk_letter" data-keycode="87">
-            W
-        </div>
-        <div class="vk_key vk_letter" data-keycode="69">
-            E
-        </div>
-        <div class="vk_key vk_letter" data-keycode="82">
-            R
-        </div>
-        <div class="vk_key vk_letter" data-keycode="84">
-            T
-        </div>
-        <div class="vk_key vk_letter" data-keycode="89">
-            Y
-        </div>
-        <div class="vk_key vk_letter" data-keycode="85">
-            U
-        </div>
-        <div class="vk_key vk_letter" data-keycode="73">
-            I
-        </div>
-        <div class="vk_key vk_letter" data-keycode="79">
-            O
-        </div>
-        <div class="vk_key vk_letter" data-keycode="80">
-            P
-        </div>
-        <div class="vk_key vk_dual" data-keycode="219">
-            {<br>[
-        </div>
-        <div class="vk_key vk_dual" data-keycode="221">
-            }<br>]
-        </div>
-        <div class="vk_key vk_letter vk_dual vk_slash" data-keycode="220">
-            |<br>\
-        </div>
-
-        <div class="vk_key vk_caps vk_newrow" data-keycode="20">
-            Caps<br>Lock
-        </div>
-        <div class="vk_key vk_letter" data-keycode="65">
-            A
-        </div>
-        <div class="vk_key vk_letter" data-keycode="83">
-            S
-        </div>
-        <div class="vk_key vk_letter" data-keycode="68">
-            D
-        </div>
-        <div class="vk_key vk_letter" data-keycode="70">
-            F
-        </div>
-        <div class="vk_key vk_letter" data-keycode="71">
-            G
-        </div>
-        <div class="vk_key vk_letter" data-keycode="72">
-            H
-        </div>
-        <div class="vk_key vk_letter" data-keycode="74">
-            J
-        </div>
-        <div class="vk_key vk_letter" data-keycode="75">
-            K
-        </div>
-        <div class="vk_key vk_letter" data-keycode="76">
-            L
-        </div>
-        <div class="vk_key vk_dual" data-keycode="59">
-            :<br>;
-        </div>
-        <div class="vk_key vk_dual" data-keycode="222">
-            "<br>'
-        </div>
-        <div class="vk_key vk_enter" data-keycode="13">
-            Enter
-        </div>
-
-        <div class="vk_key vk_shift vk_left vk_newrow" data-keycode="16">
-            Shift
-        </div>
-        <div class="vk_key vk_letter" data-keycode="90">
-            Z
-        </div>
-        <div class="vk_key vk_letter" data-keycode="88">
-            X
-        </div>
-        <div class="vk_key vk_letter" data-keycode="67">
-            C
-        </div>
-        <div class="vk_key vk_letter" data-keycode="86">
-            V
-        </div>
-        <div class="vk_key vk_letter" data-keycode="66">
-            B
-        </div>
-        <div class="vk_key vk_letter" data-keycode="78">
-            N
-        </div>
-        <div class="vk_key vk_letter" data-keycode="77">
-            M
-        </div>
-        <div class="vk_key vk_dual" data-keycode="188">
-            &lt; <br>,
-        </div>
-        <div class="vk_key vk_dual" data-keycode="190">
-            ><br>.
-        </div>
-        <div class="vk_key vk_dual" data-keycode="191">
-            ?<br>/
-        </div>
-        <div class="vk_key vk_shift vk_right" data-keycode="16">
-            Shift
-        </div>
-
-        <div class="vk_key vk_ctrl vk_newrow" data-keycode="17">
-            Ctrl
-        </div>
-        <div class="vk_key vk_win" data-keycode="91">
-            Win
-        </div>
-        <div class="vk_key vk_alt" data-keycode="18">
-            Alt
-        </div>
-        <div class="vk_key vk_space" data-keycode="32">
-            &nbsp;
-        </div>
-        <div class="vk_key vk_alt" data-keycode="18">
-            Alt
-        </div>
-        <div class="vk_key vk_win" data-keycode="97">
-            Win
-        </div>
-        <div class="vk_key vk_menu" data-keycode="93">
-            Menu
-        </div>
-        <div class="vk_key vk_ctrl" data-keycode="17">
-            Ctrl
-        </div>
-    </div><!-- end section-a-->
-
-    <div class="vk_right_half">
-        <div class="vk_special_keys">
-            <div class="vk_key vk_function vk_small" data-keycode="0">
-                Prnt Scrn
-            </div>
-            <div class="vk_key vk_function vk_small" data-keycode="145">
-                Scroll Lock
-            </div>
-            <div class="vk_key vk_function vk_small" data-keycode="19">
-                Pause Break
-            </div>
-        </div>
-
-        <div class="vk_nav_keys">
-            <div class="vk_key" data-keycode="45">
-                Insert
-            </div>
-            <div class="vk_key" data-keycode="36">
-                Home
-            </div>
-            <div class="vk_key vk_dual" data-keycode="33">
-                Page<br />Up
-            </div>
-            <div class="vk_key" data-keycode="46">
-                Del
-            </div>
-            <div class="vk_key" data-keycode="35">
-                End
-            </div>
-            <div class="vk_key vk_dual" data-keycode="37">
-                Page<br />Down
-            </div>
-        </div>
-
-        <div class="vk_arrow_keys">
-            <div class="vk_key vk_hidden">
-
-            </div>
-            <div class="vk_key" data-keycode="38">
-                ^
-            </div>
-            <div class="vk_key vk_hidden">
-
-            </div>
-            <div class="vk_key" data-keycode="37">
-                &lt;
-            </div>
-            <div class="vk_key" data-keycode="40">
-                v
-            </div>
-            <div class="vk_key" data-keycode="39">
-                >
-            </div>
-        </div>
+﻿<div id="vk-keyboard">
+    <div class="vk-row vk-function">
+        <div class="vk-key vk-esc" data-keycode="27">Esc</div>
+        <div class="vk-key" data-keycode="112">F1</div>
+        <div class="vk-key" data-keycode="113">F2</div>
+        <div class="vk-key" data-keycode="114">F3</div>
+        <div class="vk-key" data-keycode="115">F4</div>
+        <div class="vk-key" data-keycode="116">F5</div>
+        <div class="vk-key" data-keycode="117">F6</div>
+        <div class="vk-key" data-keycode="118">F7</div>
+        <div class="vk-key" data-keycode="119">F8</div>
+        <div class="vk-key" data-keycode="120">F9</div>
+        <div class="vk-key" data-keycode="121">F10</div>
+        <div class="vk-key" data-keycode="122">F11</div>
+        <div class="vk-key" data-keycode="123">F12</div>
+        <div class="vk-key vk-spid" data-keycode="145">Scr<br />Lk</div>
+        <div class="vk-key vk-spid" data-keycode="000">Prt<br />Scr</div>
+        <div class="vk-key vk-spid" data-keycode="45">Ins</div>
+        <div class="vk-key vk-spid" data-keycode="46">Del</div>
+    </div>
+    <div class="vk-row">
+        <div class="vk-key" data-keycode="192">~<br />`</div>
+        <div class="vk-key" data-keycode="49">!<br />1</div>
+        <div class="vk-key" data-keycode="50">@@<br />2</div>
+        <div class="vk-key" data-keycode="51">#<br />3</div>
+        <div class="vk-key" data-keycode="52">$<br />4</div>
+        <div class="vk-key" data-keycode="53">%<br />5</div>
+        <div class="vk-key" data-keycode="54">^<br />6</div>
+        <div class="vk-key" data-keycode="55">&<br />7</div>
+        <div class="vk-key" data-keycode="56">*<br />8</div>
+        <div class="vk-key" data-keycode="57">(<br />9</div>
+        <div class="vk-key" data-keycode="48">)<br />0</div>
+        <div class="vk-key" data-keycode="173">_<br />-</div>
+        <div class="vk-key" data-keycode="61">+<br />=</div>
+        <div class="vk-key vk-backspace" data-keycode="8">&lt;-- Backspace</div>
+        <div class="vk-key" data-keycode="36">Home</div>
+    </div>
+    <div class="vk-row">
+        <div class="vk-key vk-tab" data-keycode="9">Tab |&lt--&gt;|</div>
+        <div class="vk-key" data-keycode="81">Q</div>
+        <div class="vk-key" data-keycode="87">W</div>
+        <div class="vk-key" data-keycode="69">E</div>
+        <div class="vk-key" data-keycode="82">R</div>
+        <div class="vk-key" data-keycode="84">T</div>
+        <div class="vk-key" data-keycode="89">Y</div>
+        <div class="vk-key" data-keycode="85">U</div>
+        <div class="vk-key" data-keycode="73">I</div>
+        <div class="vk-key" data-keycode="79">O</div>
+        <div class="vk-key" data-keycode="80">P</div>
+        <div class="vk-key" data-keycode="219">{<br />[</div>
+        <div class="vk-key" data-keycode="221">}<br />]</div>
+        <div class="vk-key vk-backslash" data-keycode="220">|<br />\</div>
+        <div class="vk-key" data-keycode="33">Page<br />Up</div>
+    </div>
+    <div class="vk-row">
+        <div class="vk-key vk-capslock" data-keycode="20">Caps Lock</div>
+        <div class="vk-key" data-keycode="65">A</div>
+        <div class="vk-key" data-keycode="83">S</div>
+        <div class="vk-key" data-keycode="68">D</div>
+        <div class="vk-key" data-keycode="70">F</div>
+        <div class="vk-key" data-keycode="71">G</div>
+        <div class="vk-key" data-keycode="72">H</div>
+        <div class="vk-key" data-keycode="74">J</div>
+        <div class="vk-key" data-keycode="75">K</div>
+        <div class="vk-key" data-keycode="76">L</div>
+        <div class="vk-key" data-keycode="59">:<br />;</div>
+        <div class="vk-key" data-keycode="222">"<br />'</div>
+        <div class="vk-key vk-enter" data-keycode="13">&lt;-- enter</div>
+        <div class="vk-key" data-keycode="37">Page<br />Down</div>
+    </div>
+    <div class="vk-row">
+        <div class="vk-key vk-lshift" data-keycode="16">^ Shift</div>
+        <div class="vk-key" data-keycode="90">Z</div>
+        <div class="vk-key" data-keycode="88">X</div>
+        <div class="vk-key" data-keycode="67">C</div>
+        <div class="vk-key" data-keycode="86">V</div>
+        <div class="vk-key" data-keycode="66">B</div>
+        <div class="vk-key" data-keycode="78">N</div>
+        <div class="vk-key" data-keycode="77">M</div>
+        <div class="vk-key" data-keycode="188">&lt;<br />,</div>
+        <div class="vk-key" data-keycode="190">&gt;<br />.</div>
+        <div class="vk-key" data-keycode="191">?<br />/</div>
+        <div class="vk-key vk-rshift" data-keycode="16">^ Shift</div>
+        <div class="vk-key vk-arrow-up" data-keycode="38">^</div>
+        <div class="vk-key" data-keycode="35">End</div>
+    </div>
+    <div class="vk-row">
+        <div class="vk-key vk-ctrl" data-keycode="17">Ctrl</div>
+        <div class="vk-key" data-keycode="91">Win</div>
+        <div class="vk-key vk-alt" data-keycode="18">Alt</div>
+        <div class="vk-key vk-spacebar" data-keycode="32">&nbsp;</div>
+        <div class="vk-key vk-alt" data-keycode="18">Alt</div>
+        <div class="vk-key" data-keycode="93">App<br />Menu</div>
+        <div class="vk-key vk-ctrl" data-keycode="17">Ctrl</div>
+        <div class="vk-key" data-keycode="37">&lt</div>
+        <div class="vk-key" data-keycode="40">v</div>
+        <div class="vk-key" data-keycode="39">&gt;</div>
     </div>
 </div>

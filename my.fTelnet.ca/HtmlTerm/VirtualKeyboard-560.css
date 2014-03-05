@@ -1,98 +1,82 @@
-.vk_keyboard {
-    width: 550px;
-    height: 350px;
+#vk-keyboard {
+  background-color: black;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  height: 209px;
+  width: 560px;
 }
-
-.vk_key {
-    width: 40px;
+#vk-keyboard * {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
-
-.vk_left_half {
-    width: 550px;
+#vk-keyboard ::selection {
+  background-color: none;
+  color: inherit;
 }
-
-.vk_right_half {
-    border-top: 2px dashed #333333;
-    width: 550px;
-    height: 85px;
-    padding-top: 5px;
+#vk-keyboard ::-moz-selection {
+  background-color: none;
+  color: inherit;
 }
-
-.vk_function {
-    text-align: center;
-    padding-left: 0;
-    width: 35px;
+#vk-keyboard .vk-row > :first-child {
+  margin-left: 0 !important;
 }
-
-.vk_space1 {
-    margin-right: 23px !important;
+#vk-keyboard .vk-row .vk-key {
+  background-color: #444;
+  border-radius: 2px;
+  cursor: pointer;
+  color: #eee;
+  font: normal 12px sans-serif;
+  float: left;
+  height: 34px;
+  line-height: 15px;
+  margin: 1px 0 0 1px;
+  padding: 2px 0 0 5px;
+  transition: background-color 0.2s ease;
+  width: 34px;
 }
-
-.vk_space2 {
-    margin-right: 21px !important;
+#vk-keyboard .vk-row .vk-key:hover {
+  background-color: #eee;
+  color: #333;
+  font-weight: bold;
+  z-index: 1000;
 }
-
-.vk_dual {
-    width: 26px;
+#vk-keyboard .vk-row .vk-backslash {
+  width: 52px;
 }
-
-.vk_backspace {
-    width: 68px;
+#vk-keyboard .vk-row .vk-backspace {
+  width: 70px;
 }
-
-.vk_tab {
-    width: 44px;
+#vk-keyboard .vk-row .vk-capslock {
+  width: 59px;
 }
-
-.vk_letter {
-    width: 26px;
+#vk-keyboard .vk-row .vk-ctrl {
+  width: 44px;
 }
-
-.vk_slash {
-    width: 50px;
+#vk-keyboard .vk-row .vk-enter {
+  width: 80px;
 }
-
-.vk_caps {
-    width: 54px;
+#vk-keyboard .vk-row .vk-lshift {
+  width: 79px;
 }
-
-.vk_enter {
-    width: 84px;
+#vk-keyboard .vk-row .vk-rshift {
+  width: 60px;
 }
-
-.vk_shift.vk_left {
-    width: 83px;
+#vk-keyboard .vk-row .vk-spacebar {
+  width: 225px;
 }
-
-.vk_shift.vk_right {
-    width: 83px;
+#vk-keyboard .vk-row .vk-tab {
+  width: 52px;
 }
-
-.vk_ctrl {
-    width: 40px;
+#vk-keyboard .vk-function .vk-key {
+  height: 34px;
+  margin-top: 0;
+  width: 32px;
 }
-
-.vk_space {
-    width: 186px;
+#vk-keyboard .vk-function .vk-esc {
+  width: 32px;
 }
-
-.vk_arrow_keys {
-    float: left;
-    width: 147px;
-}
-
-.vk_nav_keys {
-    float: left;
-    margin-right: 70px;
-    width: 126px;
-}
-
-.vk_newrow {
-    clear: left;
-}
-
-.vk_special_keys
-{
-    float: left;
-    margin-right: 75px;
+#vk-keyboard .vk-function .vk-spid {
+  width: 32px;
 }

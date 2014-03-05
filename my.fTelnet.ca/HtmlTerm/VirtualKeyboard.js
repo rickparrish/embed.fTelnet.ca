@@ -8,7 +8,11 @@ var VK_CharCodes = Array();
 function VK_HighlightKey(className, lit) {
     var Keys = document.getElementsByClassName(className);
     for (var i = 0; i < Keys.length; i++) {
-        Keys[i].style.color = lit ? "#00ff00" : "#eee";
+        if (lit) {
+            Keys[i].style.color = "#00ff00";
+        } else {
+            Keys[i].removeAttribute("style");
+        }
     }
 }
 
@@ -40,7 +44,7 @@ function VK_Init() {
     VK_CharCodes[191] = { Normal: 47, Shifted: 63 }; // /
 
     // Handle click events for all keys
-    var Keys = document.getElementsByClassName("vk_key");
+    var Keys = document.getElementsByClassName("vk-key");
     for (var i = 0; i < Keys.length; i++) {
         if (Keys[i].addEventListener) {  // all browsers except IE before version 9
             var KeyCode = Keys[i].getAttribute("data-keycode");
@@ -131,8 +135,9 @@ function VK_OnKeyCode(e) {
 }
 
 function VK_ReDrawSpecialKeys() {
-    VK_HighlightKey("vk_caps", VK_CapsLockEnabled);
-    VK_HighlightKey("vk_shift", VK_ShiftPressed);
-    VK_HighlightKey("vk_ctrl", VK_CtrlPressed);
-    VK_HighlightKey("vk_alt", VK_AltPressed);
+    VK_HighlightKey("vk-capslock", VK_CapsLockEnabled);
+    VK_HighlightKey("vk-lshift", VK_ShiftPressed);
+    VK_HighlightKey("vk-rshift", VK_ShiftPressed);
+    VK_HighlightKey("vk-ctrl", VK_CtrlPressed);
+    VK_HighlightKey("vk-alt", VK_AltPressed);
 }
