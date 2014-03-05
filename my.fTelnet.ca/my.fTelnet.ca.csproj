@@ -128,7 +128,7 @@
     <Content Include="Views\Shared\_Contact.cshtml" />
     <Content Include="Views\Shared\_About.cshtml" />
     <Content Include="Views\Shared\_Donate.cshtml" />
-    <Content Include="Views\Shared\_VirtualKeyboard.cshtml" />
+    <Content Include="HtmlTerm\VirtualKeyboard.html" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="HtmlTerm\VirtualKeyboard.less" />
     <Content Include="HtmlTerm\VirtualKeyboard-960.less" />

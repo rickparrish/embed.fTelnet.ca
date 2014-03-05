@@ -3,7 +3,7 @@
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
-  height: 299px;
+  height: 298px;
   width: 800px;
 }
 #vk-keyboard * {
@@ -29,12 +29,12 @@
   color: #eee;
   font: normal 15px sans-serif;
   float: left;
-  height: 49px;
+  height: 48px;
   line-height: 22px;
-  margin: 1px 0 0 1px;
+  margin: 2px 0 0 2px;
   padding: 2px 0 0 7px;
   transition: background-color 0.2s ease;
-  width: 49px;
+  width: 48px;
 }
 #vk-keyboard .vk-row .vk-key:hover {
   background-color: #eee;
@@ -42,8 +42,13 @@
   font-weight: bold;
   z-index: 1000;
 }
+#vk-keyboard .vk-row .vk-appmenu {
+  background-image: url("img/appmenu-key.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 #vk-keyboard .vk-row .vk-backslash {
-  width: 75px;
+  width: 74px;
 }
 #vk-keyboard .vk-row .vk-backspace {
   width: 100px;
@@ -52,13 +57,13 @@
   width: 85px;
 }
 #vk-keyboard .vk-row .vk-ctrl {
-  width: 63px;
+  width: 62px;
 }
 #vk-keyboard .vk-row .vk-enter {
-  width: 114px;
+  width: 113px;
 }
 #vk-keyboard .vk-row .vk-lshift {
-  width: 113px;
+  width: 112px;
 }
 #vk-keyboard .vk-row .vk-rshift {
   width: 86px;
@@ -69,14 +74,19 @@
 #vk-keyboard .vk-row .vk-tab {
   width: 74px;
 }
+#vk-keyboard .vk-row .vk-win {
+  background-image: url("img/windows-key.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 #vk-keyboard .vk-function .vk-key {
-  height: 49px;
+  height: 48px;
   margin-top: 0;
-  width: 46px;
+  width: 45px;
 }
 #vk-keyboard .vk-function .vk-esc {
   width: 48px;
 }
 #vk-keyboard .vk-function .vk-spid {
-  width: 46px;
+  width: 45px;
 }

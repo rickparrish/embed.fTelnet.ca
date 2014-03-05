@@ -1,5 +1,4 @@
 @KeySize: floor(@KeyboardWidth / 16); // 16 is a magic number that gets the tab width to be roughly 1.5 keys wide
-@KeyMargin: 1px;
 @KeyPaddingLeft: floor(@KeySize / 7); // Another magic number
 @KeyWidth: @KeySize - @KeyMargin;
 @KeyHeight: @KeyWidth;
@@ -77,6 +76,12 @@
                 z-index: 1000;
             }
 
+        .vk-appmenu {
+            background-image: url("img/appmenu-key.png");
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
         .vk-backslash {
             width: @BackslashWidth;
         }
@@ -111,6 +116,12 @@
 
         .vk-tab {
             width: @TabWidth;
+        }
+
+        .vk-win {
+            background-image: url("img/windows-key.png");
+            background-position: center center;
+            background-repeat: no-repeat;
         }
     }
 

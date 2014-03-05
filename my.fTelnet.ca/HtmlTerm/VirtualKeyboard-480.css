@@ -42,6 +42,11 @@
   font-weight: bold;
   z-index: 1000;
 }
+#vk-keyboard .vk-row .vk-appmenu {
+  background-image: url("img/appmenu-key.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
 #vk-keyboard .vk-row .vk-backslash {
   width: 45px;
 }
@@ -68,6 +73,11 @@
 }
 #vk-keyboard .vk-row .vk-tab {
   width: 44px;
+}
+#vk-keyboard .vk-row .vk-win {
+  background-image: url("img/windows-key.png");
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 #vk-keyboard .vk-function .vk-key {
   height: 29px;

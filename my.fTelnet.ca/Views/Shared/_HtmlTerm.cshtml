@@ -3,5 +3,5 @@
         <span id="HtmlTermContainer" />
     </div>
 
-    @Html.Partial("_VirtualKeyboard")
+    @Html.Raw(File.ReadAllText(Server.MapPath("~/HtmlTerm/VirtualKeyboard.html")))
 </div>
