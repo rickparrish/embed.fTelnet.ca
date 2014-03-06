@@ -12,6 +12,8 @@ $(document).ready(function () {
     if (localStorage["SkipAbout"] && (localStorage["SkipAbout"] == "true")) {
         $('#chkSkipAbout').prop('checked', true);
         OpenPanel('HtmlTerm');
+    } else {
+        OpenPanel('About');
     }
 
     SiteInitted = true;
