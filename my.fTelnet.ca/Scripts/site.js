@@ -37,16 +37,9 @@ function Connect() {
         alert("Enter a hostname");
         return;
     }
-    if (Proxy) {
-        if (Port != 23) {
-            alert("Port can only be 23 when proxy is used");
-            return;
-        }
-    } else {
-        if ((Port < 1) || (Port > 65535)) {
-            alert("Port must be between 1 and 65535");
-            return;
-        }
+    if ((Port < 1) || (Port > 65535)) {
+        alert("Port must be between 1 and 65535");
+        return;
     }
 
     // Hides the drop down Connect menu
