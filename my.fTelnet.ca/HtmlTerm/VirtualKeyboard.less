@@ -78,7 +78,31 @@
 
         .vk-appmenu {
             background-image: url("img/appmenu-key.png");
-            background-position: center center;
+            background-position: @ImagePositionLeft @ImagePositionTop;
+            background-repeat: no-repeat;
+        }
+
+        .vk-arrow-down {
+            background-image: url("img/down-key.png");
+            background-position: @ImagePositionLeft @ImagePositionTop;
+            background-repeat: no-repeat;
+        }
+
+        .vk-arrow-left {
+            background-image: url("img/left-key.png");
+            background-position: @ImagePositionLeft @ImagePositionTop;
+            background-repeat: no-repeat;
+        }
+
+        .vk-arrow-right {
+            background-image: url("img/right-key.png");
+            background-position: @ImagePositionLeft @ImagePositionTop;
+            background-repeat: no-repeat;
+        }
+
+        .vk-arrow-up {
+            background-image: url("img/up-key.png");
+            background-position: @ImagePositionLeft @ImagePositionTop;
             background-repeat: no-repeat;
         }
 
@@ -87,6 +111,9 @@
         }
 
         .vk-backspace {
+            background-image: url("img/backspace-key.png");
+            background-position: @KeyPaddingLeft ceil(@KeyHeight / 2);
+            background-repeat: no-repeat;
             width: @BackspaceWidth;
         }
 
@@ -99,14 +126,23 @@
         }
 
         .vk-enter {
+            background-image: url("img/enter-key.png");
+            background-position: @KeyPaddingLeft ceil(@KeyHeight / 2);
+            background-repeat: no-repeat;
             width: @EnterWidth;
         }
 
         .vk-lshift {
+            background-image: url("img/shift-key.png");
+            background-position: @KeyPaddingLeft ceil(@KeyHeight / 2);
+            background-repeat: no-repeat;
             width: @LeftShiftWidth;
         }
 
         .vk-rshift {
+            background-image: url("img/shift-key.png");
+            background-position: @KeyPaddingLeft ceil(@KeyHeight / 2);
+            background-repeat: no-repeat;
             width: @RightShiftWidth;
         }
 
@@ -115,6 +151,9 @@
         }
 
         .vk-tab {
+            background-image: url("img/tab-key.png");
+            background-position: @KeyPaddingLeft ceil(@KeyHeight / 2);
+            background-repeat: no-repeat;
             width: @TabWidth;
         }
 

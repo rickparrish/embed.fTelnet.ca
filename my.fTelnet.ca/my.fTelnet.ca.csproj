@@ -137,6 +137,7 @@
     <Content Include="HtmlTerm\VirtualKeyboard-720.less" />
     <Content Include="HtmlTerm\VirtualKeyboard-560.less" />
     <Content Include="HtmlTerm\VirtualKeyboard-800.less" />
+    <Content Include="Views\Shared\_Loading.cshtml" />
     <None Include="Views\_ViewStart.cshtml" />
     <Content Include="Web.config" />
   </ItemGroup>

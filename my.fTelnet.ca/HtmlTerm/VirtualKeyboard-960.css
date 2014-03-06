@@ -44,13 +44,36 @@
 }
 #vk-keyboard .vk-row .vk-appmenu {
   background-image: url("img/appmenu-key.png");
-  background-position: center center;
+  background-position: 8px 6px;
+  background-repeat: no-repeat;
+}
+#vk-keyboard .vk-row .vk-arrow-down {
+  background-image: url("img/down-key.png");
+  background-position: 8px 6px;
+  background-repeat: no-repeat;
+}
+#vk-keyboard .vk-row .vk-arrow-left {
+  background-image: url("img/left-key.png");
+  background-position: 8px 6px;
+  background-repeat: no-repeat;
+}
+#vk-keyboard .vk-row .vk-arrow-right {
+  background-image: url("img/right-key.png");
+  background-position: 8px 6px;
+  background-repeat: no-repeat;
+}
+#vk-keyboard .vk-row .vk-arrow-up {
+  background-image: url("img/up-key.png");
+  background-position: 8px 6px;
   background-repeat: no-repeat;
 }
 #vk-keyboard .vk-row .vk-backslash {
   width: 89px;
 }
 #vk-keyboard .vk-row .vk-backspace {
+  background-image: url("img/backspace-key.png");
+  background-position: 8px 29px;
+  background-repeat: no-repeat;
   width: 120px;
 }
 #vk-keyboard .vk-row .vk-capslock {
@@ -60,18 +83,30 @@
   width: 75px;
 }
 #vk-keyboard .vk-row .vk-enter {
+  background-image: url("img/enter-key.png");
+  background-position: 8px 29px;
+  background-repeat: no-repeat;
   width: 136px;
 }
 #vk-keyboard .vk-row .vk-lshift {
+  background-image: url("img/shift-key.png");
+  background-position: 8px 29px;
+  background-repeat: no-repeat;
   width: 135px;
 }
 #vk-keyboard .vk-row .vk-rshift {
+  background-image: url("img/shift-key.png");
+  background-position: 8px 29px;
+  background-repeat: no-repeat;
   width: 103px;
 }
 #vk-keyboard .vk-row .vk-spacebar {
   width: 386px;
 }
 #vk-keyboard .vk-row .vk-tab {
+  background-image: url("img/tab-key.png");
+  background-position: 8px 29px;
+  background-repeat: no-repeat;
   width: 89px;
 }
 #vk-keyboard .vk-row .vk-win {
