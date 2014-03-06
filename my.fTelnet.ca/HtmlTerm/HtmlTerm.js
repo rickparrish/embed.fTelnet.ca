@@ -975,7 +975,7 @@ var TFont = function () {
                 var i;
                 for (i = 0; i < FCharMap[ACharCode][AAttr].data.length; i += 4) {
                     // Determine if it's back or fore colour to use for this pixel
-                    if (FCharMap[ACharCode][AAttr].data[i]) {
+                    if (FCharMap[ACharCode][AAttr].data[i] > 127) {
                         R = ForeR;
                         G = ForeG;
                         B = ForeB;
