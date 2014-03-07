@@ -43,7 +43,13 @@ function Connect() {
     }
 
     // Hides the drop down Connect menu
-    $("body").trigger("click");
+    if ($('.navbar-toggle').is(':visible')) {
+        // Mobile
+        $('.navbar-collapse').collapse('toggle');
+    } else {
+        // Desktop
+        $("body").trigger("click");
+    }
 
     // Confirms new connection if already connected
     if (HtmlTerm.Connected()) {
