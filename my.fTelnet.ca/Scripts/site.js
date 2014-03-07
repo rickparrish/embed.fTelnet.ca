@@ -1,4 +1,5 @@
-﻿var SiteInitted = false;
+﻿var RecentConnections = [];
+var SiteInitted = false;
 
 $(document).ready(function () {
     // Init HtmlTerm
@@ -16,6 +17,12 @@ $(document).ready(function () {
         OpenPanel('About');
     }
 
+    // Load list of recent connections
+    if (localStorage["RecentConnections"]) RecentConnections = JSON.parse(localStorage["RecentConnections"]);
+    UpdateRecentMenu();
+
+    // TODO Load dialing directory
+
     SiteInitted = true;
 });
 
@@ -23,8 +30,11 @@ $(window).resize(function () {
     if (SiteInitted) SetBestFontSize();
 });
 
-function AddToRecent(newEntry) {
-    // TODO Add to recent array, local store, and file menu
+function AddToRecentMenu(newEntry) {
+    RecentConnections.push(newEntry);
+    while (RecentConnections.length > 5) RecentConnections.shift();
+    localStorage["RecentConnections"] = JSON.stringify(RecentConnections);
+    UpdateRecentMenu();
 }
 
 function Connect() {
@@ -61,7 +71,7 @@ function Connect() {
     }
 
     // Add to recent menu / local storage
-    AddToRecent({
+    AddToRecentMenu({
         'Hostname': Hostname,
         'Port': Port,
         'Proxy': Proxy
@@ -75,6 +85,16 @@ function Connect() {
 
     // And connect
     HtmlTerm.Connect();
+}
+
+function ConnectToRecent(index) {
+    var Entry = RecentConnections[index];
+
+    $('#txtHostname').val(Entry.Hostname);
+    $('#txtPort').val(Entry.Port)
+    $('#chkProxy').prop('checked', Entry.Proxy);
+
+    Connect();
 }
 
 function OpenPanel(id) {
@@ -112,5 +132,17 @@ function SetSkipAbout() {
         localStorage["SkipAbout"] = "true";
     } else {
         localStorage["SkipAbout"] = "false";
+    }
+}
+
+function UpdateRecentMenu() {
+    $('.recent-connection').remove();
+    if (RecentConnections && (RecentConnections.length > 0)) {
+        var Count = 0;
+        for (var i = RecentConnections.length - 1; i >= 0; i--) {
+            $('#liAfterRecent').before("<li class=\"recent-connection\"><a href=\"#\" onclick=\"ConnectToRecent(" + i + ");\">" + ++Count + ") " + RecentConnections[i].Hostname + ":" + RecentConnections[i].Port + "</a></li>");
+        }
+    } else {
+        $('#liAfterRecent').before("<li class=\"recent-connection\"><a href=\"#\">No recent connections...</a></li>");
     }
 }

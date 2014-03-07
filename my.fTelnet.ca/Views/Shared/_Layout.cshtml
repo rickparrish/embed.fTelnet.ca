@@ -35,13 +35,9 @@
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="HtmlTerm.Connect();">Connect</a></li>
                             <li><a href="#" onclick="HtmlTerm.Disconnect();">Disconnect</a></li>
-                            <li class="divider" id="liBeforeRecent"></li>
-                            <li class="recent-connection"><a href="ConnectToRecent(0);">1: Recent A</a></li> @*TODO For testing only*@
-                            <li class="recent-connection"><a href="ConnectToRecent(1);">2: Recent B</a></li>
-                            <li class="recent-connection"><a href="ConnectToRecent(2);">3: Recent C</a></li>
-                            <li class="recent-connection"><a href="ConnectToRecent(3);">4: Recent D</a></li>
-                            <li class="recent-connection"><a href="ConnectToRecent(4);">5: Recent E</a></li>
                             <li class="divider"></li>
+                            @*List of recent connections will be added here upon load*@
+                            <li class="divider" id="liAfterRecent"></li>
                             <li><a href="#" onclick="Exit();">Exit</a></li>
                         </ul>
                     </li>
