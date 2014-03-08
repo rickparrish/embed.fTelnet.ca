@@ -209,6 +209,7 @@ function UpdateDialingDirectory() {
             NewRow += '</tr>';
             $('#tblDialingDirectory tbody').append(NewRow);
         }
+        $("#tblDialingDirectory").trigger('update');
     } else {
         $('#tblDialingDirectory tbody').append('<tr><td colspan="7">You have no dialing directory entries</td></tr>');
     }
