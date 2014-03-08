@@ -19,7 +19,7 @@
   along with HtmlTerm.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*global document: false, navigator: false, console: false, setTimeout: false, setInterval: false, Image: false, window: false, WebSocket: false, MozWebSocket: false, XMLHttpRequest: false, confirm: false, clearInterval: false, ArrayBuffer: false, DataView: false, Blob: false, FileReader: false, KeyboardEvent: false, Uint8Array: false */
-/*jslint browser: true, bitwise: true, plusplus: true, vars: true */﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -1378,7 +1378,7 @@ var TCrt = function () {
         // Create the canvas
         FCanvas = document.createElement('canvas');
         FCanvas.id = "HtmlTermCanvas";
-        FCanvas.innerHTML = "Your browser doesn't support the HTML5 Canvas element!<br>The latest version of every major web browser supports this element, so please consider upgrading now:<ul><li><a href=\"http://www.mozilla.com/firefox/\">Mozilla Firefox</a></li><li><a href=\"http://www.google.com/chrome\">Google Chrome</a></li><li><a href=\"http://www.apple.com/safari/\">Apple Safari</a></li><li><a href=\"http://www.opera.com/\">Opera</a></li><li><a href=\"http://windows.microsoft.com/en-US/internet-explorer/products/ie/home\">MS Internet Explorer</a></li></ul>";
+        FCanvas.innerHTML = 'Your browser does not support the HTML5 Canvas element!<br>The latest version of every major web browser supports this element, so please consider upgrading now:<ul><li><a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a></li><li><a href="http://www.google.com/chrome">Google Chrome</a></li><li><a href="http://www.apple.com/safari/">Apple Safari</a></li><li><a href="http://www.opera.com/">Opera</a></li><li><a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">MS Internet Explorer</a></li></ul>';
         FCanvas.width = FFont.Width * FScreenSize.x;
         FCanvas.height = FFont.Height * FScreenSize.y;
         AParent.appendChild(FCanvas);
@@ -1557,7 +1557,7 @@ var TCrt = function () {
         if (AChars === undefined) { AChars = 1; }
 
         var i;
-        for (i = that.WhereXA(); i <= that.WindMinX + that.WindCols - AChars; i++) {
+        for (i = that.WhereXA() ; i <= that.WindMinX + that.WindCols - AChars; i++) {
             that.FastWrite(FBuffer[that.WhereYA()][i + AChars].Ch, i, that.WhereYA(), FBuffer[that.WhereYA()][i + AChars]);
         }
         for (i = that.WindMinX + that.WindCols + 1 - AChars; i <= that.WindMinX + that.WindCols; i++) {
@@ -1723,7 +1723,7 @@ var TCrt = function () {
         for (i = that.WindMinX + that.WindCols; i >= that.WhereXA() + AChars; i--) {
             that.FastWrite(FBuffer[that.WhereYA()][i - AChars].Ch, i, that.WhereYA(), FBuffer[that.WhereYA()][i - AChars]);
         }
-        for (i = that.WhereXA(); i < that.WhereXA() + AChars; i++) {
+        for (i = that.WhereXA() ; i < that.WhereXA() + AChars; i++) {
             that.FastWrite(" ", i, that.WhereYA(), FCharInfo);
         }
     };
@@ -1885,7 +1885,7 @@ var TCrt = function () {
 
                 FInScrollBack = false;
             } else if (ke.keyCode === Keyboard.PAGE_DOWN) {
-                for (i = 0; i < (FScreenSize.y - 1); i++) {
+                for (i = 0; i < (FScreenSize.y - 1) ; i++) {
                     // TODO Not working
                     OnKeyDown(new KeyboardEvent("keydown", true, false, 0, Keyboard.DOWN));
                 }
@@ -2234,7 +2234,7 @@ var TCrt = function () {
             }
 
             // Then, shuffle the contents that are still visible
-            for (Y = AY1; Y <= (AY2 - ALines); Y++) {
+            for (Y = AY1; Y <= (AY2 - ALines) ; Y++) {
                 for (X = AX1; X <= AX2; X++) {
                     FBuffer[Y][X].Ch = FBuffer[Y + ALines][X].Ch;
                     FBuffer[Y][X].Attr = FBuffer[Y + ALines][X].Attr;
@@ -2244,7 +2244,7 @@ var TCrt = function () {
             }
 
             // Then, blank the contents that are not
-            for (Y = AY2; Y > (AY2 - ALines); Y--) {
+            for (Y = AY2; Y > (AY2 - ALines) ; Y--) {
                 for (X = AX1; X <= AX2; X++) {
                     FBuffer[Y][X].Ch = ACharInfo.Ch;
                     FBuffer[Y][X].Attr = ACharInfo.Attr;
@@ -2341,8 +2341,8 @@ var TCrt = function () {
         // Restore the screen contents
         // TODO If new screen is smaller than old screen, restore bottom portion not top portion
         if (FOldBuffer !== null) {
-            for (Y = 1; Y <= Math.min(FScreenSize.y, FOldScreenSize.y); Y++) {
-                for (X = 1; X <= Math.min(FScreenSize.x, FOldScreenSize.x); X++) {
+            for (Y = 1; Y <= Math.min(FScreenSize.y, FOldScreenSize.y) ; Y++) {
+                for (X = 1; X <= Math.min(FScreenSize.x, FOldScreenSize.x) ; X++) {
                     that.FastWrite(FOldBuffer[Y][X].Ch, X, Y, FOldBuffer[Y][X]);
                 }
             }
@@ -3100,7 +3100,7 @@ var TCrtLabel = function (AParent, ALeft, ATop, AWidth, AText, ATextAlign, AFore
                     // Text needs to be centered
                     var i = 0;
                     var LeftSpaces = "";
-                    for (i = 0; i < Math.floor((that.Width - FText.length) / 2); i++) {
+                    for (i = 0; i < Math.floor((that.Width - FText.length) / 2) ; i++) {
                         LeftSpaces += " ";
                     }
                     var RightSpaces = "";
@@ -5472,13 +5472,13 @@ var THtmlTerm = function () {
                 Crt.WriteLn("    Safari 5");
                 Crt.WriteLn();
                 Crt.WriteLn("* WebSockets are disabled by default in FireFox 4 and 5.");
-                Crt.WriteLn("  Enable them by changing this setting in \"about:config\":");
+                Crt.WriteLn('  Enable them by changing this setting in "about:config":');
                 Crt.WriteLn("    network.websocket.enabled = true");
                 Crt.WriteLn("    network.websocket.override-security-block = true");
                 Crt.WriteLn("  As of Firefox 6 this change is no longer required");
                 Crt.WriteLn();
                 Crt.WriteLn("** WebSockets are disabled by default in Opera.");
-                Crt.WriteLn("   Enable them by changing this setting in \"opera:config\":");
+                Crt.WriteLn('   Enable them by changing this setting in "opera:config":');
                 Crt.WriteLn("     User Prefs -> Enable WebSockets = checked");
                 trace("HtmlTerm Error: WebSocket not supported");
                 return false;
