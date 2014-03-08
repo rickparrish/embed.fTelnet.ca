@@ -93,6 +93,7 @@ function Connect() {
 
     // And connect
     HtmlTerm.Connect();
+    OpenPanel('HtmlTerm');
 
     return true;
 }
@@ -110,8 +111,6 @@ function ConnectToDialingDirectory(index) {
         DialingDirectory[index] = Entry;
         localStorage["DialingDirectory"] = JSON.stringify(DialingDirectory);
         UpdateDialingDirectory();
-
-        OpenPanel('HtmlTerm');
     }
 }
 
