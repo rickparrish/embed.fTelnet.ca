@@ -20,7 +20,8 @@ namespace my.fTelnet.ca
                 "~/HtmlTerm/HtmlTerm.js", // TODO
                 //TODO "~/HtmlTerm/HtmlTerm.compiled.js",
                 "~/HtmlTerm/HtmlTerm.font-437.js",
-                "~/HtmlTerm/VirtualKeyboard.js"));
+                "~/HtmlTerm/VirtualKeyboard.js",
+                "~/Scripts/jquery.tablesorter-2.13.3.min.js"));
         }
     }
 }

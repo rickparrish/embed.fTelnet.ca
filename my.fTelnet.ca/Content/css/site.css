@@ -36,3 +36,8 @@ body > .container {
     display: none !important;
     visibility: visible !important;
 }
+
+.tablesorter-header {
+    cursor: pointer;
+    text-decoration: underline;
+}

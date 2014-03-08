@@ -115,6 +115,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-1.11.0.min.js" />
+    <Content Include="Scripts\jquery.tablesorter-2.13.3.min.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />

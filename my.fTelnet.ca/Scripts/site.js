@@ -29,6 +29,7 @@ $(document).ready(function () {
         InitDialingDirectory();
     }
     UpdateDialingDirectory();
+    $("#tblDialingDirectory").tablesorter();
 
     SiteInitted = true;
 });
@@ -38,8 +39,8 @@ $(window).resize(function () {
 });
 
 function AddToRecentMenu(newEntry) {
-    RecentConnections.push(newEntry);
-    while (RecentConnections.length > 5) RecentConnections.shift();
+    RecentConnections.unshift(newEntry);
+    while (RecentConnections.length > 5) RecentConnections.pop();
     localStorage["RecentConnections"] = JSON.stringify(RecentConnections);
     UpdateRecentMenu();
 }
@@ -59,6 +60,15 @@ function Connect() {
         return;
     }
 
+    // Confirms new connection if already connected
+    if (HtmlTerm.Connected()) {
+        if (confirm("This will disconnect your existing session -- continue?")) {
+            HtmlTerm.Disconnect();
+        } else {
+            return false;
+        }
+    }
+
     // Hides the drop down Connect menu
     if ($('.navbar-toggle').is(':visible')) {
         // Mobile
@@ -66,15 +76,6 @@ function Connect() {
     } else {
         // Desktop
         $("body").trigger("click");
-    }
-
-    // Confirms new connection if already connected
-    if (HtmlTerm.Connected()) {
-        if (confirm("This will disconnect your existing session -- continue?")) {
-            HtmlTerm.Disconnect();
-        } else {
-            return;
-        }
     }
 
     // Add to recent menu / local storage
@@ -92,6 +93,8 @@ function Connect() {
 
     // And connect
     HtmlTerm.Connect();
+
+    return true;
 }
 
 function ConnectToDialingDirectory(index) {
@@ -101,9 +104,15 @@ function ConnectToDialingDirectory(index) {
     $('#txtPort').val(Entry.Port)
     $('#chkProxy').prop('checked', Entry.Proxy);
 
-    Connect();
+    if (Connect()) {
+        // Update connection count
+        Entry.ConnectionCount += 1;
+        DialingDirectory[index] = Entry;
+        localStorage["DialingDirectory"] = JSON.stringify(DialingDirectory);
+        UpdateDialingDirectory();
 
-    OpenPanel('HtmlTerm');
+        OpenPanel('HtmlTerm');
+    }
 }
 
 function ConnectToRecent(index) {
@@ -143,6 +152,8 @@ function InitDialingDirectory() {
         Notes: 'Default connection entry<br /><a href="http://www.blinkenlights.nl/services.html#starwars" target="_blank">Home Page</a>',
         ConnectionCount: 0
     });
+
+    localStorage["DialingDirectory"] = JSON.stringify(DialingDirectory);
 }
 
 function OpenPanel(id) {
@@ -192,7 +203,7 @@ function UpdateDialingDirectory() {
             NewRow += '<td><a href="#" onclick="ConnectToDialingDirectory(' + i + ');">' + DialingDirectory[i].Description + '</a></td>';
             NewRow += '<td>' + DialingDirectory[i].Hostname + '</td>';
             NewRow += '<td>' + DialingDirectory[i].Port + '</td>';
-            NewRow += '<td>' + DialingDirectory[i].Proxy + '</td>';
+            NewRow += '<td>' + (DialingDirectory[i].Proxy ? 'yep' : 'nope') + '</td>';
             NewRow += '<td>' + DialingDirectory[i].Notes + '</td>';
             NewRow += '<td class="text-center">' + DialingDirectory[i].ConnectionCount + '</td>';
             NewRow += '</tr>';
@@ -206,9 +217,8 @@ function UpdateDialingDirectory() {
 function UpdateRecentMenu() {
     $('.recent-connection').remove();
     if (RecentConnections && (RecentConnections.length > 0)) {
-        var Count = 0;
-        for (var i = RecentConnections.length - 1; i >= 0; i--) {
-            $('#liAfterRecent').before('<li class="recent-connection"><a href="#" onclick="ConnectToRecent(' + i + ');">' + ++Count + ') ' + RecentConnections[i].Hostname + ':' + RecentConnections[i].Port + '</a></li>');
+        for (var i = 0; i < RecentConnections.length; i++) {
+            $('#liAfterRecent').before('<li class="recent-connection"><a href="#" onclick="ConnectToRecent(' + i + ');">' + (i + 1) + ') ' + RecentConnections[i].Hostname + ':' + RecentConnections[i].Port + '</a></li>');
         }
     } else {
         $('#liAfterRecent').before('<li class="recent-connection"><a href="#">No recent connections...</a></li>');
