@@ -1,4 +1,5 @@
-﻿var RecentConnections = [];
+﻿var DialingDirectory = [];
+var RecentConnections = [];
 var SiteInitted = false;
 
 $(document).ready(function () {
@@ -21,7 +22,13 @@ $(document).ready(function () {
     if (localStorage["RecentConnections"]) RecentConnections = JSON.parse(localStorage["RecentConnections"]);
     UpdateRecentMenu();
 
-    // TODO Load dialing directory
+    // Load dialing directory
+    if (localStorage["DialingDirectory"]) {
+        DialingDirectory = JSON.parse(localStorage["DialingDirectory"]);
+    } else {
+        InitDialingDirectory();
+    }
+    UpdateDialingDirectory();
 
     SiteInitted = true;
 });
@@ -87,6 +94,18 @@ function Connect() {
     HtmlTerm.Connect();
 }
 
+function ConnectToDialingDirectory(index) {
+    var Entry = DialingDirectory[index];
+
+    $('#txtHostname').val(Entry.Hostname);
+    $('#txtPort').val(Entry.Port)
+    $('#chkProxy').prop('checked', Entry.Proxy);
+
+    Connect();
+
+    OpenPanel('HtmlTerm');
+}
+
 function ConnectToRecent(index) {
     var Entry = RecentConnections[index];
 
@@ -95,6 +114,35 @@ function ConnectToRecent(index) {
     $('#chkProxy').prop('checked', Entry.Proxy);
 
     Connect();
+}
+
+function InitDialingDirectory() {
+    DialingDirectory.push({
+        Description: 'fTelnet / HtmlTerm / GameSrv Demo Server',
+        Hostname: 'bbs.ftelnet.ca',
+        Port: 1123,
+        Proxy: false,
+        Notes: 'Default connection entry',
+        ConnectionCount: 0
+    });
+
+    DialingDirectory.push({
+        Description: 'Vertrauen',
+        Hostname: 'vert.synchro.net',
+        Port: 23,
+        Proxy: true,
+        Notes: 'Default connection entry<br />Home of <a href="http://www.synchro.net" target="_blank">Synchronet</a>',
+        ConnectionCount: 0
+    });
+
+    DialingDirectory.push({
+        Description: 'Starwars Asciimation',
+        Hostname: 'towel.blinkenlights.nl',
+        Port: 23,
+        Proxy: true,
+        Notes: 'Default connection entry<br /><a href="http://www.blinkenlights.nl/services.html#starwars" target="_blank">Home Page</a>',
+        ConnectionCount: 0
+    });
 }
 
 function OpenPanel(id) {
@@ -135,14 +183,34 @@ function SetSkipAbout() {
     }
 }
 
+function UpdateDialingDirectory() {
+    $('#tblDialingDirectory tbody tr').remove();
+    if (DialingDirectory && (DialingDirectory.length > 0)) {
+        for (var i = 0; i < DialingDirectory.length; i++) {
+            var NewRow = '<tr>';
+            NewRow += '<td>' + (i + 1) + '</td>';
+            NewRow += '<td><a href="#" onclick="ConnectToDialingDirectory(' + i + ');">' + DialingDirectory[i].Description + '</a></td>';
+            NewRow += '<td>' + DialingDirectory[i].Hostname + '</td>';
+            NewRow += '<td>' + DialingDirectory[i].Port + '</td>';
+            NewRow += '<td>' + DialingDirectory[i].Proxy + '</td>';
+            NewRow += '<td>' + DialingDirectory[i].Notes + '</td>';
+            NewRow += '<td class="text-center">' + DialingDirectory[i].ConnectionCount + '</td>';
+            NewRow += '</tr>';
+            $('#tblDialingDirectory tbody').append(NewRow);
+        }
+    } else {
+        $('#tblDialingDirectory tbody').append('<tr><td colspan="7">You have no dialing directory entries</td></tr>');
+    }
+}
+
 function UpdateRecentMenu() {
     $('.recent-connection').remove();
     if (RecentConnections && (RecentConnections.length > 0)) {
         var Count = 0;
         for (var i = RecentConnections.length - 1; i >= 0; i--) {
-            $('#liAfterRecent').before("<li class=\"recent-connection\"><a href=\"#\" onclick=\"ConnectToRecent(" + i + ");\">" + ++Count + ") " + RecentConnections[i].Hostname + ":" + RecentConnections[i].Port + "</a></li>");
+            $('#liAfterRecent').before('<li class="recent-connection"><a href="#" onclick="ConnectToRecent(' + i + ');">' + ++Count + ') ' + RecentConnections[i].Hostname + ':' + RecentConnections[i].Port + '</a></li>');
         }
     } else {
-        $('#liAfterRecent').before("<li class=\"recent-connection\"><a href=\"#\">No recent connections...</a></li>");
+        $('#liAfterRecent').before('<li class="recent-connection"><a href="#">No recent connections...</a></li>');
     }
 }
