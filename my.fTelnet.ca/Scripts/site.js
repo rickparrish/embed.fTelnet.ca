@@ -124,6 +124,11 @@ function ConnectToRecent(index) {
     Connect();
 }
 
+function Download() {
+    // TODO
+    alert('Sorry, downloading is not yet implemented');
+}
+
 function InitDialingDirectory() {
     DialingDirectory.push({
         Description: 'fTelnet / HtmlTerm / GameSrv Demo Server',
@@ -223,4 +228,9 @@ function UpdateRecentMenu() {
     } else {
         $('#liAfterRecent').before('<li class="recent-connection"><a href="#">No recent connections...</a></li>');
     }
+}
+
+function Upload() {
+    // TODO
+    alert('Sorry, uploading is not yet implemented');
 }
