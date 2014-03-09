@@ -125,8 +125,7 @@ function ConnectToRecent(index) {
 }
 
 function Download() {
-    // TODO
-    alert('Sorry, downloading is not yet implemented');
+    HtmlTerm.Download();
 }
 
 function InitDialingDirectory() {
