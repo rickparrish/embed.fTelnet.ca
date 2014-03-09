@@ -230,6 +230,9 @@ function UpdateRecentMenu() {
 }
 
 function Upload() {
-    // TODO
-    alert('Sorry, uploading is not yet implemented');
+    $('#fuUpload').change(function () {
+        HtmlTerm.Upload(this.files);
+    });
+
+    $('#fuUpload').trigger('click');
 }

@@ -6234,7 +6234,7 @@ var THtmlTerm = function () {
     };
 
     OnTimer = function (e) {
-        if (FConnection.connected) {
+        if ((FConnection !== null) && (FConnection.connected)) {
             // Determine how long it took between frames
             var MSecElapsed = new Date().getTime() - FLastTimer;
             if (MSecElapsed < 1) { MSecElapsed = 1; }
