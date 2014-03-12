@@ -3,6 +3,9 @@ var RecentConnections = [];
 var SiteInitted = false;
 
 $(document).ready(function () {
+    // Test features
+    TestFeatures();
+
     // Init HtmlTerm
     SetBestFontSize();
     HtmlTerm.Init("HtmlTermContainer");
@@ -194,6 +197,47 @@ function SetSkipAbout() {
         localStorage["SkipAbout"] = "true";
     } else {
         localStorage["SkipAbout"] = "false";
+    }
+}
+
+function TestFeatures() {
+    // Canvas
+    var elem = document.createElement('canvas');
+    if (elem.getContext && elem.getContext('2d')) {
+        $('#tdCanvasSupported').text('Yep!');
+        $('#tdCanvasSupported').addClass('text-success text-center');
+    } else {
+        $('#tdCanvasSupported').text('Nope!');
+        $('#tdCanvasSupported').addClass('text-danger text-center');
+    }
+
+    // WebSocket
+    if ('WebSocket' in window) {
+        $('#tdWebSocketSupported').text('Yep!');
+        $('#tdWebSocketSupported').addClass('text-success text-center');
+    } else {
+        $('#tdWebSocketSupported').text('Nope!');
+        $('#tdWebSocketSupported').addClass('text-danger text-center');
+    }
+
+    // WebSocket binaryType
+    if (('WebSocket' in window) && ('binaryType' in WebSocket.prototype) && ('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
+        $('#tdWebSocketBinaryTypeSupported').text('Yep!');
+        $('#tdWebSocketBinaryTypeSupported').addClass('text-success text-center');
+    } else {
+        $('#tdWebSocketBinaryTypeSupported').text('Nope!');
+        $('#tdWebSocketBinaryTypeSupported').addClass('text-danger text-center');
+    }
+
+    // Web Storage
+    try {
+        localStorage.setItem("test", "test");
+        localStorage.removeItem("test");
+        $('#tdWebStorageSupported').text('Yep!');
+        $('#tdWebStorageSupported').addClass('text-success text-center');
+    } catch (e) {
+        $('#tdWebStorageSupported').text('Nope!');
+        $('#tdWebStorageSupported').addClass('text-danger text-center');
     }
 }
 
