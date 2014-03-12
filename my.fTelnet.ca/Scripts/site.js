@@ -170,7 +170,15 @@ function OpenPanel(id) {
 }
 
 function SetBestFontSize() {
-    SetFontSize(12, 23) || SetFontSize(10, 19) || SetFontSize(9, 16) || SetFontSize(8, 13) || SetFontSize(8, 12) || SetFontSize(7, 12) || SetFontSize(6, 8, true);
+    SetFontSize(12, 23) ||
+        SetFontSize(10, 19) ||
+        SetFontSize(9, 16) ||
+        SetFontSize(8, 14) ||
+        SetFontSize(8, 13) ||
+        SetFontSize(8, 12) ||
+        SetFontSize(8, 8) ||
+        SetFontSize(7, 12) ||
+        SetFontSize(6, 8, true);
 }
 
 function SetFontSize(width, height, force) {

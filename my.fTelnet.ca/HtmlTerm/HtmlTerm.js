@@ -4564,14 +4564,11 @@ var TTelnet = function () {
     // Private variables
     var that = this;
     var FInputBuffer;
-    var FMode = 'plain';
     var FOutputBuffer;
     var FWasConnected = false;
     var FWebSocket;
 
     // Private methods
-    var decode_message = function (data) { }; // Do nothing
-    var encode_message = function (data) { }; // Do nothing
     var OnSocketClose = function () { }; // Do nothing
     var OnSocketError = function (e) { }; // Do nothing
     var OnSocketOpen = function () { }; // Do nothing
@@ -4588,48 +4585,11 @@ var TTelnet = function () {
     };
 
     this.connect = function (AHost, APort) {
-        // These support checks are from websockify's websock.js
-        var bt = false;
-        var wsbt = false;
-        var protocols;
+        FWasConnected = false;
+        FWebSocket = new WebSocket("ws://" + AHost + ":" + APort);
 
-        // Check for full typed array support
-        if (('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
-            bt = true;
-        }
-
-        // Check for full binary type support in WebSockets
-        // TODO: this sucks, the property should exist on the prototype
-        // but it does not.
-        try {
-            if (bt && ('binaryType' in (new WebSocket("ws://localhost:17523")))) {
-                wsbt = true;
-            }
-        } catch (exc) {
-            // Just ignore failed test localhost connections
-        }
-
-        if (wsbt) {
-            protocols = ['binary', 'base64', 'plain'];
-        } else {
-            protocols = ['base64', 'plain'];
-        }
-
-        try {
-            FWasConnected = false;
-            FWebSocket = new WebSocket("ws://" + AHost + ":" + APort, protocols);
-        } catch (ex) {
-            try {
-                FWebSocket = new MozWebSocket("ws://" + AHost + ":" + APort, protocols);
-            } catch (ex2) {
-                that.onsecurityerror();
-                return;
-            }
-        }
-
-        if (protocols.indexOf('binary') >= 0) {
-            FWebSocket.binaryType = 'arraybuffer';
-        }
+        // Enable binary mode
+        FWebSocket.binaryType = 'arraybuffer';
 
         // Set event handlers
         FWebSocket.onclose = OnSocketClose;
@@ -4646,50 +4606,16 @@ var TTelnet = function () {
         return false;
     });
 
-    decode_message = function (data) {
-        var i;
-        var Result = "";
-
-        if (FMode === 'binary') {
-            var u8 = new Uint8Array(data);
-            for (i = 0; i < u8.length; i++) {
-                Result += String.fromCharCode(u8[i]);
-            }
-        } else if (FMode === 'base64') {
-            var decoded = Base64.decode(data, 0);
-            for (i = 0; i < decoded.length; i++) {
-                Result += String.fromCharCode(decoded[i]);
-            }
-        } else {
-            Result = data;
-        }
-
-        return Result;
-    };
-
-    encode_message = function (data) {
-        var i;
-        var Result = [];
-
-        if (FMode === 'binary') {
-            for (i = 0; i < data.length; i++) {
-                Result.push(data.charCodeAt(i));
-            }
-            return new Uint8Array(Result);
-        } else if (FMode === 'base64') {
-            for (i = 0; i < data.length; i++) {
-                Result.push(data.charCodeAt(i));
-            }
-            return Base64.encode(Result);
-        } else {
-            return data;
-        }
-    };
-
     this.flush = function () {
         // if (DEBUG) trace("flush(): " + FOutputBuffer.toString());
 
-        FWebSocket.send(encode_message(FOutputBuffer.toString()));
+        var ToSendString = FOutputBuffer.toString();
+        var ToSendBytes = [];
+        for (i = 0; i < ToSendString.length; i++) {
+            ToSendBytes.push(ToSendString.charCodeAt(i));
+        }
+
+        FWebSocket.send(new Uint8Array(ToSendBytes));
         FOutputBuffer.clear();
     };
 
@@ -4707,12 +4633,6 @@ var TTelnet = function () {
     };
 
     OnSocketOpen = function () {
-        if (FWebSocket.protocol) {
-            FMode = FWebSocket.protocol;
-        } else {
-            FMode = 'plain';
-        }
-
         FWasConnected = true;
         that.onconnect();
     };
@@ -4726,7 +4646,10 @@ var TTelnet = function () {
         FInputBuffer.position = FInputBuffer.length;
 
         // Write the incoming message to the input buffer
-        FInputBuffer.writeString(decode_message(e.data));
+        var u8 = new Uint8Array(e.data);
+        for (var i = 0; i < u8.length; i++) {
+            FInputBuffer.writeByte(u8[i]);
+        }
 
         // Restore the old buffer position
         FInputBuffer.position = OldPosition;
@@ -4791,6 +4714,26 @@ var TTelnet = function () {
 
     this.readUTFBytes = function (ALength) {
         return FInputBuffer.readUTFBytes(ALength);
+    };
+
+    this.test = function () {
+        // This test comes from Websockify
+
+        // Check for full typed array support
+        if (('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
+            // Check for full binary type support in WebSockets
+            // TODO: this sucks, the property should exist on the prototype
+            // but it does not.
+            try {
+                if ('binaryType' in (new WebSocket("ws://localhost:53211"))) {
+                    return true;
+                }
+            } catch (exc) {
+                // Just ignore failed test localhost connections
+            }
+        }
+
+        return false;
     };
 
     // Remap all the write* functions to operate on our output buffer instead
@@ -5825,7 +5768,6 @@ var THtmlTerm = function () {
     var FSplashScreen = "G1swbRtbMkobWzA7MEgbWzE7NDQ7MzRt2sTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEG1swOzQ0OzMwbb8bWzBtDQobWzE7NDQ7MzRtsyAgG1szN21XZWxjb21lISAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzA7NDQ7MzBtsxtbMG0NChtbMTs0NDszNG3AG1swOzQ0OzMwbcTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTE2RtbMG0NCg0KG1sxbSAbWzBtIBtbMTs0NDszNG3axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzA7NDQ7MzBtvxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMzBt29vb29vb29vb29vb29vb29vb29vb2xtbMzRt29vb29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29vb29vb29vb29vb29vb29vb29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vb29sbWzFt29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vbG1sxbdvb29sbWzBt29sbWzE7MzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb2xtbMW3b29vbG1swbdvbG1sxbdvbG1szMG3b2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMTszMG3b29vbG1swbdvb29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29sbWzMwbdvbG1swOzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29sbWzBt29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzQwOzM3bQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvbG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29sbWzBt29vb29vb29vb29vb29vb29vb29sbWzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1s0MDszN20NCiAgG1sxOzQ0OzM0bbMbWzA7MzBt29vb29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN23axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzMwbb8bWzBtDQogIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29sbWzA7MzBt29vb29vb29vb2xtbMW3b2xtbMDszMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN22zICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAbWzM0bUh0bWxUZXJtIC0tIFRlbG5ldCBmb3IgdGhlIFdlYiAgICAgG1szMG2zG1swbQ0KG1sxbSAbWzBtIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb29vb29vb2xtbMDszMG3b29vb29sbWzQ0bbMbWzBtIBtbMzRtIBtbMTs0NzszN22zICAgICAbWzA7NDc7MzRtV2ViIGJhc2VkIEJCUyB0ZXJtaW5hbCBjbGllbnQgICAgG1sxOzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvbG1szMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIBtbMzBtsxtbMG0NCiAgG1sxOzQ0OzM0bcAbWzA7NDQ7MzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbSAbWzM0bSAbWzE7NDc7MzdtwBtbMzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbQ0KDQobWzExQxtbMTszMm1Db3B5cmlnaHQgKEMpIDIwMDAtMjAxNCBSJk0gU29mdHdhcmUuICBBbGwgUmlnaHRzIFJlc2VydmVkDQobWzA7MzRtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExA==";
 
     // Private methods
-    var CenterSaveFilesButton = function () { }; // Do nothing
     var LoadFile = function (f, len) { }; // Do nothing
     var OnAnsiESC5n = function (AEvent) { }; // Do nothing
     var OnAnsiESC6n = function (AEvent) { }; // Do nothing
@@ -5835,7 +5777,6 @@ var THtmlTerm = function () {
     var OnConnectionConnect = function (e) { }; // Do nothing
     var OnConnectionIOError = function (e) { }; // Do nothing
     var OnConnectionSecurityError = function (see) { }; // Do nothing
-    var OnCrtFontChanged = function (e) { }; // Do nothing    
     var OnCrtScreenSizeChanged = function (e) { }; // Do nothing
     var OnDownloadComplete = function () { }; // Do nothing
     var OnSaveFilesButtonClick = function (me) { }; // Do nothing
@@ -5870,29 +5811,21 @@ var THtmlTerm = function () {
             Crt.SetScreenSize(FScreenColumns, FScreenRows);
             Crt.Window(1, 1, 80, FScreenRows - 1);
             Crt.FastWrite(" Not connected                                                                  ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.Canvas.addEventListener(Crt.FONT_CHANGED, OnCrtFontChanged, false);
             Crt.Canvas.addEventListener(Crt.SCREEN_SIZE_CHANGED, OnCrtScreenSizeChanged, false);
 
-            // Check for websocket support
-            if ((typeof (WebSocket) === "undefined") && (typeof (MozWebSocket) === "undefined")) {
-                Crt.WriteLn("Sorry, your browser doesn't support the WebSocket API");
+            // Test websocket support
+            var TempConnection = new TTelnet();
+            if (!TempConnection.test()) {
+                Crt.WriteLn("Sorry, your browser doesn't have full WebSocket support!");
                 Crt.WriteLn();
-                Crt.WriteLn("When this version of HtmlTerm was released, WebSocket was implemented in:");
-                Crt.WriteLn("    Chrome 4");
-                Crt.WriteLn("    Firefox 4 *");
-                Crt.WriteLn("    Internet Explorer 10 Developer Preview");
-                Crt.WriteLn("    Opera 10.70 **");
-                Crt.WriteLn("    Safari 5");
+                Crt.WriteLn("WebSockets are how HtmlTerm connects to the remote server.  So either your");
+                Crt.WriteLn("browser doesn't support them, or it does, but not the binary mode that HtmlTerm");
+                Crt.WriteLn("requires.");
                 Crt.WriteLn();
-                Crt.WriteLn("* WebSockets are disabled by default in FireFox 4 and 5.");
-                Crt.WriteLn('  Enable them by changing this setting in "about:config":');
-                Crt.WriteLn("    network.websocket.enabled = true");
-                Crt.WriteLn("    network.websocket.override-security-block = true");
-                Crt.WriteLn("  As of Firefox 6 this change is no longer required");
-                Crt.WriteLn();
-                Crt.WriteLn("** WebSockets are disabled by default in Opera.");
-                Crt.WriteLn('   Enable them by changing this setting in "opera:config":');
-                Crt.WriteLn("     User Prefs -> Enable WebSockets = checked");
+                Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
+                Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
+                Crt.WriteLn("what browser you use, as well as which version it is.");
+
                 trace("HtmlTerm Error: WebSocket not supported");
                 return false;
             }
@@ -5901,7 +5834,6 @@ var THtmlTerm = function () {
             FSaveFilesButton = new TSaveFilesButton();
             FContainer.appendChild(FSaveFilesButton.Image);
             FSaveFilesButton.ongraphicchanged = OnSaveFilesButtonGraphicChanged;
-            CenterSaveFilesButton();
 
             // Create the ansi cursor position handler
             Ansi.onesc5n = OnAnsiESC5n;
@@ -5912,6 +5844,7 @@ var THtmlTerm = function () {
             Ansi.Write(atob(FSplashScreen));
         } else {
             trace("HtmlTerm Error: Unable to init Crt");
+            return false;
         }
 
         // Create our main timer
@@ -5935,10 +5868,6 @@ var THtmlTerm = function () {
     this.__defineSetter__("Blink", function (ABlink) {
         FBlink = ABlink;
     });
-
-    CenterSaveFilesButton = function () {
-        FSaveFilesButton.Center(Crt.Canvas);
-    };
 
     this.__defineGetter__("CodePage", function () {
         return FCodePage;
@@ -5984,6 +5913,7 @@ var THtmlTerm = function () {
         if (!FConnection.connected) { return; }
 
         FConnection.close();
+        // TODO Should not set to null, but set to default (empty) functions
         FConnection.onclose = null;
         FConnection.onconnect = null;
         FConnection.onioerror = null;
@@ -6092,14 +6022,8 @@ var THtmlTerm = function () {
         }
     };
 
-    OnCrtFontChanged = function (e) {
-        // Center the buttons
-        CenterSaveFilesButton();
-    };
-
     OnCrtScreenSizeChanged = function (e) {
-        // Center the buttons
-        CenterSaveFilesButton();
+        // TODO Redraw status bar
     };
 
     OnDownloadComplete = function () {
@@ -6197,7 +6121,7 @@ var THtmlTerm = function () {
 
                 // Add the padding if the file isn't a multiple of 512 bytes
                 if (FYModemReceive.FileAt(i).data.length % 512 !== 0) {
-                    for (j = 0; j < 512 - (FYModemReceive.FileAt(i).data.length % 512); j++) {
+                    for (j = 0; j < 512 - (FYModemReceive.FileAt(i).data.length % 512) ; j++) {
                         TAR.writeByte(0);
                     }
                 }
@@ -6230,7 +6154,7 @@ var THtmlTerm = function () {
     };
 
     OnSaveFilesButtonGraphicChanged = function (e) {
-        CenterSaveFilesButton();
+        FSaveFilesButton.Center(Crt.Canvas);
     };
 
     OnTimer = function (e) {
@@ -6360,6 +6284,7 @@ var THtmlTerm = function () {
         Crt.Canvas.style.opacity = 0.4;
 
         FSaveFilesButton.Image.addEventListener('click', OnSaveFilesButtonClick, false);
+        FSaveFilesButton.Center(Crt.Canvas);
         FSaveFilesButton.Show();
     };
 
