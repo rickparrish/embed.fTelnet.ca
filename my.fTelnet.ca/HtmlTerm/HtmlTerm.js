@@ -4866,7 +4866,7 @@ var TTcpConnection = function () {
             ToSendBytes.push(ToSendString.charCodeAt(i));
         }
 
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         FOutputBuffer.clear();
     };
 
@@ -5379,7 +5379,7 @@ var TTelnetConnection = function () {
             }
         }
 
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         FOutputBuffer.clear();
     };
 
@@ -5419,7 +5419,7 @@ var TTelnetConnection = function () {
         for (var i = 0; i < TerminalType.length; i++) {
             ToSendBytes.push(TerminalType.charCodeAt(i));
         }
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
 
         SendSubnegotiateEnd();
     };
@@ -5439,7 +5439,7 @@ var TTelnetConnection = function () {
             ToSendBytes.push(Size[i]);
             if (Size[i] == TelnetCommand.IAC) ToSendBytes.push(TelnetCommand.IAC); // Double up so it's not treated as an IAC
         }
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
 
         SendSubnegotiateEnd();
     };
@@ -5552,7 +5552,7 @@ var TTelnetConnection = function () {
         var ToSendBytes = [];
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(ACommand);
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendDo = function (AOption) {
@@ -5565,7 +5565,7 @@ var TTelnetConnection = function () {
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Do);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes));
+            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
@@ -5579,7 +5579,7 @@ var TTelnetConnection = function () {
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Dont);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes));
+            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
@@ -5608,14 +5608,14 @@ var TTelnetConnection = function () {
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(TelnetCommand.Subnegotiation);
         ToSendBytes.push(AOption);
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendSubnegotiateEnd = function () {
         var ToSendBytes = [];
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(TelnetCommand.EndSubnegotiation);
-        FWebSocket.send(new Uint8Array(ToSendBytes));
+        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendWill = function (AOption) {
@@ -5628,7 +5628,7 @@ var TTelnetConnection = function () {
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Will);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes));
+            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
@@ -5642,7 +5642,7 @@ var TTelnetConnection = function () {
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Wont);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes));
+            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
