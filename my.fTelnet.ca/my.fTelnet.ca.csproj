@@ -99,6 +99,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="HtmlTerm\HtmlTerm.compiled.js" />
+    <Content Include="HtmlTerm\HtmlTerm.font-c64.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-intl.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-437.js" />
     <Content Include="HtmlTerm\HtmlTerm.font-amiga.js" />

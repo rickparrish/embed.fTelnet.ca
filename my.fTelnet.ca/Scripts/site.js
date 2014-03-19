@@ -26,7 +26,7 @@ $(document).ready(function () {
     UpdateRecentMenu();
 
     // Load dialing directory
-    if (localStorage["DialingDirectory"]) {
+    if (false && localStorage["DialingDirectory"]) { // TODO Never use stored dialing directory during testing period
         DialingDirectory = JSON.parse(localStorage["DialingDirectory"]);
     } else {
         InitDialingDirectory();
@@ -48,21 +48,7 @@ function AddToRecentMenu(newEntry) {
     UpdateRecentMenu();
 }
 
-function Connect() {
-    var Hostname = $('#txtHostname').val();
-    var Port = parseInt($('#txtPort').val(), 10);
-    var Proxy = $('#chkProxy').is(':checked');
-
-    // Validate form
-    if (Hostname == "") {
-        alert("Enter a hostname");
-        return;
-    }
-    if ((Port < 1) || (Port > 65535)) {
-        alert("Port must be between 1 and 65535");
-        return;
-    }
-
+function Connect(hostname, port, proxy, connectionType, emulation) {
     // Confirms new connection if already connected
     if (HtmlTerm.Connected()) {
         if (confirm("This will disconnect your existing session -- continue?")) {
@@ -72,27 +58,37 @@ function Connect() {
         }
     }
 
-    // Hides the drop down Connect menu
-    if ($('.navbar-toggle').is(':visible')) {
-        // Mobile
-        $('.navbar-collapse').collapse('toggle');
-    } else {
-        // Desktop
-        $("body").trigger("click");
-    }
-
     // Add to recent menu / local storage
     AddToRecentMenu({
-        'Hostname': Hostname,
-        'Port': Port,
-        'Proxy': Proxy
+        'ConnectionType': connectionType,
+        'Emulation': emulation,
+        'Hostname': hostname,
+        'Port': port,
+        'Proxy': proxy
     });
 
     // Setup new values
-    HtmlTerm.ServerName = Hostname;
-    HtmlTerm.Hostname = Hostname;
-    HtmlTerm.Port = Port;
-    HtmlTerm.ProxyHostname = (Proxy ? "proxy.ftelnet.ca" : "");
+    HtmlTerm.ConnectionType = connectionType;
+    HtmlTerm.Hostname = hostname;
+    HtmlTerm.Port = (proxy ? 23 : port);
+    HtmlTerm.ProxyHostname = (proxy ? "my.ftelnet.ca" : "");
+    HtmlTerm.ServerName = hostname;
+    switch (emulation) {
+        case 'c64':
+            if (!Crt.C64) {
+                Crt.C64 = true;
+                Crt.SetFont("PETSCII-Lower", 16, 16);
+                Crt.SetScreenSize(40, 25);
+            }
+            break;
+        default:
+            if (Crt.C64) {
+                Crt.C64 = false;
+                SetBestFontSize(true);
+                Crt.SetScreenSize(80, 25);
+            }
+            break;
+    }
 
     // And connect
     HtmlTerm.Connect();
@@ -104,11 +100,7 @@ function Connect() {
 function ConnectToDialingDirectory(index) {
     var Entry = DialingDirectory[index];
 
-    $('#txtHostname').val(Entry.Hostname);
-    $('#txtPort').val(Entry.Port)
-    $('#chkProxy').prop('checked', Entry.Proxy);
-
-    if (Connect()) {
+    if (Connect(Entry.Hostname, Entry.Port, Entry.Proxy, Entry.ConnectionType, Entry.Emulation)) {
         // Update connection count
         Entry.ConnectionCount += 1;
         DialingDirectory[index] = Entry;
@@ -119,12 +111,7 @@ function ConnectToDialingDirectory(index) {
 
 function ConnectToRecent(index) {
     var Entry = RecentConnections[index];
-
-    $('#txtHostname').val(Entry.Hostname);
-    $('#txtPort').val(Entry.Port)
-    $('#chkProxy').prop('checked', Entry.Proxy);
-
-    Connect();
+    Connect(Entry.Hostname, Entry.Port, Entry.Proxy, Entry.ConnectionType, Entry.Emulation);
 }
 
 function Download() {
@@ -133,30 +120,47 @@ function Download() {
 
 function InitDialingDirectory() {
     DialingDirectory.push({
-        Description: 'fTelnet / HtmlTerm / GameSrv Demo Server',
-        Hostname: 'bbs.ftelnet.ca',
-        Port: 1123,
-        Proxy: false,
-        Notes: 'Default connection entry',
-        ConnectionCount: 0
+        'ConnectionCount': 0,
+        'ConnectionType': 'telnet',
+        'Description': 'fTelnet / HtmlTerm / GameSrv Demo Server',
+        'Emulation': 'ansi-bbs',
+        'Hostname': 'bbs.ftelnet.ca',
+        'Notes': 'Default connection entry',
+        'Port': 1123,
+        'Proxy': false
     });
 
     DialingDirectory.push({
-        Description: 'Vertrauen',
-        Hostname: 'vert.synchro.net',
-        Port: 23,
-        Proxy: true,
-        Notes: 'Default connection entry<br />Home of <a href="http://www.synchro.net" target="_blank">Synchronet</a>',
-        ConnectionCount: 0
+        'ConnectionCount': 0,
+        'ConnectionType': 'telnet',
+        'Description': 'Vertrauen',
+        'Emulation': 'ansi-bbs',
+        'Hostname': 'vert.synchro.net',
+        'Notes': 'Default connection entry<br />Home of <a href="http://www.synchro.net" target="_blank">Synchronet</a>',
+        'Port': 23,
+        'Proxy': true
     });
 
     DialingDirectory.push({
-        Description: 'Starwars Asciimation',
-        Hostname: 'towel.blinkenlights.nl',
-        Port: 23,
-        Proxy: true,
-        Notes: 'Default connection entry<br /><a href="http://www.blinkenlights.nl/services.html#starwars" target="_blank">Home Page</a>',
-        ConnectionCount: 0
+        'ConnectionCount': 0,
+        'ConnectionType': 'tcp',
+        'Description': 'LV-426',
+        'Emulation': 'c64',
+        'Hostname': 'lv426bbs.homeip.net',
+        'Notes': 'Default connection entry<br />A Commodore 64 BBS',
+        'Port': 23,
+        'Proxy': true
+    });
+
+    DialingDirectory.push({
+        'ConnectionCount': 0,
+        'ConnectionType': 'telnet',
+        'Description': 'Starwars Asciimation',
+        'Emulation': 'ansi-bbs',
+        'Hostname': 'towel.blinkenlights.nl',
+        'Notes': 'Default connection entry<br /><a href="http://www.blinkenlights.nl/services.html#starwars" target="_blank">Home Page</a>',
+        'Port': 23,
+        'Proxy': true
     });
 
     localStorage["DialingDirectory"] = JSON.stringify(DialingDirectory);
@@ -169,7 +173,36 @@ function OpenPanel(id) {
     }
 }
 
-function SetBestFontSize() {
+function QuickConnect() {
+    var Hostname = $('#txtHostname').val();
+
+    // Validate form
+    if (Hostname == "") {
+        alert("Enter a hostname");
+        return;
+    }
+
+    if (Connect(Hostname, 23, true, 'telnet', 'ansi-bbs')) {
+        // Hides the drop down Connect menu
+        if ($('.navbar-toggle').is(':visible')) {
+            // Mobile
+            $('.navbar-collapse').collapse('toggle');
+        } else {
+            // Desktop
+            $("body").trigger("click");
+        }
+    }
+}
+
+function SetBestFontSize(force) {
+    if (typeof force === 'undefined') force = false;
+
+    // Abort if we don't have a numeric codepage
+    if (SiteInitted && !force) {
+        if (isNaN(parseInt(Crt.Font.CodePage, 10))) return;
+    }
+
+    // Try to set the biggest font that fits the screen
     SetFontSize(12, 23) ||
         SetFontSize(10, 19) ||
         SetFontSize(9, 16) ||
@@ -186,7 +219,7 @@ function SetFontSize(width, height, force) {
 
     if (force || ((($(window).width() - 30) >= (width * 80)) && (($(window).height() - 60) >= (height * 25)))) { // -60 for top nav
         if (SiteInitted) {
-            Crt.SetFont(437, width, height);
+            Crt.SetFont("437", width, height);
         } else {
             HtmlTerm.FontWidth = width;
             HtmlTerm.FontHeight = height;
