@@ -4792,6 +4792,10 @@ Ansi = new TAnsi();
   You should have received a copy of the GNU General Public License
   along with HtmlTerm.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+var WebSocketSupportsBinaryType = (('WebSocket' in window) && ('binaryType' in (new WebSocket("ws://localhost:53211"))));
+var WebSocketSupportsTypedArrays = (('Uint8Array' in window) && ('set' in Uint8Array.prototype));
+
 var TTcpConnection = function () {
     // Public events
     this.onclose = function () { }; // Do nothing
@@ -4978,21 +4982,6 @@ var TTcpConnection = function () {
 
     this.readUTFBytes = function (ALength) {
         return FInputBuffer.readUTFBytes(ALength);
-    };
-
-    this.test = function () {
-        if (that.testTypedArrays()) {
-            return that.testBinaryType();
-        }
-        return false;
-    };
-
-    this.testBinaryType = function () {
-        return (('WebSocket' in window) && ('binaryType' in WebSocket.prototype));
-    };
-
-    this.testTypedArrays = function () {
-        return (('Uint8Array' in window) && ('set' in Uint8Array.prototype));
     };
 
     // Remap all the write* functions to operate on our output buffer instead
@@ -6704,22 +6693,64 @@ var THtmlTerm = function () {
             Crt.Canvas.addEventListener(Crt.SCREEN_SIZE_CHANGED, OnCrtScreenSizeChanged, false);
 
             // Test websocket support
-            var TempConnection = new TTcpConnection();
-            if (!TempConnection.test()) {
-                Crt.WriteLn("Sorry, your browser doesn't have full WebSocket support!");
+            if (!('WebSocket' in window)) {
                 Crt.WriteLn();
-                Crt.WriteLn("WebSockets are how HtmlTerm connects to the remote server.  So either your");
-                Crt.WriteLn("browser doesn't support them, or it does, but not the binary mode that HtmlTerm");
-                Crt.WriteLn("requires.");
+                Crt.WriteLn("Sorry, but your browser doesn't support the WebSocket protocol!");
+                Crt.WriteLn();
+                Crt.WriteLn("WebSockets are how HtmlTerm connects to the remote server, so without them that");
+                Crt.WriteLn("means you won't be able to connect anywhere.");
+                Crt.WriteLn();
+                Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
+                Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
+                Crt.WriteLn("Windows XP), then try switching to a different web browser.");
                 Crt.WriteLn();
                 Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
                 Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
                 Crt.WriteLn("what browser you use, as well as which version it is.");
-
                 trace("HtmlTerm Error: WebSocket not supported");
                 return false;
+            } else if (!WebSocketSupportsBinaryType) {
+                Crt.WriteLn();
+                Crt.WriteLn("Sorry, but your browser doesn't support binary WebSocket frames!");
+                Crt.WriteLn();
+                Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
+                Crt.WriteLn("in the proxy software that HtmlTerm uses.")
+                Crt.WriteLn();
+                Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
+                Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
+                Crt.WriteLn("Windows XP), then try switching to a different web browser.");
+                Crt.WriteLn();
+                Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
+                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just")
+                Crt.WriteLn("let me know and I'll look into putting in the extra work.")
+                Crt.WriteLn();
+                Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
+                Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
+                Crt.WriteLn("what browser you use, as well as which version it is.");
+                trace("HtmlTerm Error: binaryType not supported");
+                return false;
+            } else if (!WebSocketSupportsTypedArrays) {
+                Crt.WriteLn();
+                Crt.WriteLn("Sorry, but your browser doesn't support the Uint8Array typed array!");
+                Crt.WriteLn();
+                Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
+                Crt.WriteLn("in the proxy software that HtmlTerm uses, and they require Uint8Array to work.")
+                Crt.WriteLn();
+                Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
+                Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
+                Crt.WriteLn("Windows XP), then try switching to a different web browser.");
+                Crt.WriteLn();
+                Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
+                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just")
+                Crt.WriteLn("let me know and I'll look into putting in the extra work.")
+                Crt.WriteLn();
+                Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
+                Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
+                Crt.WriteLn("what browser you use, as well as which version it is.");
+                trace("HtmlTerm Error: Uint8Array not supported");
+                return false;
             }
-
+            
             // Create the Save Files button
             FSaveFilesButton = new TSaveFilesButton();
             FContainer.appendChild(FSaveFilesButton.Image);

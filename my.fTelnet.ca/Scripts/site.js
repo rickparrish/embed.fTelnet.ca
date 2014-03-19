@@ -262,7 +262,7 @@ function TestFeatures() {
     }
 
     // WebSocket binaryType
-    if (('WebSocket' in window) && ('binaryType' in WebSocket.prototype)) {
+    if (WebSocketSupportsBinaryType) {
         $('#tdWebSocketBinaryTypeSupported').text('Yep!');
         $('#tdWebSocketBinaryTypeSupported').addClass('text-success text-center');
     } else {
@@ -271,7 +271,7 @@ function TestFeatures() {
     }
 
     // Typed Arrays
-    if (('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
+    if (WebSocketSupportsTypedArrays) {
         $('#tdTypedArraysSupported').text('Yep!');
         $('#tdTypedArraysSupported').addClass('text-success text-center');
     } else {
