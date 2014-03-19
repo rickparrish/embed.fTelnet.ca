@@ -4792,7 +4792,6 @@ Ansi = new TAnsi();
   You should have received a copy of the GNU General Public License
   along with HtmlTerm.  If not, see <http://www.gnu.org/licenses/>.
 */
-var TestBinaryTypeResult;
 var TTcpConnection = function () {
     // Public events
     this.onclose = function () { }; // Do nothing
@@ -4982,33 +4981,14 @@ var TTcpConnection = function () {
     };
 
     this.test = function () {
-        // This test comes from Websockify
-        
-        // Check for full typed array support
         if (that.testTypedArrays()) {
             return that.testBinaryType();
         }
-
         return false;
     };
 
     this.testBinaryType = function () {
-        if (typeof TestBinaryTypeResult !== 'undefined') return TestBinaryTypeResult;
-        
-        // Check for full binary type support in WebSockets
-        // TODO: this sucks, the property should exist on the prototype
-        // but it does not.
-        try {
-            if ('binaryType' in (new WebSocket("ws://localhost:53211"))) {
-                TestBinaryTypeResult = true;
-                return true;
-            }
-        } catch (exc) {
-            // Just ignore failed test localhost connections
-        }
-
-        TestBinaryTypeResult = false;
-        return false;
+        return (('WebSocket' in window) && ('binaryType' in WebSocket.prototype));
     };
 
     this.testTypedArrays = function () {
