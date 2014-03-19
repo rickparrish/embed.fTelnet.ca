@@ -30,6 +30,11 @@
                     <td><strong>Required!</strong> binaryType is a property that kicks WebSocket into binary mode.  Without it, I'd have to do a lot more work on the server side of things, and I'm just too lazy to do that unless I really have to!</td>
                 </tr>
                 <tr>
+                    <td>Typed Arrays</td>
+                    <td id="tdTypedArraysSupported"></td>
+                    <td><strong>Required!</strong> Typed arrays are needed for WebSockets in binary mode.  Without it, I'd have to do a lot more work on the server side of things, and I'm just too lazy to do that unless I really have to!</td>
+                </tr>
+                <tr>
                     <td>Web Storage</td>
                     <td id="tdWebStorageSupported"></td>
                     <td><strong>Optional</strong> Web Storage is sort of like Cookies, but WAY better.  Without it, your recent connections and dialing directory won't be saved the next time you visit this site.</td>
@@ -41,7 +46,7 @@
     </div>
     <div class="panel-footer">
         <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
-        &nbsp; &nbsp; &nbsp; &nbsp
+        &nbsp; &nbsp; &nbsp; &nbsp;
         <input type="checkbox" id="chkSkipAbout" onclick="SetSkipAbout();" /> <label for="chkSkipAbout">Skip this panel next visit</label>
     </div>
 </div>

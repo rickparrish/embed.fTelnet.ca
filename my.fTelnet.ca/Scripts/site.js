@@ -262,12 +262,21 @@ function TestFeatures() {
     }
 
     // WebSocket binaryType
-    if (('WebSocket' in window) && ('binaryType' in WebSocket.prototype) && ('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
+    if (('WebSocket' in window) && ('binaryType' in WebSocket.prototype)) {
         $('#tdWebSocketBinaryTypeSupported').text('Yep!');
         $('#tdWebSocketBinaryTypeSupported').addClass('text-success text-center');
     } else {
         $('#tdWebSocketBinaryTypeSupported').text('Nope!');
         $('#tdWebSocketBinaryTypeSupported').addClass('text-danger text-center');
+    }
+
+    // Typed Arrays
+    if (('Uint8Array' in window) && ('set' in Uint8Array.prototype)) {
+        $('#tdTypedArraysSupported').text('Yep!');
+        $('#tdTypedArraysSupported').addClass('text-success text-center');
+    } else {
+        $('#tdTypedArraysSupported').text('Nope!');
+        $('#tdTypedArraysSupported').addClass('text-danger text-center');
     }
 
     // Web Storage
