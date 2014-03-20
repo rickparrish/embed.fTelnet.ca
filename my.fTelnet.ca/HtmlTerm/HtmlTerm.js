@@ -6931,7 +6931,6 @@ var THtmlTerm = function () {
 
     OnConnectionConnect = function (e) {
         Crt.ClrScr();
-        if (FProxyHostname !== "") { FConnection.writeString(FHostname + ":" + FPort + "\r\n"); }
 
         if (FProxyHostname === "") {
             Crt.FastWrite(" Connected to                                                                   ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
