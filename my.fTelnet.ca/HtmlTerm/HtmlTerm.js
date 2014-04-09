@@ -4424,13 +4424,13 @@ var TTcpConnection = function () {
     };
 
     this.connect = function (AHostname, APort, AProxyHostname, AProxyPort) {
-        if (AProxyHostname === 'undefined') { AProxyHostname = ""; }
-        if (AProxyPort === 'undefined') { AProxyPort = 11235; }
+        if (AProxyHostname === undefined) { AProxyHostname = ""; }
+        if (AProxyPort === undefined) { AProxyPort = 11235; }
 
         FWasConnected = false;
 
         if (AProxyHostname === "") {
-            that.FWebSocket = new WebSocket("ws://" + AHostname + ":" + APort);
+            that.FWebSocket = new WebSocket("ws://" + AHostname + ":" + APort); 
         } else {
             that.FWebSocket = new WebSocket("ws://" + AProxyHostname + ":" + AProxyPort + "/" + AHostname + "/" + APort);
         }
