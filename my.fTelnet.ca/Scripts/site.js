@@ -146,7 +146,7 @@ function InitDialingDirectory() {
         'ConnectionType': 'tcp',
         'Description': 'LV-426',
         'Emulation': 'c64',
-        'Hostname': 'lv426bbs.homeip.net',
+        'Hostname': 'lv426bbs.homenet.org',
         'Notes': 'Default connection entry<br />A Commodore 64 BBS',
         'Port': 23,
         'Proxy': true

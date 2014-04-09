@@ -17,6 +17,8 @@ namespace my.fTelnet.ca
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
                 "~/Scripts/site.js",
+                "~/HtmlTerm/Blob.js",
+                "~/HtmlTerm/FileSaver.js",
                 "~/HtmlTerm/HtmlTerm.js", // TODO
                 //TODO "~/HtmlTerm/HtmlTerm.compiled.js",
                 "~/HtmlTerm/HtmlTerm.font-437.js",

@@ -18,420 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with HtmlTerm.  If not, see <http://www.gnu.org/licenses/>.
 */
-/*global document: false, navigator: false, console: false, setTimeout: false, setInterval: false, Image: false, window: false, WebSocket: false, MozWebSocket: false, XMLHttpRequest: false, confirm: false, clearInterval: false, ArrayBuffer: false, DataView: false, Blob: false, FileReader: false, KeyboardEvent: false, Uint8Array: false */
-/* Blob.js
- * A Blob implementation.
- * 2013-12-27
- * 
- * By Eli Grey, http://eligrey.com
- * By Devin Samarin, https://github.com/eboyjr
- * License: X11/MIT
- *   See LICENSE.md
- */
-
-/*global self, unescape */
-/*jslint bitwise: true, regexp: true, confusion: true, es5: true, vars: true, white: true,
-  plusplus: true */
-
-/*! @source http://purl.eligrey.com/github/Blob.js/blob/master/Blob.js */
-
-if (!(typeof Blob === "function" || typeof Blob === "object") || typeof URL === "undefined")
-    if ((typeof Blob === "function" || typeof Blob === "object") && typeof webkitURL !== "undefined") self.URL = webkitURL;
-    else var Blob = (function (view) {
-        "use strict";
-
-        var BlobBuilder = view.BlobBuilder || view.WebKitBlobBuilder || view.MozBlobBuilder || view.MSBlobBuilder || (function (view) {
-            var
-                  get_class = function (object) {
-                      return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
-                  }
-                , FakeBlobBuilder = function BlobBuilder() {
-                    this.data = [];
-                }
-                , FakeBlob = function Blob(data, type, encoding) {
-                    this.data = data;
-                    this.size = data.length;
-                    this.type = type;
-                    this.encoding = encoding;
-                }
-                , FBB_proto = FakeBlobBuilder.prototype
-                , FB_proto = FakeBlob.prototype
-                , FileReaderSync = view.FileReaderSync
-                , FileException = function (type) {
-                    this.code = this[this.name = type];
-                }
-                , file_ex_codes = (
-                      "NOT_FOUND_ERR SECURITY_ERR ABORT_ERR NOT_READABLE_ERR ENCODING_ERR "
-                    + "NO_MODIFICATION_ALLOWED_ERR INVALID_STATE_ERR SYNTAX_ERR"
-                ).split(" ")
-                , file_ex_code = file_ex_codes.length
-                , real_URL = view.URL || view.webkitURL || view
-                , real_create_object_URL = real_URL.createObjectURL
-                , real_revoke_object_URL = real_URL.revokeObjectURL
-                , URL = real_URL
-                , btoa = view.btoa
-                , atob = view.atob
-
-                , ArrayBuffer = view.ArrayBuffer
-                , Uint8Array = view.Uint8Array
-            ;
-            FakeBlob.fake = FB_proto.fake = true;
-            while (file_ex_code--) {
-                FileException.prototype[file_ex_codes[file_ex_code]] = file_ex_code + 1;
-            }
-            if (!real_URL.createObjectURL) {
-                URL = view.URL = {};
-            }
-            URL.createObjectURL = function (blob) {
-                var
-                      type = blob.type
-                    , data_URI_header
-                ;
-                if (type === null) {
-                    type = "application/octet-stream";
-                }
-                if (blob instanceof FakeBlob) {
-                    data_URI_header = "data:" + type;
-                    if (blob.encoding === "base64") {
-                        return data_URI_header + ";base64," + blob.data;
-                    } else if (blob.encoding === "URI") {
-                        return data_URI_header + "," + decodeURIComponent(blob.data);
-                    } if (btoa) {
-                        return data_URI_header + ";base64," + btoa(blob.data);
-                    } else {
-                        return data_URI_header + "," + encodeURIComponent(blob.data);
-                    }
-                } else if (real_create_object_URL) {
-                    return real_create_object_URL.call(real_URL, blob);
-                }
-            };
-            URL.revokeObjectURL = function (object_URL) {
-                if (object_URL.substring(0, 5) !== "data:" && real_revoke_object_URL) {
-                    real_revoke_object_URL.call(real_URL, object_URL);
-                }
-            };
-            FBB_proto.append = function (data/*, endings*/) {
-                var bb = this.data;
-                // decode data to a binary string
-                if (Uint8Array && (data instanceof ArrayBuffer || data instanceof Uint8Array)) {
-                    var
-                          str = ""
-                        , buf = new Uint8Array(data)
-                        , i = 0
-                        , buf_len = buf.length
-                    ;
-                    for (; i < buf_len; i++) {
-                        str += String.fromCharCode(buf[i]);
-                    }
-                    bb.push(str);
-                } else if (get_class(data) === "Blob" || get_class(data) === "File") {
-                    if (FileReaderSync) {
-                        var fr = new FileReaderSync;
-                        bb.push(fr.readAsBinaryString(data));
-                    } else {
-                        // async FileReader won't work as BlobBuilder is sync
-                        throw new FileException("NOT_READABLE_ERR");
-                    }
-                } else if (data instanceof FakeBlob) {
-                    if (data.encoding === "base64" && atob) {
-                        bb.push(atob(data.data));
-                    } else if (data.encoding === "URI") {
-                        bb.push(decodeURIComponent(data.data));
-                    } else if (data.encoding === "raw") {
-                        bb.push(data.data);
-                    }
-                } else {
-                    if (typeof data !== "string") {
-                        data += ""; // convert unsupported types to strings
-                    }
-                    // decode UTF-16 to binary string
-                    bb.push(unescape(encodeURIComponent(data)));
-                }
-            };
-            FBB_proto.getBlob = function (type) {
-                if (!arguments.length) {
-                    type = null;
-                }
-                return new FakeBlob(this.data.join(""), type, "raw");
-            };
-            FBB_proto.toString = function () {
-                return "[object BlobBuilder]";
-            };
-            FB_proto.slice = function (start, end, type) {
-                var args = arguments.length;
-                if (args < 3) {
-                    type = null;
-                }
-                return new FakeBlob(
-                      this.data.slice(start, args > 1 ? end : this.data.length)
-                    , type
-                    , this.encoding
-                );
-            };
-            FB_proto.toString = function () {
-                return "[object Blob]";
-            };
-            return FakeBlobBuilder;
-        }(view));
-
-        return function Blob(blobParts, options) {
-            var type = options ? (options.type || "") : "";
-            var builder = new BlobBuilder();
-            if (blobParts) {
-                for (var i = 0, len = blobParts.length; i < len; i++) {
-                    builder.append(blobParts[i]);
-                }
-            }
-            return builder.getBlob(type);
-        };
-    }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content || this));
-/*! FileSaver.js
- *  A saveAs() FileSaver implementation.
- *  2014-01-24
- *
- *  By Eli Grey, http://eligrey.com
- *  License: X11/MIT
- *    See LICENSE.md
- */
-
-/*global self */
-/*jslint bitwise: true, indent: 4, laxbreak: true, laxcomma: true, smarttabs: true, plusplus: true */
-
-/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
-
-var saveAs = saveAs
-  // IE 10+ (native saveAs)
-  || (typeof navigator !== "undefined" &&
-      navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator))
-  // Everyone else
-  || (function (view) {
-      "use strict";
-      // IE <10 is explicitly unsupported
-      if (typeof navigator !== "undefined" &&
-          /MSIE [1-9]\./.test(navigator.userAgent)) {
-          return;
-      }
-      var
-            doc = view.document
-            // only get URL when necessary in case BlobBuilder.js hasn't overridden it yet
-          , get_URL = function () {
-              return view.URL || view.webkitURL || view;
-          }
-          , URL = view.URL || view.webkitURL || view
-          , save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
-          , can_use_save_link = !view.externalHost && "download" in save_link
-          , click = function (node) {
-              var event = doc.createEvent("MouseEvents");
-              event.initMouseEvent(
-                  "click", true, false, view, 0, 0, 0, 0, 0
-                  , false, false, false, false, 0, null
-              );
-              node.dispatchEvent(event);
-          }
-          , webkit_req_fs = view.webkitRequestFileSystem
-          , req_fs = view.requestFileSystem || webkit_req_fs || view.mozRequestFileSystem
-          , throw_outside = function (ex) {
-              (view.setImmediate || view.setTimeout)(function () {
-                  throw ex;
-              }, 0);
-          }
-          , force_saveable_type = "application/octet-stream"
-          , fs_min_size = 0
-          , deletion_queue = []
-          , process_deletion_queue = function () {
-              var i = deletion_queue.length;
-              while (i--) {
-                  var file = deletion_queue[i];
-                  if (typeof file === "string") { // file is an object URL
-                      URL.revokeObjectURL(file);
-                  } else { // file is a File
-                      file.remove();
-                  }
-              }
-              deletion_queue.length = 0; // clear queue
-          }
-          , dispatch = function (filesaver, event_types, event) {
-              event_types = [].concat(event_types);
-              var i = event_types.length;
-              while (i--) {
-                  var listener = filesaver["on" + event_types[i]];
-                  if (typeof listener === "function") {
-                      try {
-                          listener.call(filesaver, event || filesaver);
-                      } catch (ex) {
-                          throw_outside(ex);
-                      }
-                  }
-              }
-          }
-          , FileSaver = function (blob, name) {
-              // First try a.download, then web filesystem, then object URLs
-              var
-                    filesaver = this
-                  , type = blob.type
-                  , blob_changed = false
-                  , object_url
-                  , target_view
-                  , get_object_url = function () {
-                      var object_url = get_URL().createObjectURL(blob);
-                      deletion_queue.push(object_url);
-                      return object_url;
-                  }
-                  , dispatch_all = function () {
-                      dispatch(filesaver, "writestart progress write writeend".split(" "));
-                  }
-                  // on any filesys errors revert to saving with object URLs
-                  , fs_error = function () {
-                      // don't create more object URLs than needed
-                      if (blob_changed || !object_url) {
-                          object_url = get_object_url(blob);
-                      }
-                      if (target_view) {
-                          target_view.location.href = object_url;
-                      } else {
-                          window.open(object_url, "_blank");
-                      }
-                      filesaver.readyState = filesaver.DONE;
-                      dispatch_all();
-                  }
-                  , abortable = function (func) {
-                      return function () {
-                          if (filesaver.readyState !== filesaver.DONE) {
-                              return func.apply(this, arguments);
-                          }
-                      };
-                  }
-                  , create_if_not_found = { create: true, exclusive: false }
-                  , slice
-              ;
-              filesaver.readyState = filesaver.INIT;
-              if (!name) {
-                  name = "download";
-              }
-              if (can_use_save_link) {
-                  object_url = get_object_url(blob);
-                  // FF for Android has a nasty garbage collection mechanism
-                  // that turns all objects that are not pure javascript into 'deadObject'
-                  // this means `doc` and `save_link` are unusable and need to be recreated
-                  // `view` is usable though:
-                  doc = view.document;
-                  save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a");
-                  save_link.href = object_url;
-                  save_link.download = name;
-                  var event = doc.createEvent("MouseEvents");
-                  event.initMouseEvent(
-                      "click", true, false, view, 0, 0, 0, 0, 0
-                      , false, false, false, false, 0, null
-                  );
-                  save_link.dispatchEvent(event);
-                  filesaver.readyState = filesaver.DONE;
-                  dispatch_all();
-                  return;
-              }
-              // Object and web filesystem URLs have a problem saving in Google Chrome when
-              // viewed in a tab, so I force save with application/octet-stream
-              // http://code.google.com/p/chromium/issues/detail?id=91158
-              if (view.chrome && type && type !== force_saveable_type) {
-                  slice = blob.slice || blob.webkitSlice;
-                  blob = slice.call(blob, 0, blob.size, force_saveable_type);
-                  blob_changed = true;
-              }
-              // Since I can't be sure that the guessed media type will trigger a download
-              // in WebKit, I append .download to the filename.
-              // https://bugs.webkit.org/show_bug.cgi?id=65440
-              if (webkit_req_fs && name !== "download") {
-                  name += ".download";
-              }
-              if (type === force_saveable_type || webkit_req_fs) {
-                  target_view = view;
-              }
-              if (!req_fs) {
-                  fs_error();
-                  return;
-              }
-              fs_min_size += blob.size;
-              req_fs(view.TEMPORARY, fs_min_size, abortable(function (fs) {
-                  fs.root.getDirectory("saved", create_if_not_found, abortable(function (dir) {
-                      var save = function () {
-                          dir.getFile(name, create_if_not_found, abortable(function (file) {
-                              file.createWriter(abortable(function (writer) {
-                                  writer.onwriteend = function (event) {
-                                      target_view.location.href = file.toURL();
-                                      deletion_queue.push(file);
-                                      filesaver.readyState = filesaver.DONE;
-                                      dispatch(filesaver, "writeend", event);
-                                  };
-                                  writer.onerror = function () {
-                                      var error = writer.error;
-                                      if (error.code !== error.ABORT_ERR) {
-                                          fs_error();
-                                      }
-                                  };
-                                  "writestart progress write abort".split(" ").forEach(function (event) {
-                                      writer["on" + event] = filesaver["on" + event];
-                                  });
-                                  writer.write(blob);
-                                  filesaver.abort = function () {
-                                      writer.abort();
-                                      filesaver.readyState = filesaver.DONE;
-                                  };
-                                  filesaver.readyState = filesaver.WRITING;
-                              }), fs_error);
-                          }), fs_error);
-                      };
-                      dir.getFile(name, { create: false }, abortable(function (file) {
-                          // delete file if it already exists
-                          file.remove();
-                          save();
-                      }), abortable(function (ex) {
-                          if (ex.code === ex.NOT_FOUND_ERR) {
-                              save();
-                          } else {
-                              fs_error();
-                          }
-                      }));
-                  }), fs_error);
-              }), fs_error);
-          }
-          , FS_proto = FileSaver.prototype
-          , saveAs = function (blob, name) {
-              return new FileSaver(blob, name);
-          }
-      ;
-      FS_proto.abort = function () {
-          var filesaver = this;
-          filesaver.readyState = filesaver.DONE;
-          dispatch(filesaver, "abort");
-      };
-      FS_proto.readyState = FS_proto.INIT = 0;
-      FS_proto.WRITING = 1;
-      FS_proto.DONE = 2;
-
-      FS_proto.error =
-      FS_proto.onwritestart =
-      FS_proto.onprogress =
-      FS_proto.onwrite =
-      FS_proto.onabort =
-      FS_proto.onerror =
-      FS_proto.onwriteend =
-          null;
-
-      view.addEventListener("unload", process_deletion_queue, false);
-      saveAs.unload = function () {
-          process_deletion_queue();
-          view.removeEventListener("unload", process_deletion_queue, false);
-      };
-      return saveAs;
-  }(
-	   typeof self !== "undefined" && self
-	|| typeof window !== "undefined" && window
-	|| this.content
-));
-// `self` is undefined in Firefox for Android content script context
-// while `this` is nsIContentFrameMessageManager
-// with an attribute `content` that corresponds to the window
-
-if (typeof module !== "undefined") module.exports = saveAs;
+/*global document: false, navigator: false, console: false, setTimeout: false, setInterval: false, Image: false, window: false, WebSocket: false, MozWebSocket: false, XMLHttpRequest: false, confirm: false, clearInterval: false, ArrayBuffer: false, DataView: false, Blob: false, FileReader: false, KeyboardEvent: false, Uint8Array: false, HTMLInputElement: false, HTMLTextAreaElement: false, atob: false*/
 /*
   HtmlTerm: An HTML5 WebSocket client
   Copyright (C) 2009-2013  Rick Parrish, R&M Software
@@ -1274,12 +861,14 @@ var TFont = function () {
             FCharMap[FCharMapKey] = FContext.getImageData(ACharCode * FSize.x, 0, FSize.x, FSize.y);
 
             // Now colour the character
+            var Back;
+            var Fore;
             if (FCodePage.indexOf("PETSCII") === 0) {
-                var Back = that.PETSCII_COLOURS[(ACharInfo.Attr & 0xF0) >> 4];
-                var Fore = that.PETSCII_COLOURS[(ACharInfo.Attr & 0x0F)];
+                Back = that.PETSCII_COLOURS[(ACharInfo.Attr & 0xF0) >> 4];
+                Fore = that.PETSCII_COLOURS[(ACharInfo.Attr & 0x0F)];
             } else {
-                var Back = that.ANSI_COLOURS[(ACharInfo.Attr & 0xF0) >> 4];
-                var Fore = that.ANSI_COLOURS[(ACharInfo.Attr & 0x0F)];
+                Back = that.ANSI_COLOURS[(ACharInfo.Attr & 0xF0) >> 4];
+                Fore = that.ANSI_COLOURS[(ACharInfo.Attr & 0x0F)];
             }
 
             // Reverse if necessary
@@ -2216,7 +1805,7 @@ var TCrt = function () {
 
     OnKeyDown = function (ke) {
         // Skip out if we've focused an input element
-        if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) return;
+        if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) { return; }
 
         if (FInScrollBack) {
             var i;
@@ -2388,7 +1977,7 @@ var TCrt = function () {
 
     OnKeyPress = function (ke) {
         // Skip out if we've focused an input element
-        if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) return;
+        if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) { return; }
 
         if (FInScrollBack) { return; }
 
@@ -2466,8 +2055,11 @@ var TCrt = function () {
     this.RestoreScreen = function (ABuffer, ALeft, ATop, ARight, ABottom) {
         var Height = ABottom - ATop + 1;
         var Width = ARight - ALeft + 1;
-        for (var Y = 0; Y < Height; Y++) {
-            for (var X = 0; X < Width; X++) {
+
+        var Y;
+        var X;
+        for (Y = 0; Y < Height; Y++) {
+            for (X = 0; X < Width; X++) {
                 trace("Restoring: " + ABuffer[Y][X].Ch + " to " + ALeft + ":" + ATop);
                 that.FastWrite(ABuffer[Y][X].Ch, X + ALeft, Y + ATop, ABuffer[Y][X]);
             }
@@ -2486,9 +2078,11 @@ var TCrt = function () {
         var Width = ARight - ALeft + 1;
         var Result = [];
 
-        for (var Y = 0; Y < Height; Y++) {
+        var Y;
+        var X;
+        for (Y = 0; Y < Height; Y++) {
             Result[Y] = [];
-            for (var X = 0; X < Width; X++) {
+            for (X = 0; X < Width; X++) {
                 Result[Y][X] = new TCharInfo(FBuffer[Y + ATop][X + ALeft].Ch, FBuffer[Y + ATop][X + ALeft].Attr, FBuffer[Y + ATop][X + ALeft].Blink, FBuffer[Y + ATop][X + ALeft].Underline, FBuffer[Y + ATop][X + ALeft].Reverse);
             }
         }
@@ -3327,6 +2921,7 @@ var TCrt = function () {
             }
             else if (AText.charCodeAt(i) === 0x0A) {
                 // Ignore, 0x0D will handle linefeeding
+                i += 0; // Make JSLint happy (doesn't like empty block)
             }
             else if ((AText.charCodeAt(i) === 0x0D) || (AText.charCodeAt(i) === 0x8D)) {
                 // Carriage return; next character will go in the first column of the following text line. 
@@ -3637,7 +3232,7 @@ var TCrtControl = function (AParent, ALeft, ATop, AWidth, AHeight) {
         var Left = FLeft;
         var Top = FTop;
         var P = FParent;
-        while (P != null) {
+        while (P !== null) {
             Left += P.Left;
             Top += P.Top;
             P = P.FParent;
@@ -3649,7 +3244,7 @@ var TCrtControl = function (AParent, ALeft, ATop, AWidth, AHeight) {
         var Left = FLeft;
         var Top = FTop;
         var P = FParent;
-        while (P != null) {
+        while (P !== null) {
             Left += P.Left;
             Top += P.Top;
             P = P.FParent;
@@ -4809,7 +4404,7 @@ var TTcpConnection = function () {
 
     // Protected variables
     this.FInputBuffer = null;
-    this.FOutputBuffer;
+    this.FOutputBuffer = null;
     this.FWebSocket = null;
 
     // Private methods
@@ -4819,62 +4414,63 @@ var TTcpConnection = function () {
     var OnSocketMessage = function (e) { }; // Do nothing
 
     this.__defineGetter__("bytesAvailable", function () {
-        return FInputBuffer.bytesAvailable;
+        return that.FInputBuffer.bytesAvailable;
     });
 
     this.close = function () {
-        if (FWebSocket) {
-            FWebSocket.close();
+        if (that.FWebSocket) {
+            that.FWebSocket.close();
         }
     };
 
     this.connect = function (AHostname, APort, AProxyHostname, AProxyPort) {
-        if (typeof AProxyHostname === 'undefined') AProxyHostname = "";
-        if (typeof AProxyPort === 'undefined') AProxyPort = 11235;
+        if (AProxyHostname === 'undefined') { AProxyHostname = ""; }
+        if (AProxyPort === 'undefined') { AProxyPort = 11235; }
 
         FWasConnected = false;
 
         if (AProxyHostname === "") {
-            FWebSocket = new WebSocket("ws://" + AHostname + ":" + APort);
+            that.FWebSocket = new WebSocket("ws://" + AHostname + ":" + APort);
         } else {
-            FWebSocket = new WebSocket("ws://" + AProxyHostname + ":" + AProxyPort + "/" + AHostname + "/" + APort);
+            that.FWebSocket = new WebSocket("ws://" + AProxyHostname + ":" + AProxyPort + "/" + AHostname + "/" + APort);
         }
 
         // Enable binary mode
-        FWebSocket.binaryType = 'arraybuffer';
+        that.FWebSocket.binaryType = 'arraybuffer';
 
         // Set event handlers
-        FWebSocket.onclose = OnSocketClose;
-        FWebSocket.onerror = OnSocketError;
-        FWebSocket.onmessage = OnSocketMessage;
-        FWebSocket.onopen = OnSocketOpen;
+        that.FWebSocket.onclose = OnSocketClose;
+        that.FWebSocket.onerror = OnSocketError;
+        that.FWebSocket.onmessage = OnSocketMessage;
+        that.FWebSocket.onopen = OnSocketOpen;
     };
 
     this.__defineGetter__("connected", function () {
-        if (FWebSocket) {
-            return (FWebSocket.readyState === FWebSocket.OPEN);
+        if (that.FWebSocket) {
+            return (that.FWebSocket.readyState === that.FWebSocket.OPEN);
         }
 
         return false;
     });
 
     this.flushTcpConnection = function () {
-        var ToSendString = FOutputBuffer.toString();
+        var ToSendString = that.FOutputBuffer.toString();
         var ToSendBytes = [];
 
+        var i;
         for (i = 0; i < ToSendString.length; i++) {
             ToSendBytes.push(ToSendString.charCodeAt(i));
         }
 
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
-        FOutputBuffer.clear();
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FOutputBuffer.clear();
     };
 
     this.NegotiateInboundTcpConnection = function (AData) {
         // No negotiation for raw tcp connection
         while (AData.bytesAvailable) {
             var B = AData.readUnsignedByte();
-            FInputBuffer.writeByte(B);
+            that.FInputBuffer.writeByte(B);
         }
     };
 
@@ -4898,18 +4494,19 @@ var TTcpConnection = function () {
 
     OnSocketMessage = function (e) {
         // Free up some memory if we're at the end of the buffer
-        if (FInputBuffer.bytesAvailable === 0) { FInputBuffer.clear(); }
+        if (that.FInputBuffer.bytesAvailable === 0) { that.FInputBuffer.clear(); }
 
         // Save the old position and set the new position to the end of the buffer
-        var OldPosition = FInputBuffer.position;
-        FInputBuffer.position = FInputBuffer.length;
+        var OldPosition = that.FInputBuffer.position;
+        that.FInputBuffer.position = that.FInputBuffer.length;
 
         var Data = new ByteArray();
 
         // Write the incoming message to the input buffer
         if (e.data instanceof ArrayBuffer) {
             var u8 = new Uint8Array(e.data);
-            for (var i = 0; i < u8.length; i++) {
+            var i;
+            for (i = 0; i < u8.length; i++) {
                 Data.writeByte(u8[i]);
             }
         } else {
@@ -4920,127 +4517,127 @@ var TTcpConnection = function () {
         that.NegotiateInbound(Data);
 
         // Restore the old buffer position
-        FInputBuffer.position = OldPosition;
+        that.FInputBuffer.position = OldPosition;
     };
 
     // Remap all the read* functions to operate on our input buffer instead
     this.readBoolean = function () {
-        return FInputBuffer.readBoolean();
+        return that.FInputBuffer.readBoolean();
     };
 
     this.readByte = function () {
-        return FInputBuffer.readByte();
+        return that.FInputBuffer.readByte();
     };
 
     this.readBytes = function (ABytes, AOffset, ALength) {
-        return FInputBuffer.readBytes(ABytes, AOffset, ALength);
+        return that.FInputBuffer.readBytes(ABytes, AOffset, ALength);
     };
 
     this.readDouble = function () {
-        return FInputBuffer.readDouble();
+        return that.FInputBuffer.readDouble();
     };
 
     this.readFloat = function () {
-        return FInputBuffer.readFloat();
+        return that.FInputBuffer.readFloat();
     };
 
     this.readInt = function () {
-        return FInputBuffer.readInt();
+        return that.FInputBuffer.readInt();
     };
 
     this.readMultiByte = function (ALength, ACharSet) {
-        return FInputBuffer.readMultiByte(ALength, ACharSet);
+        return that.FInputBuffer.readMultiByte(ALength, ACharSet);
     };
 
     this.readObject = function () {
-        return FInputBuffer.readObject();
+        return that.FInputBuffer.readObject();
     };
 
     this.readShort = function () {
-        return FInputBuffer.readShort();
+        return that.FInputBuffer.readShort();
     };
 
     this.readString = function (ALength) {
-        return FInputBuffer.readString();
+        return that.FInputBuffer.readString();
     };
 
     this.readUnsignedByte = function () {
-        return FInputBuffer.readUnsignedByte();
+        return that.FInputBuffer.readUnsignedByte();
     };
 
     this.readUnsignedInt = function () {
-        return FInputBuffer.readUnsignedInt();
+        return that.FInputBuffer.readUnsignedInt();
     };
 
     this.readUnsignedShort = function () {
-        return FInputBuffer.readUnsignedShort();
+        return that.FInputBuffer.readUnsignedShort();
     };
 
     this.readUTF = function () {
-        return FInputBuffer.readUTF();
+        return that.FInputBuffer.readUTF();
     };
 
     this.readUTFBytes = function (ALength) {
-        return FInputBuffer.readUTFBytes(ALength);
+        return that.FInputBuffer.readUTFBytes(ALength);
     };
 
     // Remap all the write* functions to operate on our output buffer instead
     this.writeBoolean = function (AValue) {
-        FOutputBuffer.writeBoolean(AValue);
+        that.FOutputBuffer.writeBoolean(AValue);
     };
 
     this.writeByte = function (AValue) {
-        FOutputBuffer.writeByte(AValue);
+        that.FOutputBuffer.writeByte(AValue);
     };
 
     this.writeBytes = function (ABytes, AOffset, ALength) {
-        FOutputBuffer.writeBytes(ABytes, AOffset, ALength);
+        that.FOutputBuffer.writeBytes(ABytes, AOffset, ALength);
     };
 
     this.writeDouble = function (AValue) {
-        FOutputBuffer.writeDouble(AValue);
+        that.FOutputBuffer.writeDouble(AValue);
     };
 
     this.writeFloat = function (AValue) {
-        FOutputBuffer.writeFloat(AValue);
+        that.FOutputBuffer.writeFloat(AValue);
     };
 
     this.writeInt = function (AValue) {
-        FOutputBuffer.writeInt(AValue);
+        that.FOutputBuffer.writeInt(AValue);
     };
 
     this.writeMultiByte = function (AValue, ACharSet) {
-        FOutputBuffer.writeMultiByte(AValue, ACharSet);
+        that.FOutputBuffer.writeMultiByte(AValue, ACharSet);
     };
 
     this.writeObject = function (AObject) {
-        FOutputBuffer.writeObject(AObject);
+        that.FOutputBuffer.writeObject(AObject);
     };
 
     this.writeShort = function (AValue) {
-        FOutputBuffer.writeShort(AValue);
+        that.FOutputBuffer.writeShort(AValue);
     };
 
     this.writeString = function (AText) {
-        FOutputBuffer.writeString(AText);
+        that.FOutputBuffer.writeString(AText);
         that.flush();
     };
 
     this.writeUnsignedInt = function (AValue) {
-        FOutputBuffer.writeUnsignedInt(AValue);
+        that.FOutputBuffer.writeUnsignedInt(AValue);
     };
 
     this.writeUTF = function (AValue) {
-        FOutputBuffer.writeUTF(AValue);
+        that.FOutputBuffer.writeUTF(AValue);
     };
 
     this.writeUTFBytes = function (AValue) {
-        FOutputBuffer.writeUTFBytes(AValue);
+        that.FOutputBuffer.writeUTFBytes(AValue);
     };
 
     // Constructor
-    FInputBuffer = new ByteArray();
-    FOutputBuffer = new ByteArray();
+    that.FInputBuffer = new ByteArray();
+    that.FOutputBuffer = new ByteArray();
 };
 
 var TTcpConnectionSurrogate = function () { };
@@ -5351,8 +4948,10 @@ var TTelnetConnection = function () {
 
     // Private variables
     var that = this;
+    var FLocalEcho;
     var FNegotiatedOptions;
     var FNegotiationState;
+    var FWindowSize;
 
     // Private methods
     var HandleEcho = function (ACommand) { }; // Do nothing
@@ -5368,10 +4967,11 @@ var TTelnetConnection = function () {
     var SendWont = function (AOption) { }; // Do nothing
 
     this.flushTelnetConnection = function () {
-        var ToSendString = FOutputBuffer.toString();
+        var ToSendString = that.FOutputBuffer.toString();
         var ToSendBytes = [];
 
         // Read 1 byte at a time, doubling up IAC's as necessary
+        var i;
         for (i = 0; i < ToSendString.length; i++) {
             ToSendBytes.push(ToSendString.charCodeAt(i));
             if (ToSendString.charCodeAt(i) === TelnetCommand.IAC) {
@@ -5379,8 +4979,8 @@ var TTelnetConnection = function () {
             }
         }
 
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
-        FOutputBuffer.clear();
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FOutputBuffer.clear();
     };
 
     HandleEcho = function (ACommand) {
@@ -5416,10 +5016,11 @@ var TTelnetConnection = function () {
         ToSendBytes.push(0); // IS
 
         var TerminalType = "DEC-VT100"; // TODO
-        for (var i = 0; i < TerminalType.length; i++) {
+        var i;
+        for (i = 0; i < TerminalType.length; i++) {
             ToSendBytes.push(TerminalType.charCodeAt(i));
         }
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
 
         SendSubnegotiateEnd();
     };
@@ -5435,11 +5036,15 @@ var TTelnetConnection = function () {
         Size[3] = FWindowSize.y & 0xff;
 
         var ToSendBytes = [];
-        for (var i = 0; i < Size.length; i++) {
+        var i;
+        for (i = 0; i < Size.length; i++) {
             ToSendBytes.push(Size[i]);
-            if (Size[i] == TelnetCommand.IAC) ToSendBytes.push(TelnetCommand.IAC); // Double up so it's not treated as an IAC
+            if (Size[i] === TelnetCommand.IAC) {
+                // Double up so it's not treated as an IAC
+                ToSendBytes.push(TelnetCommand.IAC); 
+            }
         }
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
 
         SendSubnegotiateEnd();
     };
@@ -5460,18 +5065,18 @@ var TTelnetConnection = function () {
         while (AData.bytesAvailable) {
             var B = AData.readUnsignedByte();
 
-            if (FNegotiationState == TelnetNegotiationState.Data) {
-                if (B == TelnetCommand.IAC) {
+            if (FNegotiationState === TelnetNegotiationState.Data) {
+                if (B === TelnetCommand.IAC) {
                     FNegotiationState = TelnetNegotiationState.IAC;
                 }
                 else {
-                    FInputBuffer.writeByte(B);
+                    that.FInputBuffer.writeByte(B);
                 }
             }
-            else if (FNegotiationState == TelnetNegotiationState.IAC) {
-                if (B == TelnetCommand.IAC) {
+            else if (FNegotiationState === TelnetNegotiationState.IAC) {
+                if (B === TelnetCommand.IAC) {
                     FNegotiationState = TelnetNegotiationState.Data;
-                    FInputBuffer.writeByte(B);
+                    that.FInputBuffer.writeByte(B);
                 }
                 else {
                     switch (B) {
@@ -5495,7 +5100,7 @@ var TTelnetConnection = function () {
                     }
                 }
             }
-            else if (FNegotiationState == TelnetNegotiationState.Do) {
+            else if (FNegotiationState === TelnetNegotiationState.Do) {
                 switch (B) {
                     case TelnetOption.TransmitBinary: SendWill(B); break;
                     case TelnetOption.Echo: HandleEcho(TelnetCommand.Do); break;
@@ -5507,7 +5112,7 @@ var TTelnetConnection = function () {
                 }
                 FNegotiationState = TelnetNegotiationState.Data;
             }
-            else if (FNegotiationState == TelnetNegotiationState.Dont) {
+            else if (FNegotiationState === TelnetNegotiationState.Dont) {
                 switch (B) {
                     case TelnetOption.TransmitBinary: SendWill(B); break;
                     case TelnetOption.Echo: HandleEcho(TelnetCommand.Dont); break;
@@ -5518,7 +5123,7 @@ var TTelnetConnection = function () {
                 }
                 FNegotiationState = TelnetNegotiationState.Data;
             }
-            else if (FNegotiationState == TelnetNegotiationState.Will) {
+            else if (FNegotiationState === TelnetNegotiationState.Will) {
                 switch (B) {
                     case TelnetOption.TransmitBinary: SendDo(B); break;
                     case TelnetOption.Echo: HandleEcho(TelnetCommand.Will); break;
@@ -5529,7 +5134,7 @@ var TTelnetConnection = function () {
                 }
                 FNegotiationState = TelnetNegotiationState.Data;
             }
-            else if (FNegotiationState == TelnetNegotiationState.Wont) {
+            else if (FNegotiationState === TelnetNegotiationState.Wont) {
                 switch (B) {
                     case TelnetOption.TransmitBinary: SendDo(B); break;
                     case TelnetOption.Echo: HandleEcho(TelnetCommand.Wont); break;
@@ -5552,34 +5157,32 @@ var TTelnetConnection = function () {
         var ToSendBytes = [];
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(ACommand);
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendDo = function (AOption) {
-        if (FNegotiatedOptions[AOption] == TelnetCommand.Do) {
-            // Already negotiated this option, don't go into a negotiation storm!
-        } else {
+        if (FNegotiatedOptions[AOption] !== TelnetCommand.Do) {
+            // Haven't negotiated this option
             FNegotiatedOptions[AOption] = TelnetCommand.Do;
 
             var ToSendBytes = [];
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Do);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+            that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
     SendDont = function (AOption) {
-        if (FNegotiatedOptions[AOption] == TelnetCommand.Dont) {
-            // Already negotiated this option, don't go into a negotiation storm!
-        } else {
+        if (FNegotiatedOptions[AOption] !== TelnetCommand.Dont) {
+            // Haven't negotiated this option
             FNegotiatedOptions[AOption] = TelnetCommand.Dont;
 
             var ToSendBytes = [];
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Dont);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+            that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
@@ -5608,47 +5211,45 @@ var TTelnetConnection = function () {
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(TelnetCommand.Subnegotiation);
         ToSendBytes.push(AOption);
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendSubnegotiateEnd = function () {
         var ToSendBytes = [];
         ToSendBytes.push(TelnetCommand.IAC);
         ToSendBytes.push(TelnetCommand.EndSubnegotiation);
-        FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+        that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
     };
 
     SendWill = function (AOption) {
-        if (FNegotiatedOptions[AOption] == TelnetCommand.Will) {
-            // Already negotiated this option, don't go into a negotiation storm!
-        } else {
+        if (FNegotiatedOptions[AOption] !== TelnetCommand.Will) {
+            // Haven't negotiated this option
             FNegotiatedOptions[AOption] = TelnetCommand.Will;
 
             var ToSendBytes = [];
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Will);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+            that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
     SendWont = function (AOption) {
-        if (FNegotiatedOptions[AOption] == TelnetCommand.Wont) {
-            // Already negotiated this option, don't go into a negotiation storm!
-        } else {
+        if (FNegotiatedOptions[AOption] !== TelnetCommand.Wont) {
+            // Haven't negotiated this option
             FNegotiatedOptions[AOption] = TelnetCommand.Wont;
 
             var ToSendBytes = [];
             ToSendBytes.push(TelnetCommand.IAC);
             ToSendBytes.push(TelnetCommand.Wont);
             ToSendBytes.push(AOption);
-            FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
+            that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         }
     };
 
     this.__defineSetter__("WindowSize", function (AWindowSize) {
         FWindowSize = AWindowSize;
-        if (FNegotiatedOptions[TelnetOption.WindowSize] == TelnetCommand.Will) {
+        if (FNegotiatedOptions[TelnetOption.WindowSize] === TelnetCommand.Will) {
             HandleWindowSize();
         }
     });
@@ -5656,11 +5257,14 @@ var TTelnetConnection = function () {
     // Constructor
     TTcpConnection.call(this);
 
+    FLocalEcho = false;
     FNegotiatedOptions = [];
-    for (var i = 0; i < 256; i++) {
+    var i;
+    for (i = 0; i < 256; i++) {
         FNegotiatedOptions[i] = 0;
     }
     FNegotiationState = TelnetNegotiationState.Data;
+    FWindowSize = 0; // TODO
 };
 
 TTelnetConnection.prototype = new TTcpConnectionSurrogate();
@@ -5668,11 +5272,11 @@ TTelnetConnection.prototype.constructor = TTelnetConnection;
 
 TTelnetConnection.prototype.flush = function () {
     this.flushTelnetConnection();
-}
+};
 
 TTelnetConnection.prototype.NegotiateInbound = function (AData) {
     this.NegotiateInboundTelnetConnection(AData);
-}/*
+};/*
   HtmlTerm: An HTML5 WebSocket client
   Copyright (C) 2009-2013  Rick Parrish, R&M Software
 
@@ -6714,15 +6318,15 @@ var THtmlTerm = function () {
                 Crt.WriteLn("Sorry, but your browser doesn't support binary WebSocket frames!");
                 Crt.WriteLn();
                 Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
-                Crt.WriteLn("in the proxy software that HtmlTerm uses.")
+                Crt.WriteLn("in the proxy software that HtmlTerm uses.");
                 Crt.WriteLn();
                 Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
                 Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
                 Crt.WriteLn("Windows XP), then try switching to a different web browser.");
                 Crt.WriteLn();
                 Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
-                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just")
-                Crt.WriteLn("let me know and I'll look into putting in the extra work.")
+                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just");
+                Crt.WriteLn("let me know and I'll look into putting in the extra work.");
                 Crt.WriteLn();
                 Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
                 Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
@@ -6734,15 +6338,15 @@ var THtmlTerm = function () {
                 Crt.WriteLn("Sorry, but your browser doesn't support the Uint8Array typed array!");
                 Crt.WriteLn();
                 Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
-                Crt.WriteLn("in the proxy software that HtmlTerm uses, and they require Uint8Array to work.")
+                Crt.WriteLn("in the proxy software that HtmlTerm uses, and they require Uint8Array to work.");
                 Crt.WriteLn();
                 Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
                 Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
                 Crt.WriteLn("Windows XP), then try switching to a different web browser.");
                 Crt.WriteLn();
                 Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
-                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just")
-                Crt.WriteLn("let me know and I'll look into putting in the extra work.")
+                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just");
+                Crt.WriteLn("let me know and I'll look into putting in the extra work.");
                 Crt.WriteLn();
                 Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
                 Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
