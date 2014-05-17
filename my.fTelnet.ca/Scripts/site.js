@@ -70,7 +70,7 @@ function Connect(hostname, port, proxy, connectionType, emulation) {
     // Setup new values
     HtmlTerm.ConnectionType = connectionType;
     HtmlTerm.Hostname = hostname;
-    HtmlTerm.Port = (proxy ? 23 : port);
+    HtmlTerm.Port = port;
     HtmlTerm.ProxyHostname = (proxy ? "my.ftelnet.ca" : "");
     HtmlTerm.ServerName = hostname;
     switch (emulation) {

@@ -4430,9 +4430,9 @@ var TTcpConnection = function () {
         FWasConnected = false;
 
         if (AProxyHostname === "") {
-            that.FWebSocket = new WebSocket("ws://" + AHostname + ":" + APort); 
+            that.FWebSocket = new WebSocket("wss://" + AHostname + ":" + APort); 
         } else {
-            that.FWebSocket = new WebSocket("ws://" + AProxyHostname + ":" + AProxyPort + "/" + AHostname + "/" + APort);
+            that.FWebSocket = new WebSocket("wss://" + AProxyHostname + ":" + AProxyPort + "/" + AHostname + "/" + APort);
         }
 
         // Enable binary mode
@@ -4462,6 +4462,7 @@ var TTcpConnection = function () {
             ToSendBytes.push(ToSendString.charCodeAt(i));
         }
 
+        // TODO Check for binary support
         that.FWebSocket.send(new Uint8Array(ToSendBytes).buffer);
         that.FOutputBuffer.clear();
     };
@@ -6312,46 +6313,6 @@ var THtmlTerm = function () {
                 Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
                 Crt.WriteLn("what browser you use, as well as which version it is.");
                 trace("HtmlTerm Error: WebSocket not supported");
-                return false;
-            } else if (!WebSocketSupportsBinaryType) {
-                Crt.WriteLn();
-                Crt.WriteLn("Sorry, but your browser doesn't support binary WebSocket frames!");
-                Crt.WriteLn();
-                Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
-                Crt.WriteLn("in the proxy software that HtmlTerm uses.");
-                Crt.WriteLn();
-                Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
-                Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
-                Crt.WriteLn("Windows XP), then try switching to a different web browser.");
-                Crt.WriteLn();
-                Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
-                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just");
-                Crt.WriteLn("let me know and I'll look into putting in the extra work.");
-                Crt.WriteLn();
-                Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
-                Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
-                Crt.WriteLn("what browser you use, as well as which version it is.");
-                trace("HtmlTerm Error: binaryType not supported");
-                return false;
-            } else if (!WebSocketSupportsTypedArrays) {
-                Crt.WriteLn();
-                Crt.WriteLn("Sorry, but your browser doesn't support the Uint8Array typed array!");
-                Crt.WriteLn();
-                Crt.WriteLn("I'm super lazy, so I've only implemented support for binary WebSocket frames");
-                Crt.WriteLn("in the proxy software that HtmlTerm uses, and they require Uint8Array to work.");
-                Crt.WriteLn();
-                Crt.WriteLn("If you can, try upgrading your web browser.  If that's not an option (ie you're");
-                Crt.WriteLn("already running the latest version your platform supports, like IE 8 on");
-                Crt.WriteLn("Windows XP), then try switching to a different web browser.");
-                Crt.WriteLn();
-                Crt.WriteLn("I'm not against supporting text frames, it's just more work so I'm not going to");
-                Crt.WriteLn("do it unless it's necessary.  So if you can't use a compatable browser, just");
-                Crt.WriteLn("let me know and I'll look into putting in the extra work.");
-                Crt.WriteLn();
-                Crt.WriteLn("Feel free to contact me (http://www.ftelnet.ca/contact/) if you think you're");
-                Crt.WriteLn("seeing this message in error, and I'll look into it.  Be sure to let me know");
-                Crt.WriteLn("what browser you use, as well as which version it is.");
-                trace("HtmlTerm Error: Uint8Array not supported");
                 return false;
             }
             
