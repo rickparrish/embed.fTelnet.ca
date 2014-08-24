@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>My fTelnet</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/site.css" rel="stylesheet"/>
+
+    <link href="HtmlTerm/VirtualKeyboard-720.css" rel="stylesheet" id="VK_CSS">
+    <script type="text/javascript">
+        var VK_CSS_Url = 'HtmlTerm/VirtualKeyboard-{size}.css';
+    </script>
+</head>
+<body>
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#" onclick="OpenPanel('HtmlTerm');">My fTelnet</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">File <b class="caret"></b></a>
+                        <ul class="dropdown-menu" style="min-width: 300px;">
+                            <li class="dropdown-header">Quick Connect</li>
+                            <li style="padding: 0 15px;">
+                                <div class="input-group">
+                                    <input id="txtHostname" type="text" class="form-control" value="bbs.ftelnet.ca" placeholder="Hostname (or IP address)" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" onclick="QuickConnect();"><i class="glyphicon glyphicon-flash"></i></button>
+                                    </span>
+                                </div>
+                            </li>
+                            <li><a href="#" onclick="HtmlTerm.Disconnect();">Disconnect</a></li>
+
+                            <li class="divider"></li>
+
+                            <li class="dropdown-header">YModem-G Transfers</li>
+                            <li><a href="#" onclick="Download();">Download</a></li>
+                            <li><a href="#" onclick="Upload();">Upload</a><input type="file" id="fuUpload" style="display: none;" /></li>
+
+                            <li class="divider"></li>
+
+                            <li class="dropdown-header">Recent Connections</li>
+
+                            <li class="divider" id="liAfterRecent"></li>
+
+                            <li><a href="#" onclick="Exit();">Exit</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#DialingDirectory" onclick="OpenPanel('DialingDirectory');">Dialing Directory</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#Help" onclick="OpenPanel('Help');">Help</a></li>
+                            <li><a href="#FAQ" onclick="OpenPanel('FAQ');">F.A.Q.</a></li>
+                            <li><a href="#Contact" onclick="OpenPanel('Contact');">Contact</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#About" onclick="OpenPanel('About');">About</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#Embed" onclick="OpenPanel('Embed');"><strong class="text-success">Embed</strong></a></li>
+                    <li><a href="#Donate" onclick="OpenPanel('Donate');"><strong class="text-warning">Donate</strong></a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+
+    <!-- Begin page content -->
+    <div class="container">
+
+        <div id="pnlLoading" class="panel panel-default">
+            <div class="panel-heading">
+                My fTelnet
+            </div>
+            <div class="panel-body">
+                Loading resources, please wait...
+                <div class="progress progress-striped active">
+                    <div style="width: 100%" class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pnlAbout" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                About
+            </div>
+            <div class="panel-body">
+                <p><strong>My fTelnet</strong> is a web based application meant for connecting to BBSes.  It uses some fairly recent features of HTML5, so let's test and ensure everything will work for you:</p>
+
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Supported?</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Canvas</td>
+                            <td id="tdCanvasSupported"></td>
+                            <td><strong>Required!</strong> Canvas is how the output of the connection gets displayed.  Without it, you can't see what the BBS is trying to show you!</td>
+                        </tr>
+                        <tr>
+                            <td>WebSocket</td>
+                            <td id="tdWebSocketSupported"></td>
+                            <td><strong>Required!</strong> WebSocket is the protocol used to talk to the remote server.  Without it, you can't connect to any BBSes!</td>
+                        </tr>
+                        <tr>
+                            <td>Web Storage</td>
+                            <td id="tdWebStorageSupported"></td>
+                            <td><strong>Optional</strong> Web Storage is sort of like Cookies, but WAY better.  Without it, your recent connections and dialing directory won't be saved the next time you visit this site.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>If you see any <span class="text-danger">Nope!</span> labels above, that means your browser doesn't fully support the features used by My fTelnet and you should consider upgrading your browser.</p>
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlContact" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Contact
+            </div>
+            <div class="panel-body">
+                TODO Text goes here
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlDialingDirectory" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Dialing Directory
+            </div>
+            <div class="panel-body">
+                <p>This is your own personal dialing directory.  Unlock the editing features for just <strong><u>3</u></strong> easy payments of <strong><u>$29.95</u></strong>!</p>
+                <p>Just kidding, I haven't gotten around to making the dialing directory editable yet, so you're stuck with my three default entries for now.</p>
+                <p>Until I get around to implementing this, you can use the <strong>Quick Connect</strong> menu above to connect to the server of your choice!</p>
+
+                <table class="table table-striped table-bordered table-hover" id="tblDialingDirectory">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Description</th>
+                            <th>Hostname</th>
+                            <th>Port</th>
+                            <th>Proxy?</th>
+                            <th>Notes</th>
+                            <th>Times Called</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+                <p class="small">NB: The dialing directory is powered by HTML5 Web Storage, which means the entries are saved by your browser, on your computer, not on my server in an SQL database.  This means if you switch computers, or even switch browsers on the same computer, you won't see the same connections on the new computer/browser.<br />(Once you go back to the original computer/browser, you'll see your custom directory again.)</p>
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlDonate" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Donate
+            </div>
+            <div class="panel-body">
+                If you like <strong>My fTelnet</strong>, then I'd love to take your money, but let's hold off on that for if/when I actually finish implementing everything!
+
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlEmbed" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Embed My fTelnet on your own website
+            </div>
+            <div class="panel-body">
+                <p>Want to embed My fTelnet on your own website?  Just fill in the boxes below to get a customized &lt;iframe&gt; snippet!</p>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="txtEmbedHostname">Hostname</label>
+                        <input type="text" class="form-control" id="txtEmbedHostname" placeholder="Hostname or IP address">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="chkEmbedProxy" />
+                                Connect via the proxy.ftelnet.ca proxy server<br />(use if your BBS does not support WebSocket)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="txtEmbedHostname">Port</label>
+                        <input type="text" class="form-control" id="txtEmbedPort" placeholder="Leave blank for default">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboConnectionType">Connection Type</label>
+                        <select class="form-control" id="cboConnectionType">
+                            <option value="telnet">Telnet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboEmulation">Emulation</label>
+                        <select class="form-control" id="cboEmulation">
+                            <option value="ansi-bbs">ansi-bbs</option>
+                            <option value="c64">Commodore 64</option>
+                        </select>
+                    </div>
+                </div>
+
+                <p>Your snippet (modify height as you see fit):</p>
+                <p class="text-success" id="lblEmbed">Please enter a hostname!</p>
+                <p><a href="javascript:alert('Please enter a hostname!');" id="hlEmbed" target="_blank">Click here to test your settings in a new tab/window</a></p>
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlFAQ" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Frequently Asked Questions
+            </div>
+            <div class="panel-body">
+                TODO Text goes here
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlHelp" class="panel panel-default" style="display: none;">
+            <div class="panel-heading">
+                Help
+            </div>
+            <div class="panel-body">
+                TODO Text goes here
+            </div>
+            <div class="panel-footer">
+                <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>
+            </div>
+        </div>
+
+        <div id="pnlHtmlTerm" style="display: none;">
+            <div style="text-align: center;">
+                <span id="HtmlTermContainer"></span>
+            </div>
+
+            <div id="vk-keyboard">
+                <div class="vk-row vk-function">
+                    <div class="vk-key vk-esc" data-keycode="27">Esc</div>
+                    <div class="vk-key" data-keycode="112">F1</div>
+                    <div class="vk-key" data-keycode="113">F2</div>
+                    <div class="vk-key" data-keycode="114">F3</div>
+                    <div class="vk-key" data-keycode="115">F4</div>
+                    <div class="vk-key" data-keycode="116">F5</div>
+                    <div class="vk-key" data-keycode="117">F6</div>
+                    <div class="vk-key" data-keycode="118">F7</div>
+                    <div class="vk-key" data-keycode="119">F8</div>
+                    <div class="vk-key" data-keycode="120">F9</div>
+                    <div class="vk-key" data-keycode="121">F10</div>
+                    <div class="vk-key" data-keycode="122">F11</div>
+                    <div class="vk-key" data-keycode="123">F12</div>
+                    <div class="vk-key vk-spid" data-keycode="145">Scr<br />Lk</div>
+                    <div class="vk-key vk-spid" data-keycode="000">Prt<br />Scr</div>
+                    <div class="vk-key vk-spid" data-keycode="45">Ins</div>
+                    <div class="vk-key vk-spid" data-keycode="46">Del</div>
+                </div>
+                <div class="vk-row">
+                    <div class="vk-key" data-keycode="192">~<br />`</div>
+                    <div class="vk-key" data-keycode="49">!<br />1</div>
+                    <div class="vk-key" data-keycode="50">@<br />2</div>
+                    <div class="vk-key" data-keycode="51">#<br />3</div>
+                    <div class="vk-key" data-keycode="52">$<br />4</div>
+                    <div class="vk-key" data-keycode="53">%<br />5</div>
+                    <div class="vk-key" data-keycode="54">^<br />6</div>
+                    <div class="vk-key" data-keycode="55">&<br />7</div>
+                    <div class="vk-key" data-keycode="56">*<br />8</div>
+                    <div class="vk-key" data-keycode="57">(<br />9</div>
+                    <div class="vk-key" data-keycode="48">)<br />0</div>
+                    <div class="vk-key" data-keycode="173">_<br />-</div>
+                    <div class="vk-key" data-keycode="61">+<br />=</div>
+                    <div class="vk-key vk-backspace" data-keycode="8">Backspace</div>
+                    <div class="vk-key" data-keycode="36">Home</div>
+                </div>
+                <div class="vk-row">
+                    <div class="vk-key vk-tab" data-keycode="9">Tab</div>
+                    <div class="vk-key" data-keycode="81">Q</div>
+                    <div class="vk-key" data-keycode="87">W</div>
+                    <div class="vk-key" data-keycode="69">E</div>
+                    <div class="vk-key" data-keycode="82">R</div>
+                    <div class="vk-key" data-keycode="84">T</div>
+                    <div class="vk-key" data-keycode="89">Y</div>
+                    <div class="vk-key" data-keycode="85">U</div>
+                    <div class="vk-key" data-keycode="73">I</div>
+                    <div class="vk-key" data-keycode="79">O</div>
+                    <div class="vk-key" data-keycode="80">P</div>
+                    <div class="vk-key" data-keycode="219">{<br />[</div>
+                    <div class="vk-key" data-keycode="221">}<br />]</div>
+                    <div class="vk-key vk-backslash" data-keycode="220">|<br />\</div>
+                    <div class="vk-key" data-keycode="33">Page<br />Up</div>
+                </div>
+                <div class="vk-row">
+                    <div class="vk-key vk-capslock" data-keycode="20">Caps Lock</div>
+                    <div class="vk-key" data-keycode="65">A</div>
+                    <div class="vk-key" data-keycode="83">S</div>
+                    <div class="vk-key" data-keycode="68">D</div>
+                    <div class="vk-key" data-keycode="70">F</div>
+                    <div class="vk-key" data-keycode="71">G</div>
+                    <div class="vk-key" data-keycode="72">H</div>
+                    <div class="vk-key" data-keycode="74">J</div>
+                    <div class="vk-key" data-keycode="75">K</div>
+                    <div class="vk-key" data-keycode="76">L</div>
+                    <div class="vk-key" data-keycode="59">:<br />;</div>
+                    <div class="vk-key" data-keycode="222">"<br />'</div>
+                    <div class="vk-key vk-enter" data-keycode="13">Enter</div>
+                    <div class="vk-key" data-keycode="37">Page<br />Down</div>
+                </div>
+                <div class="vk-row">
+                    <div class="vk-key vk-lshift" data-keycode="16">Shift</div>
+                    <div class="vk-key" data-keycode="90">Z</div>
+                    <div class="vk-key" data-keycode="88">X</div>
+                    <div class="vk-key" data-keycode="67">C</div>
+                    <div class="vk-key" data-keycode="86">V</div>
+                    <div class="vk-key" data-keycode="66">B</div>
+                    <div class="vk-key" data-keycode="78">N</div>
+                    <div class="vk-key" data-keycode="77">M</div>
+                    <div class="vk-key" data-keycode="188">&lt;<br />,</div>
+                    <div class="vk-key" data-keycode="190">&gt;<br />.</div>
+                    <div class="vk-key" data-keycode="191">?<br />/</div>
+                    <div class="vk-key vk-rshift" data-keycode="16">Shift</div>
+                    <div class="vk-key vk-arrow-up" data-keycode="38"></div>
+                    <div class="vk-key" data-keycode="35">End</div>
+                </div>
+                <div class="vk-row">
+                    <div class="vk-key vk-ctrl" data-keycode="17">Ctrl</div>
+                    <div class="vk-key vk-win" data-keycode="91"></div>
+                    <div class="vk-key vk-alt" data-keycode="18">Alt</div>
+                    <div class="vk-key vk-spacebar" data-keycode="32">&nbsp;</div>
+                    <div class="vk-key vk-alt" data-keycode="18">Alt</div>
+                    <div class="vk-key vk-appmenu" data-keycode="93"></div>
+                    <div class="vk-key vk-ctrl" data-keycode="17">Ctrl</div>
+                    <div class="vk-key vk-arrow-left" data-keycode="37"></div>
+                    <div class="vk-key vk-arrow-down" data-keycode="40"></div>
+                    <div class="vk-key vk-arrow-right" data-keycode="39"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer">
+        <div class="container">
+            <p class="text-muted">Copyright &copy; 2014, <a href="http://www.rickparrish.ca" target="_blank">Rick Parrish</a> of <a href="http://www.randm.ca" target="_blank">R&amp;M Software</a></p>
+        </div>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-1.11.0.min.js"><\/script>')</script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script>$.fn.modal || document.write('<script src="js/bootstrap.min.js"><\/script>')</script>
+
+    <script src="HtmlTerm/HtmlTerm.js"></script>
+    <script src="HtmlTerm/HtmlTerm.font-437.js"></script>
+    <script src="HtmlTerm/HtmlTerm.font-c64.js"></script>
+    <script src="HtmlTerm/VirtualKeyboard.js"></script>
+
+    <script src="js/site.js"></script>
+    <script src="js/jquery.tablesorter-2.13.3.min.js"></script>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-4602017-8', 'ftelnet.ca');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
