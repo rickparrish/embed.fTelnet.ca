@@ -340,7 +340,7 @@ function UpdateEmbed() {
     EmbedValues += '&Emulation=' + $('#cboEmulation').val();
 
     // Build the url and full tag, and update the page
-    var EmbedUrl = 'http://my.ftelnet.ca/iframe.php?' + EmbedValues;
+    var EmbedUrl = 'http://embed.ftelnet.ca/?' + EmbedValues;
     var EmbedTag = '&lt;iframe src="' + EmbedUrl + '" width="100%" height="1000"&gt;&lt;/iframe&gt;';
     $('#lblEmbed').html(EmbedTag);
     $('#hlEmbed').attr("href", EmbedUrl);

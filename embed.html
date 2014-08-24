@@ -9,7 +9,7 @@
 
     <title>My fTelnet</title>
 
-    <link href="css/iframe.css" rel="stylesheet">
+    <link href="css/embed.css" rel="stylesheet">
 
     <link href="HtmlTerm/VirtualKeyboard-720.css" rel="stylesheet" id="VK_CSS">
     <script type="text/javascript">
@@ -137,19 +137,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/jquery-1.11.0.min.js"><\/script>')</script>
     
-    <script src="HtmlTerm/HtmlTerm.js"></script>
+    <script src="HtmlTerm/HtmlTerm.compiled.js"></script>
     <script src="HtmlTerm/HtmlTerm.font-437.js"></script>
     <script src="HtmlTerm/HtmlTerm.font-c64.js"></script>
     <script src="HtmlTerm/VirtualKeyboard.js"></script>
     
-    <script>
-        var TargetHostname = '<?php echo $_GET['Hostname']; ?>';
-        var TargetPort = <?php echo $_GET['Port']; ?>;
-        var TargetProxy = <?php echo $_GET['Proxy']; ?>;
-        var TargetConnectionType = '<?php echo $_GET['ConnectionType']; ?>';
-        var TargetEmulation = '<?php echo $_GET['Emulation']; ?>';
-    </script>
-    <script src="js/iframe.js"></script>
+    <script src="js/embed.js"></script>
 
     <script>
         (function (i, s, o, g, r, a, m) {
