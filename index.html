@@ -207,15 +207,16 @@
                         <input type="text" class="form-control" id="txtEmbedHostname" placeholder="Hostname or IP address">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" id="chkEmbedProxy" />
-                                Connect via the proxy.ftelnet.ca proxy server<br />(use if your BBS does not support WebSocket)
+                                <input type="checkbox" id="chkEmbedProxy" checked="checked" />
+                                Connect via the public proxy server<br />(use if your BBS does not support WebSocket)<br />
+                                <strong>NB: Port MUST be 23 if using the public proxy</strong>
                             </label>
                         </div>
                     </div>
 
                     <div class="form-group col-sm-6">
                         <label class="control-label" for="txtEmbedHostname">Port</label>
-                        <input type="text" class="form-control" id="txtEmbedPort" placeholder="Leave blank for default">
+                        <input type="text" class="form-control" id="txtEmbedPort" placeholder="Port (usually 23 with proxy or 1123 without)">
                     </div>
                 </div>
 
