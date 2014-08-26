@@ -37,12 +37,14 @@
                         <ul class="dropdown-menu" style="min-width: 300px;">
                             <li class="dropdown-header">Quick Connect</li>
                             <li style="padding: 0 15px;">
-                                <div class="input-group">
-                                    <input id="txtHostname" type="text" class="form-control" value="bbs.ftelnet.ca" placeholder="Hostname (or IP address)" />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" onclick="QuickConnect();"><i class="glyphicon glyphicon-flash"></i></button>
-                                    </span>
-                                </div>
+                                <form>
+                                    <div class="input-group">
+                                        <input id="txtHostname" type="text" class="form-control" placeholder="bbs.ftelnet.ca" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button" onclick="QuickConnect();"><i class="glyphicon glyphicon-flash"></i></button>
+                                        </span>
+                                    </div>
+                                </form>
                             </li>
                             <li><a href="#" onclick="HtmlTerm.Disconnect();">Disconnect</a></li>
 

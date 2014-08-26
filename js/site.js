@@ -94,7 +94,7 @@ function Connect(hostname, port, proxy, connectionType, emulation) {
     HtmlTerm.ConnectionType = connectionType;
     HtmlTerm.Hostname = hostname;
     HtmlTerm.Port = port;
-    HtmlTerm.ProxyHostname = (proxy ? "proxy.ftelnet.ca" : "");
+    HtmlTerm.ProxyHostname = (proxy ? "proxy-us-atl.ftelnet.ca" : "");
     HtmlTerm.ServerName = hostname;
     switch (emulation) {
         case 'c64':
@@ -204,8 +204,7 @@ function QuickConnect() {
 
     // Validate form
     if (Hostname == "") {
-        alert("Enter a hostname");
-        return;
+        Hostname = $('#txtHostname').attr("placeholder");
     }
 
     if (Connect(Hostname, 23, true, 'telnet', 'ansi-bbs')) {
