@@ -31,22 +31,23 @@ function Connect() {
     HtmlTerm.ConnectionType = GetQueryStringValue('ConnectionType');
     HtmlTerm.Hostname = GetQueryStringValue('Hostname');
     HtmlTerm.Port = GetQueryStringValue('Port');
-    HtmlTerm.ProxyHostname = (GetQueryStringValue('Proxy') == 'true') ? 'proxy.ftelnet.ca' : '';
+    if (GetQueryStringValue('Proxy') == 'false') {
+        // Legacy: false meant don't use a proxy, so don't do anything here
+    } else if (GetQueryStringValue('Proxy') == 'true') {
+        // Legacy: true meant use a proxy, so use the primary proxy here
+        HtmlTerm.ProxyHostname = 'proxy-us-atl.ftelnet.ca';
+    } else {
+        // Any value other than true or false should be the actual proxy hostname
+        HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
+    }
+    HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '' : GetQueryStringValue('ProxyPort');
     HtmlTerm.ServerName = HtmlTerm.Hostname;
+    
     switch (GetQueryStringValue('Emulation')) {
         case 'c64':
-            if (!Crt.C64) {
-                Crt.C64 = true;
-                Crt.SetFont("PETSCII-Lower", 16, 16);
-                Crt.SetScreenSize(40, 25);
-            }
-            break;
-        default:
-            if (Crt.C64) {
-                Crt.C64 = false;
-                SetBestFontSize(true);
-                Crt.SetScreenSize(80, 25);
-            }
+            Crt.C64 = true;
+            Crt.SetFont("PETSCII-Lower", 16, 16);
+            Crt.SetScreenSize(40, 25);
             break;
     }
 

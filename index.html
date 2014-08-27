@@ -205,14 +205,6 @@
                     <div class="form-group col-sm-6">
                         <label class="control-label" for="txtEmbedHostname">Hostname</label>
                         <input type="text" class="form-control" id="txtEmbedHostname" placeholder="Hostname or IP address">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" id="chkEmbedProxy" checked="checked" />
-                                Connect via the public proxy server<br />
-                            </label>
-                            (use if your BBS does not support WebSocket)<br />
-                            <strong>NB: Port MUST be 23 if using the public proxy</strong>
-                        </div>
                     </div>
 
                     <div class="form-group col-sm-6">
@@ -237,7 +229,26 @@
                         </select>
                     </div>
                 </div>
+                
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboProxyServer">Proxy Server</label>
+                        <select class="form-control" id="cboProxyServer">
+                            <option value="none">Don't connect through a proxy</option>
+                            <option value="us-atl" selected="selected">Atlanta, Georgia, USA (proxy-us-atl.ftelnet.ca)</option>
+                            <option value="au:8410">Sydney, Australia (proxy-au.ftelnet.ca)</option>
+                        </select>
+                    </div>
 
+                    <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            <strong>Proxy Server Tip:</strong> Select the server closest to you geographically, or if you already
+                            run a proxy server of your own (either <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>
+                            or Synchronet's websocketservice.js service), then select the option to not use a proxy.
+                        </div>
+                    </div>
+                </div>
+                
                 <p>Your snippet (modify height as you see fit):</p>
                 <p class="text-success" id="lblEmbed">Please enter a hostname!</p>
                 <p><a href="javascript:alert('Please enter a hostname!');" id="hlEmbed" target="_blank">Click here to test your settings in a new tab/window</a></p>

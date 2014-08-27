@@ -52,7 +52,7 @@ $('#cboEmulation').change(function () {
     UpdateEmbed();
 });
 
-$('#chkEmbedProxy').click(function () {
+$('#cboProxyServer').change(function () {
     UpdateEmbed();
 });
 
@@ -322,21 +322,32 @@ function UpdateEmbed() {
     // Build the querystring parameters
     var EmbedValues = 'Hostname=' + $('#txtEmbedHostname').val();
     if ($('#txtEmbedPort').val() == '') {
-        if ($('#chkEmbedProxy').is(':checked')) {
-            EmbedValues += '&Port=23';
-        } else {
+        // No port, use default
+        if ($('#cboProxyServer').val() == 'none') {
+            // No proxy, use 1123
             EmbedValues += '&Port=1123';
+        } else {
+            // Proxy, use 23
+            EmbedValues += '&Port=23';
         }
     } else {
-        EmbedValues += '&Port=' + $('#txtEmbedPort').val();
-    }
-    if ($('#chkEmbedProxy').is(':checked')) {
-        EmbedValues += '&Proxy=true';
-    } else {
-        EmbedValues += '&Proxy=false';
+        if ($('#cboProxyServer').val() == 'none') {
+            // No proxy, allow any port
+            EmbedValues += '&Port=' + $('#txtEmbedPort').val();
+        } else {
+            // Proxy, force port 23
+            EmbedValues += '&Port=23';
+        }
     }
     EmbedValues += '&ConnectionType=' + $('#cboConnectionType').val();
     EmbedValues += '&Emulation=' + $('#cboEmulation').val();
+    if ($('#cboProxyServer').val() != 'none') {
+        var HostPort = $('#cboProxyServer').val().split(':');
+        EmbedValues += '&Proxy=proxy-' + HostPort[0] + '.ftelnet.ca';
+        if (HostPort.length == 2) {
+            EmbedValues += '&ProxyPort=' + HostPort[1];
+        }
+    }
 
     // Build the url and full tag, and update the page
     var EmbedUrl = 'http://embed.ftelnet.ca/?' + EmbedValues;
