@@ -344,9 +344,7 @@ function UpdateEmbed() {
     if ($('#cboProxyServer').val() != 'none') {
         var HostPort = $('#cboProxyServer').val().split(':');
         EmbedValues += '&Proxy=proxy-' + HostPort[0] + '.ftelnet.ca';
-        if (HostPort.length == 2) {
-            EmbedValues += '&ProxyPort=' + HostPort[1];
-        }
+        EmbedValues += '&ProxyPort=' + HostPort[1];
     }
 
     // Build the url and full tag, and update the page
