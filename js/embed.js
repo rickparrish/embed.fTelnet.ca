@@ -40,7 +40,7 @@ function Connect() {
         // Any value other than true or false should be the actual proxy hostname
         HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
     }
-    HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '' : GetQueryStringValue('ProxyPort');
+    HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '1123' : GetQueryStringValue('ProxyPort');
     HtmlTerm.ServerName = HtmlTerm.Hostname;
     
     switch (GetQueryStringValue('Emulation')) {
