@@ -50,6 +50,29 @@ function Connect() {
             Crt.SetScreenSize(40, 25);
             break;
     }
+    
+    switch (GetQueryStringValue('VirtualKeyboard')) {
+        case 'auto':
+            // TODO Detect PC/mobile and only show if mobile
+            $('#vk-keyboard').css("display", "none");
+            break;
+        case 'hide':
+            // Hide keyboard by default but allow user to toggle
+            $('#vk-keyboard').css("display", "none");
+            break;
+        case 'off':
+            // Hide keyboard and toggle button
+            $('#vk-keyboard').css("display", "none");
+            $('#cmdVirtualKeyboard').css("display", "none");
+            break;
+        case 'on':
+            // Show keyboard and hide toggle button
+            $('#cmdVirtualKeyboard').css("display", "none");
+            break;
+        case 'show':
+            // Show keyboard by default but allow user to toggle
+            break;
+    }
 
     // And connect
     HtmlTerm.Connect();
@@ -108,6 +131,10 @@ function SetFontSize(width, height, force) {
     }
 
     return false;
+}
+
+function ToggleVirtualKeyboard() {
+    $('#vk-keyboard').toggle();
 }
 
 function Upload() {

@@ -208,46 +208,109 @@
                     </div>
 
                     <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            Should be self-explanatory what this is for!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-sm-6">
                         <label class="control-label" for="txtEmbedHostname">Port</label>
                         <input type="text" class="form-control" id="txtEmbedPort" placeholder="Port (usually 23 with proxy or 1123 without)">
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboConnectionType">Connection Type</label>
-                        <select class="form-control" id="cboConnectionType">
-                            <option value="telnet">Telnet</option>
-                        </select>
-                    </div>
 
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmulation">Emulation</label>
-                        <select class="form-control" id="cboEmulation">
-                            <option value="ansi-bbs">ansi-bbs</option>
-                            <option value="c64">Commodore 64</option>
-                        </select>
+                        <div class="alert alert-success">
+                            If you run your own proxy, enter the proxy server's port (usually 1123).<br />
+                            If you're using one of my public proxies, enter your telnet server port.<br />
+                            <strong>NOTE:</strong> My public proxies only allow port <strong>23</strong>
+                            by default -- if you need any other port, either run your own proxy, or 
+                            <a href="http://ftelnet.ca/contact" target="_blank">contact me</a>
+                            to get your non-standard hostname:port combination whitelisted.
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="form-group col-sm-6">
                         <label class="control-label" for="cboProxyServer">Proxy Server</label>
-                        <select class="form-control" id="cboProxyServer">
-                            <option value="none">I run my own proxy</option>
-                            <option value="au:8410">Australia (Sydney): proxy-au.ftelnet.ca</option>
-                            <option value="jp:2710">Japan (Tokyo): proxy-jp.ftelnet.ca</option>
-                            <option value="nl:9010">Netherlands (Rotterdam): proxy-nl.ftelnet.ca</option>
-                            <option value="uk:2910">United Kingdon (Newcastle): proxy-uk.ftelnet.ca</option>
-                            <option value="us-atl:1123" selected="selected">United States (Atlanta, Georgia): proxy-us-atl.ftelnet.ca</option>
+                        <select class="form-control" id="cboEmbedProxyServer">
+                            <optgroup label="Don't connect through a public proxy">
+                                <option value="none">I run my own proxy</option>
+                            </optgroup>
+                            <optgroup label="Asia">
+                                <option value="jp:2710">Japan (Tokyo): proxy-jp.ftelnet.ca</option>
+                            </optgroup>
+                            <optgroup label="Australia">
+                                <option value="au:8410">Australia (Sydney): proxy-au.ftelnet.ca</option>
+                            </optgroup>
+                            <optgroup label="Europe">
+                                <option value="nl:9010">Netherlands (Rotterdam): proxy-nl.ftelnet.ca</option>
+                                <option value="uk:2910">United Kingdon (Newcastle): proxy-uk.ftelnet.ca</option>
+                            </optgroup>
+                            <optgroup label="North America">
+                                <option value="us-atl:1123" selected="selected">United States (Atlanta, Georgia): proxy-us-atl.ftelnet.ca</option>
+                            </optgroup>
                         </select>
                     </div>
 
                     <div class="form-group col-sm-6">
                         <div class="alert alert-success">
-                            <strong>Proxy Server Tip:</strong> Select the server closest to you geographically, or if you already
-                            run a proxy server of your own (either <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>
-                            or Synchronet's websocketservice.js service), then select the option to not use a proxy.
+                            If you run <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>,
+                            <a href="https://github.com/rickparrish/FleckProxy" target="_blank">FleckProxy</a>, or Synchronet's websocketservice.js, then
+                            select the <strong>I run my own proxy</strong> option.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboConnectionType">Connection Type</label>
+                        <select class="form-control" id="cboEmbedConnectionType">
+                            <option value="telnet">Telnet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            Only telnet for now, may have an option for rlogin in the future.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboEmulation">Emulation</label>
+                        <select class="form-control" id="cboEmbedEmulation">
+                            <option value="ansi-bbs" selected="selected">ansi-bbs</option>
+                            <option value="c64">Commodore 64</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            Most likely you want the default <strong>ansi-bbs</strong>.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="cboVirtualKeyboard">Virtual Keyboard</label>
+                        <select class="form-control" id="cboEmbedVirtualKeyboard">
+                            <option value="on">Always on (user cannot hide)</option>
+                            <option value="off">Always off (user cannot show)</option>
+                            <option value="show">Show by default (user may opt to hide it)</option>
+                            <option value="hide">Hide by default (user may opt to show it)</option>
+                            <option value="auto" selected="selected">Auto-detect default state (user may opt to toggle it)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            Mobile phones/tablets will likely need the virtual keyboard,
+                            so I highly recommend you <strong>NOT</strong> use the <strong>Always off</strong> setting.
                         </div>
                     </div>
                 </div>
