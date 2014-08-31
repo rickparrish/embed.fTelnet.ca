@@ -83,7 +83,6 @@ function ParseQueryString() {
             // Hide keyboard and toggle button
             $('#vk-keyboard').css("display", "none");
             $('#cmdVirtualKeyboard').css("display", "none");
-            alert('here');
             break;
         case 'on':
             // Show keyboard and hide toggle button
