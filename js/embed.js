@@ -20,6 +20,9 @@ $(document).ready(function () {
         }
     }, 500);
 
+    // Parse querystring parameters and setup HtmlTerm properties
+    ParseQueryString();
+    
     SiteInitted = true;
 });
 
@@ -27,7 +30,23 @@ $(window).resize(function () {
     if (SiteInitted) SetBestFontSize();
 });
 
-function Connect() {
+function Download() {
+    HtmlTerm.Download();
+}
+
+// From: http://css-tricks.com/snippets/javascript/get-url-variables/
+function GetQueryStringValue(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
+function ParseQueryString() {
     HtmlTerm.ConnectionType = GetQueryStringValue('ConnectionType');
     HtmlTerm.Hostname = GetQueryStringValue('Hostname');
     HtmlTerm.Port = GetQueryStringValue('Port');
@@ -64,6 +83,7 @@ function Connect() {
             // Hide keyboard and toggle button
             $('#vk-keyboard').css("display", "none");
             $('#cmdVirtualKeyboard').css("display", "none");
+            alert('here');
             break;
         case 'on':
             // Show keyboard and hide toggle button
@@ -73,25 +93,6 @@ function Connect() {
             // Show keyboard by default but allow user to toggle
             break;
     }
-
-    // And connect
-    HtmlTerm.Connect();
-}
-
-function Download() {
-    HtmlTerm.Download();
-}
-
-// From: http://css-tricks.com/snippets/javascript/get-url-variables/
-function GetQueryStringValue(variable)
-{
-       var query = window.location.search.substring(1);
-       var vars = query.split("&");
-       for (var i=0;i<vars.length;i++) {
-               var pair = vars[i].split("=");
-               if(pair[0] == variable){return pair[1];}
-       }
-       return(false);
 }
 
 function SetBestFontSize(force) {
