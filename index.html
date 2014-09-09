@@ -216,7 +216,7 @@
 
                 <div class="row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="txtEmbedHostname">Port</label>
+                        <label class="control-label" for="txtEmbedPort">Port</label>
                         <input type="text" class="form-control" id="txtEmbedPort" placeholder="Port (usually 23 with proxy or 1123 without)">
                     </div>
 
@@ -234,7 +234,7 @@
 
                 <div class="row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboProxyServer">Proxy Server</label>
+                        <label class="control-label" for="cboEmbedProxyServer">Proxy Server</label>
                         <select class="form-control" id="cboEmbedProxyServer">
                             <optgroup label="Don't connect through a public proxy">
                                 <option value="none">I run my own proxy</option>
@@ -266,7 +266,7 @@
                 
                 <div class="row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboConnectionType">Connection Type</label>
+                        <label class="control-label" for="cboEmbedConnectionType">Connection Type</label>
                         <select class="form-control" id="cboEmbedConnectionType">
                             <option value="telnet">Telnet</option>
                         </select>
@@ -281,7 +281,7 @@
                 
                 <div class="row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmulation">Emulation</label>
+                        <label class="control-label" for="cboEmbedEmulation">Emulation</label>
                         <select class="form-control" id="cboEmbedEmulation">
                             <option value="ansi-bbs" selected="selected">ansi-bbs</option>
                             <option value="c64">Commodore 64</option>
@@ -297,7 +297,7 @@
                 
                 <div class="row">
                     <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboVirtualKeyboard">Virtual Keyboard</label>
+                        <label class="control-label" for="cboEmbedVirtualKeyboard">Virtual Keyboard</label>
                         <select class="form-control" id="cboEmbedVirtualKeyboard">
                             <option value="on">Always on (user cannot hide)</option>
                             <option value="off">Always off (user cannot show)</option>
@@ -315,6 +315,21 @@
                     </div>
                 </div>
                 
+                <div class="row">
+                    <div class="form-group col-sm-6">
+                        <label class="control-label" for="txtEmbedSplashScreen">Splash Screen</label>
+                        <input type="text" class="form-control" id="txtEmbedSplashScreen" placeholder="Url to your splashscreen.js file">
+                    </div>
+
+                    <div class="form-group col-sm-6">
+                        <div class="alert alert-success">
+                            Don't like my default splash screen?  Just modify my <a href="js/splashscreen.js" target="_blank">splashscreen.js</a>, 
+                            upload it to your webserver, and then enter the full url to it in this box.  If your modified splashscreen.js doesn't
+                            work, check your javascript console for errors that indicate what might have gone wrong.
+                        </div>
+                    </div>
+                </div>
+
                 <p>Your snippet (modify height as you see fit):</p>
                 <p class="text-success" id="lblEmbed">Please enter a hostname!</p>
                 <p><a href="javascript:alert('Please enter a hostname!');" id="hlEmbed" target="_blank">Click here to test your settings in a new tab/window</a></p>

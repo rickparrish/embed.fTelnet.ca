@@ -143,6 +143,16 @@
     <script src="HtmlTerm/HtmlTerm.font-c64.js"></script>
     <script src="HtmlTerm/VirtualKeyboard.js"></script>
     
+    <script>
+        if (GetQueryStringValue('SplashScreen') != '') {
+            $.ajax({
+                url: GetQueryStringValue('SplashScreen'),
+                dataType: "script",
+                async: false
+            });
+        }
+    </script>
+    
     <script src="js/embed.js"></script>
 
     <script>
