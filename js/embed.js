@@ -1,6 +1,17 @@
 ﻿var SiteInitted = false;
 
 $(document).ready(function () {
+    // Load the remote splash screen, if necessary
+    if (GetQueryStringValue('SplashScreen') == '') {
+        FinishDocumentReady();
+    } else {
+        $.getScript(decodeURIComponent(GetQueryStringValue('SplashScreen'))).always(function () {
+            FinishDocumentReady();
+        });
+    }
+});
+
+function FinishDocumentReady() {
     // Init HtmlTerm
     SetBestFontSize();
     HtmlTerm.Init("HtmlTermContainer");
@@ -24,7 +35,7 @@ $(document).ready(function () {
     ParseQueryString();
     
     SiteInitted = true;
-});
+}
 
 $(window).resize(function () {
     if (SiteInitted) SetBestFontSize();
