@@ -34,30 +34,11 @@ $(document).ready(function () {
     UpdateDialingDirectory();
     $("#tblDialingDirectory").tablesorter();
 
-    // Update the embed panel, just in case they refreshed while on that page
-    UpdateEmbed();
-
     SiteInitted = true;
 });
 
 $(window).resize(function () {
     if (SiteInitted) SetBestFontSize();
-});
-
-$('#cboEmbedConnectionType').change(function () {
-    UpdateEmbed();
-});
-
-$('#cboEmbedEmulation').change(function () {
-    UpdateEmbed();
-});
-
-$('#cboEmbedProxyServer').change(function () {
-    UpdateEmbed();
-});
-
-$('#cboEmbedVirtualKeyboard').change(function () {
-    UpdateEmbed();
 });
 
 $('#chkVirtualKeyboard').change(function () {
@@ -67,18 +48,6 @@ $('#chkVirtualKeyboard').change(function () {
     } else {
         $('#vk-keyboard').css("display", "none");
     }
-});
-
-$('#txtEmbedHostname').keyup(function () {
-    UpdateEmbed();
-});
-
-$('#txtEmbedPort').keyup(function () {
-    UpdateEmbed();
-});
-
-$('#txtEmbedSplashScreen').keyup(function () {
-    UpdateEmbed();
 });
 
 function AddToRecentMenu(newEntry) {
@@ -351,60 +320,6 @@ function UpdateDialingDirectory() {
     } else {
         $('#tblDialingDirectory tbody').append('<tr><td colspan="7">You have no dialing directory entries</td></tr>');
     }
-}
-
-function UpdateEmbed() {
-    // Clean up the hostname in case someony copy/pastes it in there with extra spaces
-    $('#txtEmbedHostname').val($.trim($('#txtEmbedHostname').val()));
-    
-    // Ensure we have a hostname
-    if ($('#txtEmbedHostname').val() == '') {
-        $('#lblEmbed').html('Please enter a hostname!');
-        $('#hlEmbed').attr("href", "javascript:alert('Please enter a hostname!');");
-        return;
-    }
-
-    // Hostname
-    var EmbedValues = 'Hostname=' + $('#txtEmbedHostname').val();
-    
-    // Port
-    if ($('#txtEmbedPort').val() == '') {
-        // No port, use default
-        if ($('#cboEmbedProxyServer').val() == 'none') {
-            // No proxy, use 1123
-            EmbedValues += '&Port=1123';
-        } else {
-            // Proxy, use 23
-            EmbedValues += '&Port=23';
-        }
-    } else {
-        EmbedValues += '&Port=' + $('#txtEmbedPort').val();
-    }
-    
-    // Proxy
-    if ($('#cboEmbedProxyServer').val() != 'none') {
-        var HostPort = $('#cboEmbedProxyServer').val().split(':');
-        EmbedValues += '&Proxy=proxy-' + HostPort[0] + '.ftelnet.ca';
-        EmbedValues += '&ProxyPort=' + HostPort[1];
-    }
-    
-    // Connection type
-    EmbedValues += '&ConnectionType=' + $('#cboEmbedConnectionType').val();
-    
-    // Emulation
-    EmbedValues += '&Emulation=' + $('#cboEmbedEmulation').val();
-    
-    // Virtual keyboard
-    EmbedValues += '&VirtualKeyboard=' + $('#cboEmbedVirtualKeyboard').val();
-    
-    // Splash screen
-    EmbedValues += '&SplashScreen=' + encodeURIComponent($('#txtEmbedSplashScreen').val());
-
-    // Build the url and full tag, and update the page
-    var EmbedUrl = 'http://embed.ftelnet.ca/?' + EmbedValues;
-    var EmbedTag = '&lt;iframe src="' + EmbedUrl + '" width="100%" height="1000"&gt;&lt;/iframe&gt;';
-    $('#lblEmbed').html(EmbedTag);
-    $('#hlEmbed').attr("href", EmbedUrl);
 }
 
 function UpdateRecentMenu() {

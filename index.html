@@ -83,8 +83,8 @@
                             <li><a href="#About" onclick="OpenPanel('About');">About</a></li>
                         </ul>
                     </li>
-                    <li><a href="#Embed" onclick="OpenPanel('Embed');"><strong class="text-success">Embed</strong></a></li>
                     <li><a href="#Donate" onclick="OpenPanel('Donate');"><strong class="text-warning">Donate</strong></a></li>
+                    <li><a href="#Embed" onclick="OpenPanel('Embed');"><strong class="text-success">Embed</strong></a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
@@ -208,144 +208,11 @@
                 Embed My fTelnet on your own website
             </div>
             <div class="panel-body">
-                <p>Want to embed My fTelnet on your own website?  Just fill in the boxes below to get a customized &lt;iframe&gt; snippet!</p>
-
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="txtEmbedHostname">Hostname</label>
-                        <input type="text" class="form-control" id="txtEmbedHostname" placeholder="Hostname or IP address">
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            Should be self-explanatory what this is for!
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="txtEmbedPort">Port</label>
-                        <input type="text" class="form-control" id="txtEmbedPort" placeholder="Port (usually 23 with proxy or 1123 without)">
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            If you run your own proxy, enter the proxy server's port (usually 1123).<br />
-                            If you're using one of my public proxies, enter your telnet server port.<br />
-                            <strong>NOTE:</strong> My public proxies only allow port <strong>23</strong>
-                            by default -- if you need any other port, either run your own proxy, or 
-                            <a href="http://ftelnet.ca/contact" target="_blank">contact me</a>
-                            to get your non-standard hostname:port combination whitelisted.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmbedProxyServer">Proxy Server</label>
-                        <select class="form-control" id="cboEmbedProxyServer">
-                            <optgroup label="Don't connect through a public proxy">
-                                <option value="none" selected="selected">I run my own proxy</option>
-                            </optgroup>
-                            <optgroup label="Asia">
-                                <option value="jp:2710">Japan (Tokyo): proxy-jp.ftelnet.ca</option>
-                            </optgroup>
-                            <optgroup label="Australia">
-                                <option value="au:8410">Australia (Sydney): proxy-au.ftelnet.ca</option>
-                            </optgroup>
-                            <optgroup label="Europe">
-                                <option value="fr:18910">France (Roubaix): proxy-fr.ftelnet.ca</option>
-                                <option value="nl:9010">Netherlands (Rotterdam): proxy-nl.ftelnet.ca</option>
-                                <option value="uk:2910">United Kingdon (Newcastle): proxy-uk.ftelnet.ca</option>
-                            </optgroup>
-                            <optgroup label="North America">
-                                <option value="us-ca:1123">United States (California): proxy-us-ca.ftelnet.ca</option>
-                                <option value="us-ga:1123">United States (Georgia): proxy-us-ga.ftelnet.ca</option>
-                                <option value="us-fl:1123">United States (Florida): proxy-us-fl.ftelnet.ca</option>
-                                <option value="us-nj:1123">United States (New Jersey): proxy-us-nj.ftelnet.ca</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            If you run <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>,
-                            <a href="https://github.com/rickparrish/FleckProxy" target="_blank">FleckProxy</a>, or Synchronet's <a href="http://ftelnet.ca/websocketservice.js" target="_blank">websocketservice.js</a>, then
-                            select the <strong>I run my own proxy</strong> option.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmbedConnectionType">Connection Type</label>
-                        <select class="form-control" id="cboEmbedConnectionType">
-                            <option value="telnet">Telnet</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            Only telnet for now, may have an option for rlogin in the future.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmbedEmulation">Emulation</label>
-                        <select class="form-control" id="cboEmbedEmulation">
-                            <option value="ansi-bbs" selected="selected">ansi-bbs</option>
-                            <option value="c64">Commodore 64</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            Most likely you want the default <strong>ansi-bbs</strong>.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="cboEmbedVirtualKeyboard">Virtual Keyboard</label>
-                        <select class="form-control" id="cboEmbedVirtualKeyboard">
-                            <option value="on">Always on (user cannot hide)</option>
-                            <option value="off">Always off (user cannot show)</option>
-                            <option value="show">Show by default (user may opt to hide it)</option>
-                            <option value="hide">Hide by default (user may opt to show it)</option>
-                            <option value="auto" selected="selected">Auto-detect default state (user may opt to toggle it)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            Mobile phones/tablets will likely need the virtual keyboard,
-                            so I highly recommend you <strong>NOT</strong> use the <strong>Always off</strong> setting.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="form-group col-sm-6">
-                        <label class="control-label" for="txtEmbedSplashScreen">Splash Screen</label>
-                        <input type="text" class="form-control" id="txtEmbedSplashScreen" placeholder="Url to your splashscreen.js file">
-                    </div>
-
-                    <div class="form-group col-sm-6">
-                        <div class="alert alert-success">
-                            Don't like my default splash screen?  Just modify my <a href="js/splashscreen.js" target="_blank">splashscreen.js</a>, 
-                            upload it to your webserver, and then enter the full url to it in this box.  If your modified splashscreen.js doesn't
-                            work, check your javascript console for errors that indicate what might have gone wrong.
-                        </div>
-                    </div>
-                </div>
-
-                <p>Your snippet (modify height as you see fit):</p>
-                <p class="text-success" id="lblEmbed">Please enter a hostname!</p>
-                <p><a href="javascript:alert('Please enter a hostname!');" id="hlEmbed" target="_blank">Click here to test your settings in a new tab/window</a></p>
+                <p>
+                    Want to embed My fTelnet on your own website?  Use the <a href="http://embed.ftelnet.ca/wizard.html" target="_blank">embed wizard</a>
+                    and you'll be up and running in no time.
+                </p>
+                <p>For additional usage options, you can also check out <a href="http://ftelnet.ca" target="_blank">http://ftelnet.ca</a> (check the Downloads page).</p>
             </div>
             <div class="panel-footer">
                 <a href="#" onclick="OpenPanel('HtmlTerm');">Close Panel</a>

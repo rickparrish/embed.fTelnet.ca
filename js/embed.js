@@ -61,16 +61,18 @@ function ParseQueryString() {
     HtmlTerm.ConnectionType = GetQueryStringValue('ConnectionType');
     HtmlTerm.Hostname = GetQueryStringValue('Hostname');
     HtmlTerm.Port = GetQueryStringValue('Port');
-    if (GetQueryStringValue('Proxy') == 'false') {
-        // Legacy: false meant don't use a proxy, so don't do anything here
-    } else if (GetQueryStringValue('Proxy') == 'true') {
-        // Legacy: true meant use a proxy, so use the primary proxy here
-        HtmlTerm.ProxyHostname = 'proxy-us-atl.ftelnet.ca';
-    } else {
-        // Any value other than true or false should be the actual proxy hostname
-        HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
+    if (GetQueryStringValue('Proxy') != '') {
+        if (GetQueryStringValue('Proxy') == 'false') {
+            // Legacy: false meant don't use a proxy, so don't do anything here
+        } else if (GetQueryStringValue('Proxy') == 'true') {
+            // Legacy: true meant use a proxy, so use the primary proxy here
+            HtmlTerm.ProxyHostname = 'proxy-us-atl.ftelnet.ca';
+        } else {
+            // Any value other than true or false should be the actual proxy hostname
+            HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
+        }
+        HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '1123' : GetQueryStringValue('ProxyPort');
     }
-    HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '1123' : GetQueryStringValue('ProxyPort');
     HtmlTerm.ServerName = HtmlTerm.Hostname;
     
     switch (GetQueryStringValue('Emulation')) {
