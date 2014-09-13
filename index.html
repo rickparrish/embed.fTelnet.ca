@@ -246,7 +246,7 @@
                         <label class="control-label" for="cboEmbedProxyServer">Proxy Server</label>
                         <select class="form-control" id="cboEmbedProxyServer">
                             <optgroup label="Don't connect through a public proxy">
-                                <option value="none">I run my own proxy</option>
+                                <option value="none" selected="selected">I run my own proxy</option>
                             </optgroup>
                             <optgroup label="Asia">
                                 <option value="jp:2710">Japan (Tokyo): proxy-jp.ftelnet.ca</option>
@@ -260,9 +260,10 @@
                                 <option value="uk:2910">United Kingdon (Newcastle): proxy-uk.ftelnet.ca</option>
                             </optgroup>
                             <optgroup label="North America">
-                                <option value="us-atl:1123" selected="selected">United States (Atlanta, Georgia): proxy-us-atl.ftelnet.ca</option>
-                                <option value="us-jax:1123">United States (Jacksonville, Florida): proxy-us-jax.ftelnet.ca</option>
-                                <option value="us-lax:1123">United States (Los Angeles, California): proxy-us-lax.ftelnet.ca</option>
+                                <option value="us-ca:1123">United States (California): proxy-us-ca.ftelnet.ca</option>
+                                <option value="us-ga:1123">United States (Georgia): proxy-us-ga.ftelnet.ca</option>
+                                <option value="us-fl:1123">United States (Florida): proxy-us-fl.ftelnet.ca</option>
+                                <option value="us-nj:1123">United States (New Jersey): proxy-us-nj.ftelnet.ca</option>
                             </optgroup>
                         </select>
                     </div>
@@ -270,7 +271,7 @@
                     <div class="form-group col-sm-6">
                         <div class="alert alert-success">
                             If you run <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>,
-                            <a href="https://github.com/rickparrish/FleckProxy" target="_blank">FleckProxy</a>, or Synchronet's websocketservice.js, then
+                            <a href="https://github.com/rickparrish/FleckProxy" target="_blank">FleckProxy</a>, or Synchronet's <a href="http://ftelnet.ca/websocketservice.js" target="_blank">websocketservice.js</a>, then
                             select the <strong>I run my own proxy</strong> option.
                         </div>
                     </div>
