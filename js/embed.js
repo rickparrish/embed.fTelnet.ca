@@ -1,5 +1,10 @@
 ﻿var SiteInitted = false;
 
+// Redirect to wizard if there are no querystring parameters
+if (GetQueryStringValue('Hostname') == '') {
+    location.href = "wizard.html";
+}
+
 $(document).ready(function () {
     // Load the remote splash screen, if necessary
     if (GetQueryStringValue('SplashScreen') == '') {
@@ -66,7 +71,7 @@ function ParseQueryString() {
             // Legacy: false meant don't use a proxy, so don't do anything here
         } else if (GetQueryStringValue('Proxy') == 'true') {
             // Legacy: true meant use a proxy, so use the primary proxy here
-            HtmlTerm.ProxyHostname = 'proxy-us-atl.ftelnet.ca';
+            HtmlTerm.ProxyHostname = 'proxy-us-ga.ftelnet.ca';
         } else {
             // Any value other than true or false should be the actual proxy hostname
             HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
