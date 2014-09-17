@@ -81,7 +81,7 @@ function Update() {
     }
 
     // Build the url and full tag, and update the page
-    var Url = 'https://embed.ftelnet.ca/?' + Values;
+    var Url = 'http://embed.ftelnet.ca/?' + Values;
     var Tag = '&lt;iframe src="' + Url + '" width="100%" height="1000"&gt;&lt;/iframe&gt;';
     $('#lblIframe').html(Tag);
     $('#hlTest').attr("href", Url);
