@@ -5125,7 +5125,8 @@ var TTelnetConnection = function () {
     var FLocalEcho;
     var FNegotiatedOptions;
     var FNegotiationState;
-    var FWindowSize;
+    var FTerminalTypeIndex;
+    var FTerminalTypes;
 
     // Private methods
     var HandleAreYouThere = function () { }; // Do nothing
@@ -5194,7 +5195,7 @@ var TTelnetConnection = function () {
         SendWill(TelnetOption.TerminalType);
         SendSubnegotiate(TelnetOption.TerminalType);
 
-        var TerminalType = "DEC-VT100"; // TODO
+        var TerminalType = FTerminalTypes[FTerminalTypeIndex];
         var ToSendBytes = [];
         ToSendBytes.push(0); // IS
 
@@ -5205,6 +5206,13 @@ var TTelnetConnection = function () {
         that.Send(ToSendBytes);
 
         SendSubnegotiateEnd();
+
+        // Move to next terminal type, in case we're asked for an alternate
+        if (FTerminalTypeIndex < (FTerminalTypes.length - 1)) {
+            FTerminalTypeIndex += 1;
+        } else {
+            FTerminalTypeIndex = 0;
+        }
     };
 
     HandleTerminalLocationNumber = function () {
@@ -5245,10 +5253,10 @@ var TTelnetConnection = function () {
         SendSubnegotiate(TelnetOption.WindowSize);
 
         var Size = [];
-        Size[0] = (FWindowSize.x >> 8) & 0xff;
-        Size[1] = FWindowSize.x & 0xff;
-        Size[2] = (FWindowSize.y >> 8) & 0xff;
-        Size[3] = FWindowSize.y & 0xff;
+        Size[0] = (Crt.WindCols >> 8) & 0xff;
+        Size[1] = Crt.WindCols & 0xff;
+        Size[2] = (Crt.WindRows >> 8) & 0xff;
+        Size[3] = Crt.WindRows & 0xff;
 
         var ToSendBytes = [];
         var i;
@@ -5474,13 +5482,6 @@ var TTelnetConnection = function () {
         }
     };
 
-    this.__defineSetter__("WindowSize", function (AWindowSize) {
-        FWindowSize = AWindowSize;
-        if (FNegotiatedOptions[TelnetOption.WindowSize] === TelnetCommand.Will) {
-            HandleWindowSize();
-        }
-    });
-
     // Constructor
     TTcpConnection.call(this);
 
@@ -5491,7 +5492,8 @@ var TTelnetConnection = function () {
         FNegotiatedOptions[i] = 0;
     }
     FNegotiationState = TelnetNegotiationState.Data;
-    FWindowSize = 0; // TODO
+    FTerminalTypeIndex = 0;
+    FTerminalTypes = ["ansi-bbs", "ansi", "cp437", "cp437"]; // cp437 twice as a cheat since you're supposed to repeat the last item before going to the first item
 };
 
 TTelnetConnection.prototype = new TTcpConnectionSurrogate();
@@ -6476,6 +6478,7 @@ var THtmlTerm = function () {
     var FScreenRows = 25;
     var FServerName = "fTelnet / HtmlTerm / GameSrv Support Server";
     var FSplashScreen = "G1swbRtbMkobWzA7MEgbWzE7NDQ7MzRt2sTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEG1swOzQ0OzMwbb8bWzBtDQobWzE7NDQ7MzRtsyAgG1szN21XZWxjb21lISAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzA7NDQ7MzBtsxtbMG0NChtbMTs0NDszNG3AG1swOzQ0OzMwbcTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTE2RtbMG0NCg0KG1sxbSAbWzBtIBtbMTs0NDszNG3axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzA7NDQ7MzBtvxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMzBt29vb29vb29vb29vb29vb29vb29vb2xtbMzRt29vb29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29vb29vb29vb29vb29vb29vb29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vb29sbWzFt29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vbG1sxbdvb29sbWzBt29sbWzE7MzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb2xtbMW3b29vbG1swbdvbG1sxbdvbG1szMG3b2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMTszMG3b29vbG1swbdvb29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29sbWzMwbdvbG1swOzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29sbWzBt29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzQwOzM3bQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvbG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29sbWzBt29vb29vb29vb29vb29vb29vb29sbWzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1s0MDszN20NCiAgG1sxOzQ0OzM0bbMbWzA7MzBt29vb29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN23axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzMwbb8bWzBtDQogIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29sbWzA7MzBt29vb29vb29vb2xtbMW3b2xtbMDszMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN22zICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAbWzM0bUh0bWxUZXJtIC0tIFRlbG5ldCBmb3IgdGhlIFdlYiAgICAgG1szMG2zG1swbQ0KG1sxbSAbWzBtIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb29vb29vb2xtbMDszMG3b29vb29sbWzQ0bbMbWzBtIBtbMzRtIBtbMTs0NzszN22zICAgICAbWzA7NDc7MzRtV2ViIGJhc2VkIEJCUyB0ZXJtaW5hbCBjbGllbnQgICAgG1sxOzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvbG1szMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIBtbMzBtsxtbMG0NCiAgG1sxOzQ0OzM0bcAbWzA7NDQ7MzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbSAbWzM0bSAbWzE7NDc7MzdtwBtbMzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbQ0KDQobWzExQxtbMTszMm1Db3B5cmlnaHQgKEMpIDIwMDAtMjAxNCBSJk0gU29mdHdhcmUuICBBbGwgUmlnaHRzIFJlc2VydmVkDQobWzA7MzRtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExA==";
+    var FStatusBar = true;
 
     // Private methods
     var OnAnsiESC5n = function (AEvent) { }; // Do nothing
@@ -6519,8 +6522,10 @@ var THtmlTerm = function () {
             Crt.Blink = FBlink;
             Crt.SetFont(FCodePage, FFontWidth, FFontHeight);
             Crt.SetScreenSize(FScreenColumns, FScreenRows);
-            Crt.Window(1, 1, FScreenColumns, FScreenRows - 1);
-            Crt.FastWrite(" Not connected                                                                  ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            if (FStatusBar) {
+                Crt.Window(1, 1, FScreenColumns, FScreenRows - 1);
+                that.UpdateStatusBar(" Not connected");
+            }
             Crt.Canvas.addEventListener(Crt.SCREEN_SIZE_CHANGED, OnCrtScreenSizeChanged, false);
 
             // Test websocket support
@@ -6618,12 +6623,10 @@ var THtmlTerm = function () {
 
         // Make connection
         if (FProxyHostname === "") {
-            Crt.FastWrite(" Connecting to                                                                  ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort, 16, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Connecting to " + FHostname + ":" + FPort);
             FConnection.connect(FHostname, FPort);
         } else {
-            Crt.FastWrite(" Connecting to                                                                  ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort + " via proxy", 16, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Connecting to " + FHostname + ":" + FPort + " via proxy");
             FConnection.connect(FHostname, FPort, FProxyHostname, FProxyPort);
         }
     };
@@ -6715,19 +6718,16 @@ var THtmlTerm = function () {
         FSaveFilesButton.Image.removeEventListener("click", OnSaveFilesButtonClick, false);
         FSaveFilesButton.Hide();
 
-        Crt.FastWrite(" Disconnected from                                                              ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-        Crt.FastWrite(FHostname + ":" + FPort, 20, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+        that.UpdateStatusBar(" Disconnected from " + FHostname + ":" + FPort);
     };
 
     OnConnectionConnect = function (e) {
         Crt.ClrScr();
 
         if (FProxyHostname === "") {
-            Crt.FastWrite(" Connected to                                                                   ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort, 15, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Connected to " + FHostname + ":" + FPort);
         } else {
-            Crt.FastWrite(" Connected to                                                                   ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort + " via proxy", 15, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Connected to " + FHostname + ":" + FPort + " via proxy");
         }
     };
 
@@ -6737,11 +6737,9 @@ var THtmlTerm = function () {
 
     OnConnectionSecurityError = function (see) {
         if (FProxyHostname === "") {
-            Crt.FastWrite(" Unable to connect to                                                           ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort, 23, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Unable to connect to " + FHostname + ":" + FPort);
         } else {
-            Crt.FastWrite(" Unable to connect to                                                           ", 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
-            Crt.FastWrite(FHostname + ":" + FPort + " via proxy", 23, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+            that.UpdateStatusBar(" Unable to connect to " + FHostname + ":" + FPort + " via proxy");
         }
     };
 
@@ -6984,6 +6982,23 @@ var THtmlTerm = function () {
     this.__defineSetter__("SplashScreen", function (ASplashScreen) {
         FSplashScreen = ASplashScreen;
     });
+
+    this.__defineGetter__("StatusBar", function () {
+        return FStatusBar;
+    });
+
+    this.__defineSetter__("StatusBar", function (AStatusBar) {
+        FStatusBar = AStatusBar;
+    });
+
+    this.UpdateStatusBar = function (AText) {
+        if (FStatusBar) {
+            while (AText.length < FScreenColumns) {
+                AText += ' ';
+            }
+            Crt.FastWrite(AText, 1, FScreenRows, new TCharInfo(' ', 31, false, false), true);
+        }
+    };
 
     this.Upload = function (AFiles) {
         if (FConnection === null) { return; }

@@ -83,7 +83,8 @@ function Connect(hostname, port, proxy, connectionType, emulation) {
     HtmlTerm.ConnectionType = connectionType;
     HtmlTerm.Hostname = hostname;
     HtmlTerm.Port = port;
-    HtmlTerm.ProxyHostname = (proxy ? "proxy-us-atl.ftelnet.ca" : "");
+    HtmlTerm.ProxyHostname = (proxy ? "proxy-us-ga.ftelnet.ca" : "");
+    HtmlTerm.ProxyPort = 1123;
     HtmlTerm.ServerName = hostname;
     switch (emulation) {
         case 'c64':
