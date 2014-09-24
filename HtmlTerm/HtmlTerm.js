@@ -4067,6 +4067,7 @@ var TAnsi = function () {
     var FAnsiParserState;
     var FAnsiXY;
 
+    // TODO: http://cvs.synchro.net/cgi-bin/viewcvs.cgi/*checkout*/src/conio/cterm.txt?content-type=text%2Fplain&revision=HEAD
     var AnsiCommand = function (ACommand) {
         var Colour = 0;
         var X = 0;
@@ -4547,10 +4548,15 @@ var TTcpConnection = function () {
         FWasConnected = false;
 
         var Protocols;
-        if (WebSocketSupportsBinaryType && WebSocketSupportsTypedArrays) {
-            Protocols = ['binary', 'base64', 'plain'];
+        if (window.WebSocket && (WebSocket.CLOSED === 2 || WebSocket.prototype.CLOSED === 2)) { // From: http://stackoverflow.com/a/17850524/342378
+            // This is likely a hixie client, so don't request any protocols
+            Protocols = [];
         } else {
-            Protocols = ['base64', 'plain'];
+            if (WebSocketSupportsBinaryType && WebSocketSupportsTypedArrays) {
+                Protocols = ['binary', 'base64', 'plain'];
+            } else {
+                Protocols = ['base64', 'plain'];
+            }
         }
 
         if (AProxyHostname === '') {
