@@ -4550,8 +4550,8 @@ var TTcpConnection = function () {
 
         var Protocols;
         if (window.WebSocket && (WebSocket.CLOSED === 2 || WebSocket.prototype.CLOSED === 2)) { // From: http://stackoverflow.com/a/17850524/342378
-            // This is likely a hixie client, so don't request any protocols
-            Protocols = [];
+            // This is likely a hixie client, which doesn't support negotiation fo multiple protocols, so we only ask for plain
+            Protocols = ['plain'];
         } else {
             if (WebSocketSupportsBinaryType && WebSocketSupportsTypedArrays) {
                 Protocols = ['binary', 'base64', 'plain'];
