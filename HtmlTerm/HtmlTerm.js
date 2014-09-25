@@ -4541,9 +4541,10 @@ var TTcpConnection = function () {
         }
     };
 
-    this.connect = function (AHostname, APort, AProxyHostname, AProxyPort) {
+    this.connect = function (AHostname, APort, AProxyHostname, AProxyPort, AProxyPortSecure) {
         if (AProxyHostname === undefined) { AProxyHostname = ""; }
         if (AProxyPort === undefined) { AProxyPort = 1123; }
+        if (AProxyPortSecure === undefined) { AProxyPortSecure = 11235; }
 
         FWasConnected = false;
 
@@ -4562,7 +4563,7 @@ var TTcpConnection = function () {
         if (AProxyHostname === '') {
             that.FWebSocket = new WebSocket(WebSocketProtocol + '://' + AHostname + ':' + APort, Protocols);
         } else {
-            that.FWebSocket = new WebSocket(WebSocketProtocol + '://' + AProxyHostname + ':' + AProxyPort + '/' + AHostname + '/' + APort, Protocols);
+            that.FWebSocket = new WebSocket(WebSocketProtocol + '://' + AProxyHostname + ':' + (WebSocketProtocol === 'wss' ? AProxyPortSecure : AProxyPort) + '/' + AHostname + '/' + APort, Protocols);
         }
 
         // Enable binary mode, if supported
@@ -6480,6 +6481,7 @@ var THtmlTerm = function () {
     var FPort = 1123;
     var FProxyHostname = "";
     var FProxyPort = 1123;
+    var FProxyPortSecure = 11235;
     var FScreenColumns = 80;
     var FScreenRows = 25;
     var FServerName = "fTelnet / HtmlTerm / GameSrv Support Server";
@@ -6633,7 +6635,7 @@ var THtmlTerm = function () {
             FConnection.connect(FHostname, FPort);
         } else {
             that.UpdateStatusBar(" Connecting to " + FHostname + ":" + FPort + " via proxy");
-            FConnection.connect(FHostname, FPort, FProxyHostname, FProxyPort);
+            FConnection.connect(FHostname, FPort, FProxyHostname, FProxyPort, FProxyPortSecure);
         }
     };
 
@@ -6947,6 +6949,14 @@ var THtmlTerm = function () {
 
     this.__defineSetter__("ProxyPort", function (AProxyPort) {
         FProxyPort = AProxyPort;
+    });
+
+    this.__defineGetter__("ProxyPortSecure", function () {
+        return FProxyPortSecure;
+    });
+
+    this.__defineSetter__("ProxyPortSecure", function (AProxyPortSecure) {
+        FProxyPortSecure = AProxyPortSecure;
     });
 
     this.__defineGetter__("ScreenColumns", function () {

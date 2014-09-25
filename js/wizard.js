@@ -64,6 +64,7 @@ function Update() {
         var HostPort = $('#cboProxyServer').val().split(':');
         Values += '&Proxy=proxy-' + HostPort[0] + '.ftelnet.ca';
         Values += '&ProxyPort=' + HostPort[1];
+        Values += '&ProxyPortSecure=' + HostPort[2];
     }
     
     // Connection type

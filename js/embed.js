@@ -77,6 +77,7 @@ function ParseQueryString() {
             HtmlTerm.ProxyHostname = GetQueryStringValue('Proxy');
         }
         HtmlTerm.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '1123' : GetQueryStringValue('ProxyPort');
+        HtmlTerm.ProxyPortSecure = (GetQueryStringValue('ProxyPortSecure') == '') ? '11235' : GetQueryStringValue('ProxyPortSecure');
     }
     HtmlTerm.ServerName = HtmlTerm.Hostname;
     
