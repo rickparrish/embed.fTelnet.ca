@@ -6,6 +6,11 @@ if (GetQueryStringValue('Hostname') == '') {
 }
 
 $(document).ready(function () {
+    // Load the remote css, if necessary
+    if (GetQueryStringValue('CSS') != '') {
+        document.getElementById('EmbedCSS').href = decodeURIComponent(GetQueryStringValue('CSS'));
+    }
+    
     // Load the remote splash screen, if necessary
     if (GetQueryStringValue('SplashScreen') == '') {
         FinishDocumentReady();

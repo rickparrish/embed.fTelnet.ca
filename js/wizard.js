@@ -19,6 +19,10 @@ $('#cboVirtualKeyboard').change(function () {
     Update();
 });
 
+$('#txtCSS').keyup(function () {
+    Update();
+});
+
 $('#txtHostname').keyup(function () {
     Update();
 });
@@ -76,13 +80,18 @@ function Update() {
     // Virtual keyboard
     Values += '&VirtualKeyboard=' + $('#cboVirtualKeyboard').val();
     
+    // CSS
+    if ($('#txtCSS').val() != '') {
+        Values += '&CSS=' + encodeURIComponent($('#txtCSS').val());
+    }
+
     // Splash screen
     if ($('#txtSplashScreen').val() != '') {
         Values += '&SplashScreen=' + encodeURIComponent($('#txtSplashScreen').val());
     }
 
     // Build the url and full tag, and update the page
-    var Url = 'http://embed.ftelnet.ca/?' + Values;
+    var Url = '//embed.ftelnet.ca/?' + Values;
     var Tag = '&lt;iframe src="' + Url + '" width="100%" height="1000"&gt;&lt;/iframe&gt;';
     $('#lblIframe').html(Tag);
     $('#hlTest').attr("href", Url);
