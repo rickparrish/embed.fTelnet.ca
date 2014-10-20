@@ -23,9 +23,17 @@
       <a href="javascript:HtmlTerm.Disconnect();">Disconnect</a>              
     </div>
     
-    <!-- REENOTE These script tags could be put in the <head> section, but it's better to put them near the bottom 
-         of your page so it can render the non-HtmlTerm content sooner -->
+    <!-- REENOTE This script tag is required, as it loads the core HtmlTerm logic -->
     <script type="text/javascript" src="HtmlTerm.js"></script>
+    
+    <!-- REENOTE The extra fonts are disabled by default, since they add to the page load time.  If you specify a
+         different CodePage, FontWidth or FontHeight below, then you'll need to uncomment the appropriate font here. -->
+    <!--<script type="text/javascript" src="HtmlTerm.font-437.js"></script>-->
+    <!--<script type="text/javascript" src="HtmlTerm.font-amiga.js"></script>-->
+    <!--<script type="text/javascript" src="HtmlTerm.font-atari.js"></script>-->
+    <!--<script type="text/javascript" src="HtmlTerm.font-c64.js"></script>-->
+    <!--<script type="text/javascript" src="HtmlTerm.font-intl.js"></script>-->
+    
     <script type="text/javascript">
         // REENOTE Here's all the settings that can be changed.  Note that this may not always be an up to date list,
         // some settings may be deleted/renamed/added over time, and so this demo may get out of date.  You can open
