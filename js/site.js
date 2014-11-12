@@ -302,6 +302,32 @@ function TestFeatures() {
     }
 }
 
+function ToggleFullScreen() {
+  var FullScreenDiv = document.getElementById('divAllButFooter');
+  
+  if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+    if (FullScreenDiv.requestFullscreen) {
+      FullScreenDiv.requestFullscreen();
+    } else if (FullScreenDiv.msRequestFullscreen) {
+      FullScreenDiv.msRequestFullscreen();
+    } else if (FullScreenDiv.mozRequestFullScreen) {
+      FullScreenDiv.mozRequestFullScreen();
+    } else if (FullScreenDiv.webkitRequestFullscreen) {
+      FullScreenDiv.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
 function UpdateDialingDirectory() {
     $('#tblDialingDirectory tbody tr').remove();
     if (DialingDirectory && (DialingDirectory.length > 0)) {
