@@ -94,6 +94,10 @@ function ParseQueryString() {
             break;
     }
     
+    if (GetQueryStringValue('TopButtons') == 'false') {
+        document.getElementById('TopButtons').style.display = 'none';
+    }
+    
     switch (GetQueryStringValue('VirtualKeyboard')) {
         case 'auto':
             // From: http://detectmobilebrowsers.com/ on Sep 11, 2014
@@ -122,6 +126,10 @@ function ParseQueryString() {
             // Show keyboard by default but allow user to toggle
             // NB: Nothing to do, since it's shown by default
             break;
+    }
+    
+    if (GetQueryStringValue('AutoConnect') == 'true') {
+        HtmlTerm.Connect();
     }
 }
 

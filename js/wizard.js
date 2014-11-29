@@ -3,6 +3,10 @@ $(document).ready(function () {
     Update();
 });
 
+$('#cboAutoConnect').change(function () {
+    Update();
+});
+
 $('#cboConnectionType').change(function () {
     Update();
 });
@@ -12,6 +16,10 @@ $('#cboEmulation').change(function () {
 });
 
 $('#cboProxyServer').change(function () {
+    Update();
+});
+
+$('#cboTopButtons').change(function () {
     Update();
 });
 
@@ -71,12 +79,18 @@ function Update() {
         Values += '&ProxyPortSecure=' + HostPort[2];
     }
     
+    // Auto connect
+    Values += '&AutoConnect=' + $('#cboAutoConnect').val();
+    
     // Connection type
     Values += '&ConnectionType=' + $('#cboConnectionType').val();
     
     // Emulation
     Values += '&Emulation=' + $('#cboEmulation').val();
     
+    // Show top buttons
+    Values += '&TopButtons=' + $('#cboTopButtons').val();
+
     // Virtual keyboard
     Values += '&VirtualKeyboard=' + $('#cboVirtualKeyboard').val();
     

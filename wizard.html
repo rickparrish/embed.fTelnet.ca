@@ -110,6 +110,22 @@
             
             <div class="row">
                 <div class="form-group col-sm-6">
+                    <label class="control-label" for="cboAutoConnect">Auto Connect?</label>
+                    <select class="form-control" id="cboAutoConnect">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <div class="alert alert-success">
+                        Automatically connect when the client loads?
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-sm-6">
                     <label class="control-label" for="cboConnectionType">Connection Type</label>
                     <select class="form-control" id="cboConnectionType">
                         <option value="telnet">Telnet</option>
@@ -139,6 +155,22 @@
                 </div>
             </div>
             
+            <div class="row">
+                <div class="form-group col-sm-6">
+                    <label class="control-label" for="cboTopButtons">Show Top Buttons?</label>
+                    <select class="form-control" id="cboTopButtons">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <div class="alert alert-success">
+                        Show the button bar (with Connect, Disconnect, Download, Update, Keyboard, etc, buttons)?
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="form-group col-sm-6">
                     <label class="control-label" for="cboVirtualKeyboard">Virtual Keyboard</label>
