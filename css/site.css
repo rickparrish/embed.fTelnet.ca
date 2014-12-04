@@ -8,8 +8,9 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
-body #divAllButFooter > .container {
+body > .container {
   padding: 60px 15px 0;
+  padding-bottom: 20px;
 }
 #footer {
   position: absolute;
@@ -26,14 +27,6 @@ body #divAllButFooter > .container {
 
 
 
-
-#pnlHtmlTerm {
-    margin-bottom: 20px;
-}
-
-#vk-keyboard {
-    margin: auto;
-}
 
 .tablesorter-header {
     cursor: pointer;

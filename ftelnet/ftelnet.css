@@ -1,0 +1,49 @@
+﻿#fTelnetContainer canvas {
+    display: block;
+    margin: auto;
+}
+
+#fTelnetButtons {
+    background-color: green;
+    color: white;
+    font: 16px "Courier New", Courier, monospace;
+    margin: auto;
+    padding: 5px;
+    text-align: center;
+}
+
+    #fTelnetButtons a {
+        color: white;
+        text-decoration: none;
+    }
+    
+#fTelnetFocusWarning {
+    background-color: red;
+    color: white;
+    font: 16px "Courier New", Courier, monospace;
+    margin: auto;
+    padding: 5px;
+    text-align: center;
+}
+
+#fTelnetScrollback {
+    background-color: red;
+    color: white;
+    font: 16px "Courier New", Courier, monospace;
+    margin: auto;
+    padding: 5px;
+    text-align: center;
+}
+
+    #fTelnetScrollback a {
+        color: white;
+        text-decoration: none;
+    }
+
+#fTelnetStatusBar {
+    background-color: blue;
+    color: white;
+    font: 16px "Courier New", Courier, monospace;
+    margin: auto;
+    padding: 5px;
+}
