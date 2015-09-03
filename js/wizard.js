@@ -43,7 +43,7 @@ function Update() {
     var fTelnetAutoConnect = '';
     var fTelnetCss = '';
     var fTelnetScript = '';
-    var IframeUrl = '//embed.ftelnet.ca/';
+    var IframeUrl = '//' + window.location.hostname + '/';
 
     // Clean up the hostname in case someone copy/pastes it in there with extra spaces
     $('#txtHostname').val($.trim($('#txtHostname').val()));
@@ -122,7 +122,7 @@ function Update() {
 
     // Update the page with the snippets
     $('#hlTest').attr("href", IframeUrl);
-    $('#lblJavascript').html(fTelnetCss + '&lt;div id="fTelnetContainer"&gt;&lt;/div&gt;<br />&lt;script src="//embed.ftelnet.ca/ftelnet/ftelnet.min.js" id="fTelnetScript"&gt;&lt;/script&gt;<br />&lt;script&gt;<br />' + fTelnetScript + ' &nbsp; &nbsp; fTelnet.Init();' + fTelnetAutoConnect + '<br />&lt;/script&gt;');
+    $('#lblJavascript').html(fTelnetCss + '&lt;div id="fTelnetContainer"&gt;&lt;/div&gt;<br />&lt;script src="//' + window.location.hostname + '/ftelnet/ftelnet.min.js" id="fTelnetScript"&gt;&lt;/script&gt;<br />&lt;script&gt;<br />' + fTelnetScript + ' &nbsp; &nbsp; fTelnet.Init();' + fTelnetAutoConnect + '<br />&lt;/script&gt;');
     $('#lblIframe').html('&lt;iframe src="' + IframeUrl + '" width="100%" height="1000"&gt;&lt;/iframe&gt;');
     
 }
