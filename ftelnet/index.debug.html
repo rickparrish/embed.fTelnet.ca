@@ -6,9 +6,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-
-    <link href="ftelnet.css" rel="stylesheet" type="text/css" />
-    <link href="" rel="stylesheet" id="fTelnetKeyboardCss">
 </head>
 <body>
     <h1 style="text-align: center">Super Simple Sample</h1>
@@ -16,30 +13,20 @@
     <p>This is a super simple sample of how to use fTelnet.  For more information, <a href="docs/index.html">see the docs</a>.</p>
 
     <a href="#" onclick="Crt.SetScreenSize(85, 25);">Screen 80x25</a>
-    <a href="#" onclick="fTelnet.ButtonBarVisible = !fTelnet.ButtonBarVisible;">ButtonBarVisible</a>
     <a href="#" onclick="fTelnet.StatusBarVisible = !fTelnet.StatusBarVisible;">StatusBarVisible</a>
     <a href="#" onclick="fTelnet.VirtualKeyboardVisible = !fTelnet.VirtualKeyboardVisible;">VirtualKeyboardVisible</a>
     <a href="#" onclick="TestRIP();">Test RIP</a>
     <a href="#" onclick="fTelnet.StuffInputBuffer('Ree');">Test Ree</a>
 
-    <div>
-        <div id="fTelnetContainer"></div>
-    </div>
-
-    <!-- Stop IE8 and below from complaining about Object.defineProperty -->
-    <!--[if lt IE 9]>
-        <script>
-            Object.defineProperty = function () { /* Do Nothing */ };
-        </script>
-    <![endif]-->
-
     <!--
         ftelnet.js requires Blob.js and FileSaver.js to enable file transfers
         ftelnet.min.js has them embedded, so if you use that, don't include these files
     -->
+    <script src="IELessThan9Check.js"></script>
     <script src="Blob.js"></script>
     <script src="FileSaver.js"></script>
 
+    <div id="fTelnetContainer"></div>
     <script src="ftelnet.debug.js" id="fTelnetScript"></script>
     <script>
         //fTelnet.Emulation = 'RIP';
@@ -49,16 +36,18 @@
         //fTelnet.RLoginClientUsername = 'TODO';//TODO
         //fTelnet.RLoginServerUsername = 'Ree';//TODO
 
-        fTelnet.Hostname = "bbs.throwbackbbs.com";
+        fTelnet.Hostname = "bbs.ftelnet.ca";
         //fTelnet.Hostname = "sbbs.ftelnet.ca";
         fTelnet.Port = 23;
         //fTelnet.Port = 513;
         fTelnet.ProxyHostname = "proxy-us-ga.ftelnet.ca";
         fTelnet.ProxyPort = 1123;
-        fTelnet.ondata.on(function(data) {
-            console.log(data);
-        });
+        fTelnet.ProxyPortSecure = 1123;
+        //fTelnet.ondata.on(function(data) {
+        //    console.log(data);
+        //});
         fTelnet.Init();
+        //fTelnet.Connect();
     </script>
 
     <input type="file" name="RIPFileSelect" id="RIPFileSelect" onchange="OnRIPFileSelectClick();" />

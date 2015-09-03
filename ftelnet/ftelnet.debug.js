@@ -1,8 +1,8 @@
-﻿(function () {
+// From: Unknown, forgot to save the url!
+(function () {
     if ('atob' in window && 'btoa' in window) {
         return;
     }
-
     var B64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     function atob(input) {
         input = String(input);
@@ -33,7 +33,8 @@
         if (bits === 12) {
             buffer = buffer >> 4;
             output.push(String.fromCharCode(buffer & 0xFF));
-        } else if (bits === 18) {
+        }
+        else if (bits === 18) {
             buffer = buffer >> 2;
             output.push(String.fromCharCode((buffer >> 8) & 0xFF));
             output.push(String.fromCharCode(buffer & 0xFF));
@@ -51,7 +52,6 @@
             o1 = input.charCodeAt(position++);
             o2 = input.charCodeAt(position++);
             o3 = input.charCodeAt(position++);
-
             e1 = o1 >> 2;
             e2 = ((o1 & 0x3) << 4) | (o2 >> 4);
             e3 = ((o2 & 0xf) << 2) | (o3 >> 6);
@@ -59,7 +59,8 @@
             if (position === input.length + 2) {
                 e3 = 64;
                 e4 = 64;
-            } else if (position === input.length + 1) {
+            }
+            else if (position === input.length + 1) {
                 e4 = 64;
             }
             out.push(B64_ALPHABET.charAt(e1), B64_ALPHABET.charAt(e2), B64_ALPHABET.charAt(e3), B64_ALPHABET.charAt(e4));
@@ -70,6 +71,119 @@
     window.atob = atob;
     window.btoa = btoa;
 }());
+var Clipboard = (function () {
+    function Clipboard() {
+    }
+    Clipboard.GetData = function () {
+        if (document.queryCommandSupported('paste')) {
+            var textArea = document.createElement("textarea");
+            textArea.style.position = 'fixed';
+            textArea.style.top = '0px';
+            textArea.style.left = '0px';
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            textArea.style.padding = '0px';
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            textArea.style.background = 'transparent';
+            textArea.value = "paste";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('paste');
+            }
+            catch (err) {
+                textArea.value = prompt("Press CTRL-V then Enter to paste the text from your clipboard");
+            }
+            document.body.removeChild(textArea);
+            return textArea.value;
+        }
+        else if (window.clipboardData) {
+            return window.clipboardData.getData("Text");
+        }
+        else {
+            return prompt("Press CTRL-V then Enter to paste the text from your clipboard");
+        }
+    };
+    Clipboard.SetData = function (text) {
+        if (document.queryCommandSupported('copy')) {
+            var textArea = document.createElement("textarea");
+            textArea.style.position = 'fixed';
+            textArea.style.top = '0px';
+            textArea.style.left = '0px';
+            textArea.style.width = '2em';
+            textArea.style.height = '2em';
+            textArea.style.padding = '0px';
+            textArea.style.border = 'none';
+            textArea.style.outline = 'none';
+            textArea.style.boxShadow = 'none';
+            textArea.style.background = 'transparent';
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+            }
+            catch (err) {
+                prompt('Press CTRL-C then Enter to copy the text to your clipboard', text);
+            }
+            document.body.removeChild(textArea);
+        }
+        else if (window.clipboardData) {
+            window.clipboardData.setData("Text", text);
+        }
+        else {
+            prompt('Press CTRL-C then Enter to copy the text to your clipboard', text);
+        }
+    };
+    return Clipboard;
+})();
+var GetScrollbarWidth = (function () {
+    function GetScrollbarWidth() {
+    }
+    Object.defineProperty(GetScrollbarWidth, "Width", {
+        get: function () {
+            if (this._Width === null) {
+                var outer = document.createElement("div");
+                outer.style.visibility = "hidden";
+                outer.style.width = "100px";
+                outer.style.msOverflowStyle = "scrollbar";
+                document.body.appendChild(outer);
+                var widthNoScroll = outer.offsetWidth;
+                outer.style.overflow = "scroll";
+                var inner = document.createElement("div");
+                inner.style.width = "100%";
+                outer.appendChild(inner);
+                var widthWithScroll = inner.offsetWidth;
+                outer.parentNode.removeChild(outer);
+                this._Width = widthNoScroll - widthWithScroll;
+            }
+            return this._Width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GetScrollbarWidth._Width = null;
+    return GetScrollbarWidth;
+})();
+var DetectMobileBrowser = (function () {
+    function DetectMobileBrowser() {
+    }
+    Object.defineProperty(DetectMobileBrowser, "IsMobile", {
+        get: function () {
+            if (this._IsMobile === null) {
+                var a = navigator.userAgent || navigator.vendor;
+                this._IsMobile = (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4)));
+            }
+            return this._IsMobile;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    DetectMobileBrowser._IsMobile = null;
+    return DetectMobileBrowser;
+})();
 var Rectangle = (function () {
     function Rectangle(x, y, width, height) {
         this.height = 0;
@@ -96,7 +210,6 @@ var Rectangle = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Rectangle.prototype, "left", {
         get: function () {
             return this.x;
@@ -104,7 +217,6 @@ var Rectangle = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Rectangle.prototype, "right", {
         get: function () {
             return this.x + this.width;
@@ -112,7 +224,6 @@ var Rectangle = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Rectangle.prototype, "top", {
         get: function () {
             return this.y;
@@ -133,7 +244,6 @@ var Benchmark = (function () {
         enumerable: true,
         configurable: true
     });
-
     Benchmark.prototype.Start = function () {
         this._StartTime = new Date();
     };
@@ -151,27 +261,23 @@ var StrokeFont = (function () {
             }
             this.Strokes.push(Chars);
         }
-
         if (document.getElementById('fTelnetScript') !== null) {
             var ScriptUrl = document.getElementById('fTelnetScript').src;
             var JsonUrl = ScriptUrl.replace('/ftelnet.min.js', '/fonts/RIP-Strokes.json');
             JsonUrl = JsonUrl.replace('/ftelnet.debug.js', '/fonts/RIP-Strokes.json');
-
             var xhr = new XMLHttpRequest();
             xhr.open('get', JsonUrl, true);
-            xhr.onload = function () {
-                _this.OnJsonLoad(xhr);
-            };
+            xhr.onload = function () { _this.OnJsonLoad(xhr); };
             xhr.send();
         }
     };
-
     StrokeFont.OnJsonLoad = function (xhr) {
         var status = xhr.status;
         if (status === 200) {
             this.Strokes = JSON.parse(xhr.responseText);
             this.Loaded = true;
-        } else {
+        }
+        else {
             alert('fTelnet Error: Unable to load RIP stroke fonts');
         }
     };
@@ -185,19 +291,14 @@ var StrokeFont = (function () {
 var RLoginCommand;
 (function (RLoginCommand) {
     RLoginCommand[RLoginCommand["Cookie"] = 255] = "Cookie";
-
     RLoginCommand[RLoginCommand["S"] = 115] = "S";
 })(RLoginCommand || (RLoginCommand = {}));
 var RLoginNegotiationState;
 (function (RLoginNegotiationState) {
     RLoginNegotiationState[RLoginNegotiationState["Data"] = 0] = "Data";
-
     RLoginNegotiationState[RLoginNegotiationState["Cookie1"] = 1] = "Cookie1";
-
     RLoginNegotiationState[RLoginNegotiationState["Cookie2"] = 2] = "Cookie2";
-
     RLoginNegotiationState[RLoginNegotiationState["S1"] = 3] = "S1";
-
     RLoginNegotiationState[RLoginNegotiationState["SS"] = 4] = "SS";
 })(RLoginNegotiationState || (RLoginNegotiationState = {}));
 var ByteArray = (function () {
@@ -213,13 +314,11 @@ var ByteArray = (function () {
         enumerable: true,
         configurable: true
     });
-
     ByteArray.prototype.clear = function () {
         this._Bytes = [];
         this._Length = 0;
         this._Position = 0;
     };
-
     Object.defineProperty(ByteArray.prototype, "length", {
         get: function () {
             return this._Length;
@@ -227,23 +326,22 @@ var ByteArray = (function () {
         set: function (value) {
             if (value <= 0) {
                 this.clear();
-            } else {
+            }
+            else {
                 if (value < this._Length) {
                     this._Bytes.splice(value, this._Length - value);
-                } else if (value > this._Length) {
+                }
+                else if (value > this._Length) {
                     for (var i = this._Length + 1; i <= value; i++) {
                         this._Bytes.push(0);
                     }
                 }
-
                 this._Length = value;
             }
         },
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(ByteArray.prototype, "position", {
         get: function () {
             return this._Position;
@@ -251,17 +349,15 @@ var ByteArray = (function () {
         set: function (value) {
             if (value <= 0) {
                 value = 0;
-            } else if (value >= this._Length) {
+            }
+            else if (value >= this._Length) {
                 value = this._Length;
             }
-
             this._Position = value;
         },
         enumerable: true,
         configurable: true
     });
-
-
     ByteArray.prototype.readBytes = function (bytes, offset, length) {
         if (typeof offset === 'undefined') {
             offset = 0;
@@ -269,70 +365,54 @@ var ByteArray = (function () {
         if (typeof length === 'undefined') {
             length = 0;
         }
-
         if (this._Position + length > this._Length) {
             throw 'There is not sufficient data available to read.';
         }
-
         var BytesPosition = bytes.position;
         bytes.position = offset;
-
         for (var i = 0; i < length; i++) {
             bytes.writeByte(this._Bytes[this._Position++] & 0xFF);
         }
-
         bytes.position = BytesPosition;
     };
-
     ByteArray.prototype.readString = function (length) {
         if (typeof length === 'undefined') {
             length = this._Length;
         }
-
         var Result = '';
         while ((length-- > 0) && (this._Position < this._Length)) {
             Result += String.fromCharCode(this._Bytes[this._Position++]);
         }
-
         if (this.bytesAvailable === 0) {
             this.clear();
         }
-
         return Result;
     };
-
     ByteArray.prototype.readUnsignedByte = function () {
         if (this._Position >= this._Length) {
             throw 'There is not sufficient data available to read.';
         }
-
         return (this._Bytes[this._Position++] & 0xFF);
     };
-
     ByteArray.prototype.readUnsignedShort = function () {
         if (this._Position >= (this._Length - 1)) {
             throw 'There is not sufficient data available to read.';
         }
-
         return ((this._Bytes[this._Position++] & 0xFF) << 8) + (this._Bytes[this._Position++] & 0xFF);
     };
-
     ByteArray.prototype.toString = function () {
         var Result = '';
         for (var i = 0; i < this._Length; i++) {
             Result += String.fromCharCode(this._Bytes[i]);
         }
-
         return Result;
     };
-
     ByteArray.prototype.writeByte = function (value) {
         this._Bytes[this._Position++] = (value & 0xFF);
         if (this._Position > this._Length) {
             this._Length++;
         }
     };
-
     ByteArray.prototype.writeBytes = function (bytes, offset, length) {
         if (!offset) {
             offset = 0;
@@ -340,16 +420,15 @@ var ByteArray = (function () {
         if (!length) {
             length = 0;
         }
-
         if (offset < 0) {
             offset = 0;
         }
         if (length < 0) {
             return;
-        } else if (length === 0) {
+        }
+        else if (length === 0) {
             length = bytes.length;
         }
-
         if (offset >= bytes.length) {
             offset = 0;
         }
@@ -359,22 +438,17 @@ var ByteArray = (function () {
         if (offset + length > bytes.length) {
             length = bytes.length - offset;
         }
-
         var BytesPosition = bytes.position;
         bytes.position = offset;
-
         for (var i = 0; i < length; i++) {
             this.writeByte(bytes.readUnsignedByte());
         }
-
         bytes.position = BytesPosition;
     };
-
     ByteArray.prototype.writeShort = function (value) {
         this.writeByte((value & 0xFF00) >> 8);
         this.writeByte(value & 0x00FF);
     };
-
     ByteArray.prototype.writeString = function (text) {
         var Textlength = text.length;
         for (var i = 0; i < Textlength; i++) {
@@ -383,7 +457,7 @@ var ByteArray = (function () {
     };
     return ByteArray;
 })();
-
+// From: https://typescript.codeplex.com/discussions/402228
 var TypedEvent = (function () {
     function TypedEvent() {
         this._listeners = [];
@@ -399,15 +473,15 @@ var TypedEvent = (function () {
                     break;
                 }
             }
-        } else {
+        }
+        else {
             this._listeners = [];
         }
     };
-
     TypedEvent.prototype.trigger = function () {
         var a = [];
-        for (var _i = 0; _i < (arguments.length - 0); _i++) {
-            a[_i] = arguments[_i + 0];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            a[_i - 0] = arguments[_i];
         }
         var context = {};
         var listeners = this._listeners.slice(0);
@@ -417,25 +491,43 @@ var TypedEvent = (function () {
     };
     return TypedEvent;
 })();
+/*
+  fTelnet: An HTML5 WebSocket client
+  Copyright (C) 2009-2013  Rick Parrish, R&M Software
 
+  This file is part of fTelnet.
+
+  fTelnet is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or any later version.
+
+  fTelnet is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with fTelnet.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/// <reference path="../../3rdparty/TypedEvent.ts" />
 if (('WebSocket' in window) && !navigator.userAgent.match('AppleWebKit/534.30')) {
-} else if ('MozWebSocket' in window) {
+}
+else if ('MozWebSocket' in window) {
     window['WebSocket'] = window['MozWebSocket'];
-} else {
+}
+else {
     var ScriptUrl = document.getElementById('fTelnetScript').src;
     var ScriptRoot = ScriptUrl.replace('/ftelnet.min.js', '');
     ScriptRoot = ScriptRoot.replace('/ftelnet.debug.js', '');
-
     window['WEB_SOCKET_FORCE_FLASH'] = true;
     window['WEB_SOCKET_SWF_LOCATION'] = ScriptRoot + "/WebSocketMain.swf";
-    document.write('<script src="' + ScriptRoot + '/swfobject.js")"><\/script>');
-    document.write('<script src="' + ScriptRoot + '/web_socket.js")"><\/script>');
+    document.write('<script src="' + ScriptRoot + '/swfobject.js"><\/script>');
+    document.write('<script src="' + ScriptRoot + '/web_socket.js"><\/script>');
 }
-
 var WebSocketProtocol = ('https:' === document.location.protocol ? 'wss' : 'ws');
 var WebSocketSupportsTypedArrays = (('Uint8Array' in window) && ('set' in Uint8Array.prototype));
 var WebSocketSupportsBinaryType = (WebSocketSupportsTypedArrays && ('binaryType' in WebSocket.prototype || !!(new WebSocket(WebSocketProtocol + '://.').binaryType)));
-
 var WebSocketConnection = (function () {
     function WebSocketConnection() {
         this.onclose = new TypedEvent();
@@ -460,13 +552,11 @@ var WebSocketConnection = (function () {
         enumerable: true,
         configurable: true
     });
-
     WebSocketConnection.prototype.close = function () {
         if (this._WebSocket) {
             this._WebSocket.close();
         }
     };
-
     WebSocketConnection.prototype.connect = function (hostname, port, proxyHostname, proxyPort, proxyPortSecure) {
         var _this = this;
         if (typeof proxyHostname === 'undefined') {
@@ -478,69 +568,53 @@ var WebSocketConnection = (function () {
         if (typeof proxyPortSecure === 'undefined') {
             proxyPortSecure = 11235;
         }
-
         this._WasConnected = false;
-
         var Protocols;
         if (('WebSocket' in window) && (WebSocket.CLOSED === 2 || WebSocket.prototype.CLOSED === 2)) {
             Protocols = ['plain'];
-        } else {
+        }
+        else {
             if (WebSocketSupportsBinaryType && WebSocketSupportsTypedArrays) {
                 Protocols = ['binary', 'base64', 'plain'];
-            } else {
+            }
+            else {
                 Protocols = ['base64', 'plain'];
             }
         }
-
         if (proxyHostname === '') {
             this._WebSocket = new WebSocket(WebSocketProtocol + '://' + hostname + ':' + port, Protocols);
-        } else {
+        }
+        else {
             this._WebSocket = new WebSocket(WebSocketProtocol + '://' + proxyHostname + ':' + (WebSocketProtocol === 'wss' ? proxyPortSecure : proxyPort) + '/' + hostname + '/' + port, Protocols);
         }
-
         if (Protocols.indexOf('binary') >= 0) {
             this._WebSocket.binaryType = 'arraybuffer';
         }
-
-        this._WebSocket.onclose = function () {
-            _this.OnSocketClose();
-        };
-        this._WebSocket.onerror = function (e) {
-            _this.OnSocketError(e);
-        };
-        this._WebSocket.onmessage = function (e) {
-            _this.OnSocketMessage(e);
-        };
-        this._WebSocket.onopen = function () {
-            _this.OnSocketOpen();
-        };
+        this._WebSocket.onclose = function () { _this.OnSocketClose(); };
+        this._WebSocket.onerror = function (e) { _this.OnSocketError(e); };
+        this._WebSocket.onmessage = function (e) { _this.OnSocketMessage(e); };
+        this._WebSocket.onopen = function () { _this.OnSocketOpen(); };
     };
-
     Object.defineProperty(WebSocketConnection.prototype, "connected", {
         get: function () {
             if (this._WebSocket) {
                 return (this._WebSocket.readyState === this._WebSocket.OPEN) || (this._WebSocket.readyState === WebSocket.OPEN);
             }
-
             return false;
         },
         enumerable: true,
         configurable: true
     });
-
     WebSocketConnection.prototype.flush = function () {
         var ToSendBytes = [];
-
         this._OutputBuffer.position = 0;
         while (this._OutputBuffer.bytesAvailable > 0) {
             var B = this._OutputBuffer.readUnsignedByte();
             ToSendBytes.push(B);
         }
-
         this.Send(ToSendBytes);
         this._OutputBuffer.clear();
     };
-
     Object.defineProperty(WebSocketConnection.prototype, "LocalEcho", {
         set: function (value) {
             this._LocalEcho = value;
@@ -548,167 +622,161 @@ var WebSocketConnection = (function () {
         enumerable: true,
         configurable: true
     });
-
     WebSocketConnection.prototype.NegotiateInbound = function (data) {
         while (data.bytesAvailable) {
             var B = data.readUnsignedByte();
             this._InputBuffer.writeByte(B);
         }
     };
-
     WebSocketConnection.prototype.OnSocketClose = function () {
         if (this._WasConnected) {
             this.onclose.trigger();
-        } else {
+        }
+        else {
             this.onsecurityerror.trigger();
         }
         this._WasConnected = false;
     };
-
     WebSocketConnection.prototype.OnSocketError = function (e) {
         this.onioerror.trigger(e);
     };
-
     WebSocketConnection.prototype.OnSocketOpen = function () {
         if (this._WebSocket.protocol) {
             this._Protocol = this._WebSocket.protocol;
-        } else {
+        }
+        else {
             this._Protocol = 'plain';
         }
-
         this._WasConnected = true;
         this.onconnect.trigger();
     };
-
     WebSocketConnection.prototype.OnSocketMessage = function (e) {
         if (this._InputBuffer.bytesAvailable === 0) {
             this._InputBuffer.clear();
         }
-
         var OldPosition = this._InputBuffer.position;
         this._InputBuffer.position = this._InputBuffer.length;
-
         var Data = new ByteArray();
-
         var i;
         if (this._Protocol === 'binary') {
             var u8 = new Uint8Array(e.data);
             for (i = 0; i < u8.length; i++) {
                 Data.writeByte(u8[i]);
             }
-        } else if (this._Protocol === 'base64') {
+        }
+        else if (this._Protocol === 'base64') {
             Data.writeString(atob(e.data));
-        } else {
+        }
+        else {
             Data.writeString(e.data);
         }
         Data.position = 0;
-
         this.NegotiateInbound(Data);
-
         this._InputBuffer.position = OldPosition;
-
         this.ondata.trigger();
     };
-
     WebSocketConnection.prototype.readBytes = function (bytes, offset, length) {
         return this._InputBuffer.readBytes(bytes, offset, length);
     };
-
     WebSocketConnection.prototype.readString = function (length) {
         return this._InputBuffer.readString(length);
     };
-
     WebSocketConnection.prototype.readUnsignedByte = function () {
         return this._InputBuffer.readUnsignedByte();
     };
-
     WebSocketConnection.prototype.readUnsignedShort = function () {
         return this._InputBuffer.readUnsignedShort();
     };
-
     WebSocketConnection.prototype.Send = function (data) {
         var i = 0;
         var ToSendString = '';
-
         if (this._Protocol === 'binary') {
             this._WebSocket.send(new Uint8Array(data).buffer);
-        } else if (this._Protocol === 'base64') {
+        }
+        else if (this._Protocol === 'base64') {
             for (i = 0; i < data.length; i++) {
                 ToSendString += String.fromCharCode(data[i]);
             }
             this._WebSocket.send(btoa(ToSendString));
-        } else {
+        }
+        else {
             for (i = 0; i < data.length; i++) {
                 ToSendString += String.fromCharCode(data[i]);
             }
             this._WebSocket.send(ToSendString);
         }
     };
-
     WebSocketConnection.prototype.writeByte = function (value) {
         this._OutputBuffer.writeByte(value);
     };
-
     WebSocketConnection.prototype.writeBytes = function (bytes, offset, length) {
         this._OutputBuffer.writeBytes(bytes, offset, length);
     };
-
     WebSocketConnection.prototype.writeShort = function (value) {
         this._OutputBuffer.writeShort(value);
     };
-
     WebSocketConnection.prototype.writeString = function (text) {
         this._OutputBuffer.writeString(text);
         this.flush();
     };
     return WebSocketConnection;
 })();
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="../../actionscript/ByteArray.ts" />
+/// <reference path="../WebSocketConnection.ts" />
+/// <reference path="RLoginCommand.ts" />
+/// <reference path="RLoginNegotiationState.ts" />
 var RLoginConnection = (function (_super) {
     __extends(RLoginConnection, _super);
     function RLoginConnection() {
         _super.call(this);
-
-        this._NegotiationState = 0 /* Data */;
+        this._NegotiationState = RLoginNegotiationState.Data;
         this._SSBytes = 0;
     }
     RLoginConnection.prototype.NegotiateInbound = function (data) {
         while (data.bytesAvailable) {
             var B = data.readUnsignedByte();
-
-            if (this._NegotiationState === 0 /* Data */) {
-                if (B === 255 /* Cookie */) {
-                    this._NegotiationState = 1 /* Cookie1 */;
-                } else {
+            if (this._NegotiationState === RLoginNegotiationState.Data) {
+                if (B === RLoginCommand.Cookie) {
+                    this._NegotiationState = RLoginNegotiationState.Cookie1;
+                }
+                else {
                     this._InputBuffer.writeByte(B);
                 }
-            } else if (this._NegotiationState === 1 /* Cookie1 */) {
-                if (B === 255 /* Cookie */) {
-                    this._NegotiationState = 2 /* Cookie2 */;
-                } else {
-                    this._NegotiationState = 0 /* Data */;
+            }
+            else if (this._NegotiationState === RLoginNegotiationState.Cookie1) {
+                if (B === RLoginCommand.Cookie) {
+                    this._NegotiationState = RLoginNegotiationState.Cookie2;
                 }
-            } else if (this._NegotiationState === 2 /* Cookie2 */) {
-                if (B === 115 /* S */) {
-                    this._NegotiationState = 3 /* S1 */;
-                } else {
-                    this._NegotiationState = 0 /* Data */;
+                else {
+                    this._NegotiationState = RLoginNegotiationState.Data;
                 }
-            } else if (this._NegotiationState === 3 /* S1 */) {
-                if (B === 115 /* S */) {
-                    this._NegotiationState = 4 /* SS */;
-                } else {
-                    this._NegotiationState = 0 /* Data */;
+            }
+            else if (this._NegotiationState === RLoginNegotiationState.Cookie2) {
+                if (B === RLoginCommand.S) {
+                    this._NegotiationState = RLoginNegotiationState.S1;
                 }
-            } else if (this._NegotiationState === 4 /* SS */) {
+                else {
+                    this._NegotiationState = RLoginNegotiationState.Data;
+                }
+            }
+            else if (this._NegotiationState === RLoginNegotiationState.S1) {
+                if (B === RLoginCommand.S) {
+                    this._NegotiationState = RLoginNegotiationState.SS;
+                }
+                else {
+                    this._NegotiationState = RLoginNegotiationState.Data;
+                }
+            }
+            else if (this._NegotiationState === RLoginNegotiationState.SS) {
                 if (++this._SSBytes >= 8) {
                     this._SSBytes = 0;
-                    this._NegotiationState = 0 /* Data */;
+                    this._NegotiationState = RLoginNegotiationState.Data;
                 }
             }
         }
@@ -718,13 +786,9 @@ var RLoginConnection = (function (_super) {
 var AnsiParserState;
 (function (AnsiParserState) {
     AnsiParserState[AnsiParserState["None"] = 0] = "None";
-
     AnsiParserState[AnsiParserState["Escape"] = 1] = "Escape";
-
     AnsiParserState[AnsiParserState["Bracket"] = 2] = "Bracket";
-
     AnsiParserState[AnsiParserState["ParameterByte"] = 3] = "ParameterByte";
-
     AnsiParserState[AnsiParserState["IntermediateByte"] = 4] = "IntermediateByte";
 })(AnsiParserState || (AnsiParserState = {}));
 var Point = (function () {
@@ -734,6 +798,9 @@ var Point = (function () {
     }
     return Point;
 })();
+/// <reference path='AnsiParserState.ts' />
+/// <reference path='../../3rdparty/TypedEvent.ts' />
+/// <reference path='../actionscript/Point.ts' />
 var Ansi = (function () {
     function Ansi() {
     }
@@ -742,7 +809,6 @@ var Ansi = (function () {
         var x = 0;
         var y = 0;
         var z = 0;
-
         switch (finalByte) {
             case '!':
                 if (this._AnsiParams.length < 1) {
@@ -811,7 +877,8 @@ var Ansi = (function () {
                     x = Math.max(1, parseInt(this._AnsiParams.shift(), 10));
                     x = Math.max(1, Crt.WhereX() - x);
                     Crt.GotoXY(x, Crt.WhereY());
-                } else if (this._AnsiIntermediates.indexOf(' ') !== -1) {
+                }
+                else if (this._AnsiIntermediates.indexOf(' ') !== -1) {
                     while (this._AnsiParams.length < 2) {
                         this._AnsiParams.push('0');
                     }
@@ -819,7 +886,8 @@ var Ansi = (function () {
                     y = parseInt(this._AnsiParams.shift(), 10);
                     if ((x === 0) && (y >= 0) && (y <= 40)) {
                         Crt.SetFont('SyncTerm-' + y.toString(10));
-                    } else {
+                    }
+                    else {
                         console.log('Unhandled ESC sequence: Secondary Font Selection (set font ' + x + ' to ' + y + ')');
                     }
                     break;
@@ -980,7 +1048,8 @@ var Ansi = (function () {
                             console.log('Unknown ESC sequence: PB(' + this._AnsiParams.toString() + ') IB(' + this._AnsiIntermediates.toString() + ') FB(' + finalByte + ')');
                             break;
                     }
-                } else {
+                }
+                else {
                     if (this._AnsiParams.length < 1) {
                         this._AnsiParams.push('1');
                     }
@@ -1120,11 +1189,14 @@ var Ansi = (function () {
             case 'r':
                 if (this._AnsiIntermediates.length === 0) {
                     console.log('Unknown ESC sequence: PB(' + this._AnsiParams.toString() + ') IB(' + this._AnsiIntermediates.toString() + ') FB(' + finalByte + ')');
-                } else if (this._AnsiIntermediates[0].indexOf('*') !== -1) {
+                }
+                else if (this._AnsiIntermediates[0].indexOf('*') !== -1) {
                     console.log('Unhandled ESC sequence: Set the output emulation speed.');
-                } else if (this._AnsiIntermediates[0].indexOf(']') !== -1) {
+                }
+                else if (this._AnsiIntermediates[0].indexOf(']') !== -1) {
                     console.log('Unhandled ESC sequence: Set Top and Bottom Margins');
-                } else {
+                }
+                else {
                     console.log('Unknown ESC sequence: PB(' + this._AnsiParams.toString() + ') IB(' + this._AnsiIntermediates.toString() + ') FB(' + finalByte + ')');
                 }
                 break;
@@ -1138,7 +1210,8 @@ var Ansi = (function () {
             case 's':
                 if (this._AnsiIntermediates.length === 0) {
                     this._AnsiXY = new Point(Crt.WhereX(), Crt.WhereY());
-                } else {
+                }
+                else {
                     console.log('Unhandled ESC sequence: Save Mode Setting');
                 }
                 break;
@@ -1155,7 +1228,8 @@ var Ansi = (function () {
             case 'u':
                 if (this._AnsiIntermediates.length === 0) {
                     Crt.GotoXY(this._AnsiXY.x, this._AnsiXY.y);
-                } else {
+                }
+                else {
                     console.log('Unhandled ESC sequence: Restore Mode Setting');
                 }
                 break;
@@ -1174,47 +1248,40 @@ var Ansi = (function () {
                 break;
         }
     };
-
     Ansi.ClrBol = function () {
         return '\x1B[1K';
     };
-
     Ansi.ClrBos = function () {
         return '\x1B[1J';
     };
-
     Ansi.ClrEol = function () {
         return '\x1B[K';
     };
-
     Ansi.ClrEos = function () {
         return '\x1B[J';
     };
-
     Ansi.ClrLine = function () {
         return '\x1B[2K';
     };
-
     Ansi.ClrScr = function () {
         return '\x1B[2J';
     };
-
     Ansi.CursorDown = function (count) {
         if (count === 1) {
             return '\x1B[B';
-        } else {
+        }
+        else {
             return '\x1B[' + count.toString() + 'B';
         }
     };
-
     Ansi.CursorLeft = function (count) {
         if (count === 1) {
             return '\x1B[D';
-        } else {
+        }
+        else {
             return '\x1B[' + count.toString() + 'D';
         }
     };
-
     Ansi.CursorPosition = function (x, y) {
         if (typeof x === 'undefined') {
             x = Crt.WhereXA();
@@ -1222,65 +1289,58 @@ var Ansi = (function () {
         if (typeof y === 'undefined') {
             y = Crt.WhereYA();
         }
-
         return '\x1B[' + y + ';' + x + 'R';
     };
-
     Ansi.CursorRestore = function () {
         return '\x1B[u';
     };
-
     Ansi.CursorRight = function (count) {
         if (count === 1) {
             return '\x1B[C';
-        } else {
+        }
+        else {
             return '\x1B[' + count.toString() + 'C';
         }
     };
-
     Ansi.CursorSave = function () {
         return '\x1B[s';
     };
-
     Ansi.CursorUp = function (count) {
         if (count === 1) {
             return '\x1B[A';
-        } else {
+        }
+        else {
             return '\x1B[' + count.toString() + 'A';
         }
     };
-
     Ansi.GotoX = function (x) {
         if (x === 1) {
             return this.CursorLeft(255);
-        } else {
+        }
+        else {
             return this.CursorLeft(255) + this.CursorRight(x - 1);
         }
     };
-
     Ansi.GotoXY = function (x, y) {
         return '\x1B[' + y.toString() + ';' + x.toString() + 'H';
     };
-
     Ansi.GotoY = function (y) {
         if (y === 1) {
             return this.CursorUp(255);
-        } else {
+        }
+        else {
             return this.CursorUp(255) + this.CursorDown(y - 1);
         }
     };
-
     Ansi.TextAttr = function (attr) {
         return this.TextColor(attr % 16) + this.TextBackground(Math.floor(attr / 16));
     };
-
     Ansi.TextBackground = function (colour) {
         while (colour >= 8) {
             colour -= 8;
         }
         return '\x1B[' + (40 + this.ANSI_COLORS[colour]).toString() + 'm';
     };
-
     Ansi.TextColor = function (colour) {
         switch (colour % 16) {
             case 0:
@@ -1299,124 +1359,123 @@ var Ansi = (function () {
             case 12:
             case 13:
             case 14:
-            case 15:
-                return '\x1B[1;' + (30 + this.ANSI_COLORS[(colour % 16) - 8]).toString() + 'm';
+            case 15: return '\x1B[1;' + (30 + this.ANSI_COLORS[(colour % 16) - 8]).toString() + 'm';
         }
-
         return '';
     };
-
     Ansi.Write = function (text) {
         if (Crt.Atari || Crt.C64) {
             Crt.Write(text);
-        } else {
+        }
+        else {
             var Buffer = '';
-
             for (var i = 0; i < text.length; i++) {
                 if (text.charAt(i) === '\x1B') {
-                    this._AnsiParserState = 1 /* Escape */;
-                } else if (this._AnsiParserState === 1 /* Escape */) {
+                    this._AnsiParserState = AnsiParserState.Escape;
+                }
+                else if (this._AnsiParserState === AnsiParserState.Escape) {
                     if (text.charAt(i) === '[') {
-                        this._AnsiParserState = 2 /* Bracket */;
+                        this._AnsiParserState = AnsiParserState.Bracket;
                         this._AnsiBuffer = '';
-
                         while (this._AnsiParams.length > 0) {
                             this._AnsiParams.pop();
                         }
                         while (this._AnsiIntermediates.length > 0) {
                             this._AnsiIntermediates.pop();
                         }
-                    } else {
-                        Buffer += text.charAt(i);
-                        this._AnsiParserState = 0 /* None */;
                     }
-                } else if (this._AnsiParserState === 2 /* Bracket */) {
+                    else {
+                        Buffer += text.charAt(i);
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                }
+                else if (this._AnsiParserState === AnsiParserState.Bracket) {
                     if (text.charAt(i) === '!') {
                         Crt.Write(Buffer);
                         Buffer = '';
-
                         this.AnsiCommand(text.charAt(i));
-
-                        this._AnsiParserState = 0 /* None */;
-                    } else if ((text.charAt(i) >= '0') && (text.charAt(i) <= '?')) {
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                    else if ((text.charAt(i) >= '0') && (text.charAt(i) <= '?')) {
                         this._AnsiBuffer += text.charAt(i);
-                        this._AnsiParserState = 3 /* ParameterByte */;
-                    } else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
+                        this._AnsiParserState = AnsiParserState.ParameterByte;
+                    }
+                    else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
                         this._AnsiBuffer += text.charAt(i);
-                        this._AnsiParserState = 4 /* IntermediateByte */;
-                    } else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
+                        this._AnsiParserState = AnsiParserState.IntermediateByte;
+                    }
+                    else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
                         Crt.Write(Buffer);
                         Buffer = '';
-
                         this.AnsiCommand(text.charAt(i));
-
-                        this._AnsiParserState = 0 /* None */;
-                    } else {
-                        Buffer += text.charAt(i);
-                        this._AnsiParserState = 0 /* None */;
+                        this._AnsiParserState = AnsiParserState.None;
                     }
-                } else if (this._AnsiParserState === 3 /* ParameterByte */) {
+                    else {
+                        Buffer += text.charAt(i);
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                }
+                else if (this._AnsiParserState === AnsiParserState.ParameterByte) {
                     if (text.charAt(i) === '!') {
                         this._AnsiParams.push((this._AnsiBuffer === '') ? '0' : this._AnsiBuffer);
                         this._AnsiBuffer = '';
-
                         Crt.Write(Buffer);
                         Buffer = '';
-
                         this.AnsiCommand(text.charAt(i));
-
-                        this._AnsiParserState = 0 /* None */;
-                    } else if (text.charAt(i) === ';') {
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                    else if (text.charAt(i) === ';') {
                         this._AnsiParams.push((this._AnsiBuffer === '') ? '0' : this._AnsiBuffer);
                         this._AnsiBuffer = '';
-                    } else if ((text.charAt(i) >= '0') && (text.charAt(i) <= '?')) {
+                    }
+                    else if ((text.charAt(i) >= '0') && (text.charAt(i) <= '?')) {
                         this._AnsiBuffer += text.charAt(i);
-                    } else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
+                    }
+                    else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
                         this._AnsiParams.push((this._AnsiBuffer === '') ? '0' : this._AnsiBuffer);
                         this._AnsiBuffer = '';
-
                         this._AnsiIntermediates.push(text.charAt(i));
-                        this._AnsiParserState = 4 /* IntermediateByte */;
-                    } else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
+                        this._AnsiParserState = AnsiParserState.IntermediateByte;
+                    }
+                    else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
                         this._AnsiParams.push((this._AnsiBuffer === '') ? '0' : this._AnsiBuffer);
                         this._AnsiBuffer = '';
-
                         Crt.Write(Buffer);
                         Buffer = '';
-
                         this.AnsiCommand(text.charAt(i));
-
-                        this._AnsiParserState = 0 /* None */;
-                    } else {
-                        Buffer += text.charAt(i);
-                        this._AnsiParserState = 0 /* None */;
+                        this._AnsiParserState = AnsiParserState.None;
                     }
-                } else if (this._AnsiParserState === 4 /* IntermediateByte */) {
+                    else {
+                        Buffer += text.charAt(i);
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                }
+                else if (this._AnsiParserState === AnsiParserState.IntermediateByte) {
                     if ((text.charAt(i) >= '0') && (text.charAt(i) <= '?')) {
                         Buffer += text.charAt(i);
-                        this._AnsiParserState = 0 /* None */;
-                    } else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                    else if ((text.charAt(i) >= ' ') && (text.charAt(i) <= '/')) {
                         this._AnsiIntermediates.push(text.charAt(i));
-                    } else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
+                    }
+                    else if ((text.charAt(i) >= '@') && (text.charAt(i) <= '~')) {
                         Crt.Write(Buffer);
                         Buffer = '';
-
                         this.AnsiCommand(text.charAt(i));
-
-                        this._AnsiParserState = 0 /* None */;
-                    } else {
-                        Buffer += text.charAt(i);
-                        this._AnsiParserState = 0 /* None */;
+                        this._AnsiParserState = AnsiParserState.None;
                     }
-                } else {
+                    else {
+                        Buffer += text.charAt(i);
+                        this._AnsiParserState = AnsiParserState.None;
+                    }
+                }
+                else {
                     Buffer += text.charAt(i);
                 }
             }
-
             Crt.Write(Buffer);
         }
     };
-
     Ansi.WriteLn = function (text) {
         this.Write(text + '\r\n');
     };
@@ -1427,14 +1486,12 @@ var Ansi = (function () {
     Ansi.onripdetect = new TypedEvent();
     Ansi.onripdisable = new TypedEvent();
     Ansi.onripenable = new TypedEvent();
-
     Ansi.ANSI_COLORS = [0, 4, 2, 6, 1, 5, 3, 7];
-
     Ansi._AnsiAttr = 7;
     Ansi._AnsiBuffer = '';
     Ansi._AnsiIntermediates = [];
     Ansi._AnsiParams = [];
-    Ansi._AnsiParserState = 0 /* None */;
+    Ansi._AnsiParserState = AnsiParserState.None;
     Ansi._AnsiXY = new Point(1, 1);
     return Ansi;
 })();
@@ -1471,11 +1528,9 @@ var MouseButton = (function () {
         enumerable: true,
         configurable: true
     });
-
     MouseButton.prototype.DoResetScreen = function () {
         return ((this._Flags & 4) == 4);
     };
-
     Object.defineProperty(MouseButton.prototype, "HotKey", {
         get: function () {
             return this._HotKey;
@@ -1483,11 +1538,9 @@ var MouseButton = (function () {
         enumerable: true,
         configurable: true
     });
-
     MouseButton.prototype.IsInvertable = function () {
         return ((this._Flags & 2) == 2);
     };
-
     Object.defineProperty(MouseButton.prototype, "HostCommand", {
         get: function () {
             return this._HostCommand;
@@ -1500,15 +1553,10 @@ var MouseButton = (function () {
 var RIPParserState;
 (function (RIPParserState) {
     RIPParserState[RIPParserState["None"] = 0] = "None";
-
     RIPParserState[RIPParserState["GotExclamation"] = 1] = "GotExclamation";
-
     RIPParserState[RIPParserState["GotPipe"] = 2] = "GotPipe";
-
     RIPParserState[RIPParserState["GotLevel"] = 3] = "GotLevel";
-
     RIPParserState[RIPParserState["GotSubLevel"] = 4] = "GotSubLevel";
-
     RIPParserState[RIPParserState["GotCommand"] = 5] = "GotCommand";
 })(RIPParserState || (RIPParserState = {}));
 var BitmapFont = (function () {
@@ -1516,36 +1564,32 @@ var BitmapFont = (function () {
     }
     BitmapFont.Init = function () {
         var _this = this;
-        for (var char = 0; char < 256; char++) {
-            this.Pixels[char] = [];
+        for (var Char = 0; Char < 256; Char++) {
+            this.Pixels[Char] = [];
             for (var y = 0; y < 8; y++) {
-                this.Pixels[char][y] = [];
+                this.Pixels[Char][y] = [];
                 for (var x = 0; x < 8; x++) {
-                    this.Pixels[char][y][x] = 0;
+                    this.Pixels[Char][y][x] = 0;
                 }
             }
         }
-
         if (document.getElementById('fTelnetScript') !== null) {
             var ScriptUrl = document.getElementById('fTelnetScript').src;
             var JsonUrl = ScriptUrl.replace('/ftelnet.min.js', '/fonts/RIP-Bitmap_8x8.json');
             JsonUrl = JsonUrl.replace('/ftelnet.debug.js', '/fonts/RIP-Bitmap_8x8.json');
-
             var xhr = new XMLHttpRequest();
             xhr.open('get', JsonUrl, true);
-            xhr.onload = function () {
-                _this.OnJsonLoad(xhr);
-            };
+            xhr.onload = function () { _this.OnJsonLoad(xhr); };
             xhr.send();
         }
     };
-
     BitmapFont.OnJsonLoad = function (xhr) {
         var status = xhr.status;
         if (status === 200) {
             this.Pixels = JSON.parse(xhr.responseText);
             this.Loaded = true;
-        } else {
+        }
+        else {
             alert('fTelnet Error: Unable to load RIP bitmap font');
         }
     };
@@ -1573,7 +1617,7 @@ var FillSettings = (function () {
     function FillSettings() {
         this.Colour = 15;
         this.Pattern = [];
-        this.Style = 1 /* Solid */;
+        this.Style = FillStyle.Solid;
         for (var y = 0; y < 8; y++) {
             this.Pattern[y] = [];
             for (var x = 0; x < 8; x++) {
@@ -1588,26 +1632,45 @@ var LineThickness;
     LineThickness[LineThickness["Normal"] = 1] = "Normal";
     LineThickness[LineThickness["Thick"] = 3] = "Thick";
 })(LineThickness || (LineThickness = {}));
+/// <reference path='LineThickness.ts' />
 var LineSettings = (function () {
     function LineSettings() {
-        this.Style = 0 /* Solid */;
+        this.Style = LineStyle.Solid;
         this.Pattern = 0xFFFF;
-        this.Thickness = 1 /* Normal */;
+        this.Thickness = LineThickness.Normal;
     }
     return LineSettings;
 })();
+var LineStyle;
+(function (LineStyle) {
+    LineStyle[LineStyle["Normal"] = 0] = "Normal";
+    LineStyle[LineStyle["Solid"] = 0] = "Solid";
+    LineStyle[LineStyle["Dotted"] = 1] = "Dotted";
+    LineStyle[LineStyle["Center"] = 2] = "Center";
+    LineStyle[LineStyle["Dashed"] = 3] = "Dashed";
+    LineStyle[LineStyle["User"] = 4] = "User";
+})(LineStyle || (LineStyle = {}));
+var TextJustification;
+(function (TextJustification) {
+    TextJustification[TextJustification["Left"] = 0] = "Left";
+    TextJustification[TextJustification["Center"] = 1] = "Center";
+    TextJustification[TextJustification["Right"] = 2] = "Right";
+    TextJustification[TextJustification["Bottom"] = 0] = "Bottom";
+    TextJustification[TextJustification["Top"] = 2] = "Top";
+})(TextJustification || (TextJustification = {}));
 var TextOrientation;
 (function (TextOrientation) {
     TextOrientation[TextOrientation["Horizontal"] = 0] = "Horizontal";
     TextOrientation[TextOrientation["Vertical"] = 1] = "Vertical";
 })(TextOrientation || (TextOrientation = {}));
+/// <reference path='TextOrientation.ts' />
 var TextSettings = (function () {
     function TextSettings() {
-        this.Direction = 0 /* Horizontal */;
+        this.Direction = TextOrientation.Horizontal;
         this.Font = 0;
-        this.HorizontalAlign = 0 /* Left */;
+        this.HorizontalAlign = TextJustification.Left;
         this.Size = 1;
-        this.VerticalAlign = 2 /* Top */;
+        this.VerticalAlign = TextJustification.Top;
         this.SetStrokeScale();
     }
     TextSettings.prototype.SetStrokeScale = function () {
@@ -1652,17 +1715,43 @@ var WriteMode;
     WriteMode[WriteMode["And"] = 3] = "And";
     WriteMode[WriteMode["Not"] = 4] = "Not";
 })(WriteMode || (WriteMode = {}));
+/*
+  fTelnet: An HTML5 WebSocket client
+  Copyright (C) 2009-2013  Rick Parrish, R&M Software
+
+  This file is part of fTelnet.
+
+  fTelnet is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or any later version.
+
+  fTelnet is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with fTelnet.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/// <reference path='IPutPixelFunction.ts' />
+/// <reference path='FillSettings.ts' />
+/// <reference path='LineSettings.ts' />
+/// <reference path='LineStyle.ts' />
+/// <reference path='StrokeFont.ts' />
+/// <reference path='TextJustification.ts' />
+/// <reference path='TextSettings.ts' />
+/// <reference path='ViewPortSettings.ts' />
+/// <reference path='WriteMode.ts' />
+/// <reference path='../actionscript/Point.ts' />
 var Graph = (function () {
     function Graph() {
     }
     Graph.Init = function (container) {
         this._Container = container;
-
         this._TextWindow = new Rectangle(0, 0, Crt.ScreenCols, Crt.ScreenRows);
-
         BitmapFont.Init();
         StrokeFont.Init();
-
         this._Canvas = document.createElement('canvas');
         this._Canvas.id = 'fTelnetGraphCanvas';
         this._Canvas.innerHTML = 'Your browser does not support the HTML5 Canvas element!<br>The latest version of every major web browser supports this element, so please consider upgrading now:<ul><li><a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a></li><li><a href="http://www.google.com/chrome">Google Chrome</a></li><li><a href="http://www.apple.com/safari/">Apple Safari</a></li><li><a href="http://www.opera.com/">Opera</a></li><li><a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">MS Internet Explorer</a></li></ul>';
@@ -1670,63 +1759,49 @@ var Graph = (function () {
         this._Canvas.style.zIndex = '0';
         this._Canvas.width = this.PIXELS_X;
         this._Canvas.height = this.PIXELS_Y;
-
         this._Container.style.width = this.PIXELS_X.toString(10) + 'px';
         this._Container.style.height = this.PIXELS_Y.toString(10) + 'px';
         Crt.Canvas.style.position = 'absolute';
-
+        Crt.Transparent = true;
         if (!this._Canvas.getContext) {
             console.log('fTelnet Error: Canvas not supported');
             return false;
         }
-
         this._Container.appendChild(this._Canvas);
-
         this._CanvasContext = this._Canvas.getContext('2d');
         this._CanvasContext.font = '12pt monospace';
         this._CanvasContext.textBaseline = 'top';
-
         this.GraphDefaults();
-
         RIP.Init();
-
         return true;
     };
-
     Graph.Arc = function (AX, AY, AStartAngle, AEndAngle, ARadius) {
         this.Ellipse(AX, AY, AStartAngle, AEndAngle, ARadius, Math.floor(ARadius * this.ASPECT_RATIO));
     };
-
     Graph.Bar = function (AX1, AY1, AX2, AY2) {
         var x;
         var y;
-
         if ((this._ViewPortSettings.Clip) && (!this._ViewPortSettings.FullScreen)) {
             AX1 += this._ViewPortSettings.x1;
             AY1 += this._ViewPortSettings.y1;
             AX2 += this._ViewPortSettings.x1;
             AY2 += this._ViewPortSettings.y1;
-
             if ((AX1 > this._ViewPortSettings.x2) || (AY1 > this._ViewPortSettings.y2))
                 return;
         }
-
         AX2 = Math.min(AX2, this._ViewPortSettings.x2);
         AY2 = Math.min(AY2, this._ViewPortSettings.y2);
-
-        if ((this._FillSettings.Colour === this._BackColour) || (this._FillSettings.Style === 0 /* Empty */) || (this._FillSettings.Style === 1 /* Solid */)) {
-            var Colour = (this._FillSettings.Style === 1 /* Solid */) ? this._FillSettings.Colour : this._BackColour;
+        if ((this._FillSettings.Colour === this._BackColour) || (this._FillSettings.Style === FillStyle.Empty) || (this._FillSettings.Style === FillStyle.Solid)) {
+            var Colour = (this._FillSettings.Style === FillStyle.Solid) ? this._FillSettings.Colour : this._BackColour;
             Colour = this.CURRENT_PALETTE[Colour];
             this._CanvasContext.fillStyle = '#' + StringUtils.PadLeft(Colour.toString(16), '0', 6);
-
             this._CanvasContext.fillRect(AX1, AY1, AX2 - AX1 + 1, AY2 - AY1 + 1);
-        } else {
+        }
+        else {
             var XOffset = AX1 + (AY1 * this.PIXELS_X);
             var RowSkip = ((this.PIXELS_X - 1) - AX2) + (AX1);
-
             var ColourOn = '#' + StringUtils.PadLeft(this.CURRENT_PALETTE[this._FillSettings.Colour].toString(16), '0', 6);
             var ColourOff = '#' + StringUtils.PadLeft(this.CURRENT_PALETTE[0].toString(16), '0', 6);
-
             for (y = AY1; y <= AY2; y++) {
                 for (x = AX1; x <= AX2; x++) {
                     this._CanvasContext.fillStyle = (this._FillSettings.Pattern[y & 7][x & 7] ? ColourOn : ColourOff);
@@ -1736,30 +1811,24 @@ var Graph = (function () {
             }
         }
     };
-
     Graph.Bezier = function (x1, y1, x2, y2, x3, y3, x4, y4, count) {
         var lastx = x1;
         var lasty = y1;
         var nextx;
         var nexty;
-
         var ucubed;
         var usquared;
         for (var u = 0; u <= 1; u += 1 / count) {
             usquared = u * u;
             ucubed = usquared * u;
-
             nextx = Math.round(ucubed * (x4 + 3 * (x2 - x3) - x1) + 3 * usquared * (x1 - 2 * x2 + x3) + 3 * u * (x2 - x1) + x1);
             nexty = Math.round(ucubed * (y4 + 3 * (y2 - y3) - y1) + 3 * usquared * (y1 - 2 * y2 + y3) + 3 * u * (y2 - y1) + y1);
             this.Line(lastx, lasty, nextx, nexty);
-
             lastx = nextx;
             lasty = nexty;
         }
-
         this.Line(lastx, lasty, x4, y4);
     };
-
     Object.defineProperty(Graph, "Canvas", {
         get: function () {
             return this._Canvas;
@@ -1767,46 +1836,34 @@ var Graph = (function () {
         enumerable: true,
         configurable: true
     });
-
     Graph.ClearTextWindow = function () {
         var x1 = parseInt(Crt.Canvas.style.left.replace('px', ''), 10);
         var x2 = x1 + Crt.Canvas.width - 1;
         var y1 = parseInt(Crt.Canvas.style.top.replace('px', ''), 10);
         var y2 = y1 + Crt.Canvas.height - 1;
-
         this._CanvasContext.fillStyle = '#' + StringUtils.PadLeft(this.CURRENT_PALETTE[this._BackColour].toString(16), '0', 6);
-
         this._CanvasContext.fillRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
-
         Crt.ClrScr();
     };
-
     Graph.ClearViewPort = function () {
         this.MoveTo(0, 0);
-
         var OldFillStyle = this._FillSettings.Style;
-        this._FillSettings.Style = 0 /* Empty */;
-
+        this._FillSettings.Style = FillStyle.Empty;
         this.Bar(0, 0, (this.PIXELS_X - 1), (this.PIXELS_Y - 1));
-
         this._FillSettings.Style = OldFillStyle;
     };
-
     Graph.Circle = function (AX, AY, ARadius) {
         this.Ellipse(AX, AY, 0, 360, ARadius, Math.floor(ARadius * this.ASPECT_RATIO));
     };
-
     Graph.DrawPoly = function (APoints) {
         var APointslength = APoints.length;
         for (var i = 1; i < APointslength; i++) {
             this.Line(APoints[i - 1].x, APoints[i - 1].y, APoints[i].x, APoints[i].y);
         }
     };
-
     Graph.Ellipse = function (AX, AY, AStartAngle, AEndAngle, AXRadius, AYRadius) {
         if (AStartAngle === AEndAngle)
             return;
-
         var ConvFac = Math.PI / 180.0;
         var j;
         var Delta;
@@ -1824,68 +1881,51 @@ var Graph = (function () {
         var BackupColor;
         var TmpAngle;
         var OldLineWidth;
-
         AStartAngle = AStartAngle % 361;
         AEndAngle = AEndAngle % 361;
-
         if (AEndAngle < AStartAngle) {
             this.Ellipse(AX, AY, AStartAngle, 360, AXRadius, AYRadius);
             this.Ellipse(AX, AY, 0, AEndAngle, AXRadius, AYRadius);
             return;
         }
-
-        if (this._LineSettings.Thickness === 3 /* Thick */) {
+        if (this._LineSettings.Thickness === LineThickness.Thick) {
             OldLineWidth = this._LineSettings.Thickness;
-            this._LineSettings.Thickness = 1 /* Normal */;
-
+            this._LineSettings.Thickness = LineThickness.Normal;
             this.Ellipse(AX, AY, AStartAngle, AEndAngle, AXRadius + 1, AYRadius + 1);
             this.Ellipse(AX, AY, AStartAngle, AEndAngle, AXRadius, AYRadius);
-
             this._LineSettings.Thickness = OldLineWidth;
-
             if ((AXRadius > 0) && (AYRadius > 0)) {
                 AXRadius--;
                 AYRadius--;
-            } else {
+            }
+            else {
                 return;
             }
         }
-
         if (AXRadius === 0)
             AXRadius++;
         if (AYRadius === 0)
             AYRadius++;
-
         if ((AXRadius <= 1) && (AYRadius <= 1)) {
             this.PutPixel(AX, AY, this._Colour);
             return;
         }
-
         NumOfPixels = Math.round(Math.sqrt(3) * Math.sqrt(Math.pow(AXRadius, 2) + Math.pow(AYRadius, 2)));
-
         Delta = 90.0 / NumOfPixels;
-
         j = 0;
-
         DeltaEnd = 91;
-
         xnext = AXRadius;
         ynext = 0;
-
         do {
             xtemp = xnext;
             ytemp = ynext;
-
             TempTerm = (j + Delta) * ConvFac;
-
             xnext = Math.round(AXRadius * Math.cos(TempTerm));
             ynext = Math.round(AYRadius * Math.sin(TempTerm + Math.PI));
-
             xp = AX + xtemp;
             xm = AX - xtemp;
             yp = AY + ytemp;
             ym = AY - ytemp;
-
             if ((j >= AStartAngle) && (j <= AEndAngle)) {
                 this.PutPixel(xp, yp, this._Colour);
             }
@@ -1898,55 +1938,44 @@ var Graph = (function () {
             if (((360 - j) >= AStartAngle) && ((360 - j) <= AEndAngle)) {
                 this.PutPixel(xp, ym, this._Colour);
             }
-
             if (this._FillEllipse) {
                 this.Bar(Math.max(0, xm + 1), Math.max(0, yp + 1), Math.min(this.PIXELS_X - 1, xm + 1), Math.min(this.PIXELS_Y - 1, ym - 1));
                 this.Bar(Math.max(0, xp - 1), Math.max(0, yp + 1), Math.min(this.PIXELS_X - 1, xp - 1), Math.min(this.PIXELS_Y - 1, ym - 1));
             }
-
             j = j + Delta;
-        } while(j <= DeltaEnd);
+        } while (j <= DeltaEnd);
     };
-
     Graph.EraseEOL = function () {
         var x1 = parseInt(Crt.Canvas.style.left.replace('px', ''), 10) + ((Crt.WhereX() - 1) * Crt.Font.Width);
         var x2 = x1 + Crt.Canvas.width - 1;
         var y1 = parseInt(Crt.Canvas.style.top.replace('px', ''), 10) + ((Crt.WhereY() - 1) * Crt.Font.Height);
         var y2 = y1 + Crt.Font.Height;
-
         this._CanvasContext.fillStyle = '#' + StringUtils.PadLeft(this.CURRENT_PALETTE[this._BackColour].toString(16), '0', 6);
-
         for (var y = y1; y <= y2; y++) {
             for (var x = x1; x <= x2; x++) {
                 this._CanvasContext.fillRect(x, y, 1, 1);
             }
         }
-
         Crt.ClrEol();
     };
-
     Graph.FillEllipse = function (AX, AY, AXRadius, AYRadius) {
         this._FillEllipse = true;
         this.Ellipse(AX, AY, 0, 360, AXRadius, AYRadius);
         this._FillEllipse = false;
     };
-
     Graph.FillPoly = function (APoints) {
         this._FillPolyMap = [];
         for (var y = 0; y <= this.PIXELS_Y; y++) {
             this._FillPolyMap[y] = [];
         }
-
         this.PutPixel = this.PutPixelPoly;
         this.DrawPoly(APoints);
         this.PutPixel = this.PutPixelDefault;
-
         var Bounds = new Rectangle();
         Bounds.left = APoints[0].x;
         Bounds.top = APoints[0].y;
         Bounds.right = APoints[0].x;
         Bounds.bottom = APoints[0].y;
-
         var APointslength = APoints.length;
         for (var i = 1; i < APointslength; i++) {
             if (APoints[i].x < Bounds.left)
@@ -1958,59 +1987,53 @@ var Graph = (function () {
             if (APoints[i].y > Bounds.bottom)
                 Bounds.bottom = APoints[i].y;
         }
-
         Bounds.left = Math.max(Bounds.left, 0);
         Bounds.top = Math.max(Bounds.top, 0);
         Bounds.right = Math.min(Bounds.right, 639);
         Bounds.bottom = Math.min(Bounds.bottom, 349);
-
         for (var y = Bounds.top; y <= Bounds.bottom; y++) {
             var InPoly = false;
             var LastWasEdge = false;
             var LeftPoint = -1;
             var RightPoint = -1;
-
             for (var x = Bounds.left; x <= Bounds.right; x++) {
                 if (this._FillPolyMap[y][x]) {
                     if (LastWasEdge) {
-                    } else {
+                    }
+                    else {
                         if (LeftPoint !== -1) {
                             this.Bar(LeftPoint, y, RightPoint, y);
                             LeftPoint = -1;
                             RightPoint = -1;
                         }
                     }
-
                     LastWasEdge = true;
-                } else {
+                }
+                else {
                     if (LastWasEdge) {
                         InPoly = this.PointInPoly(x, y, APoints);
                     }
-
                     if (InPoly) {
                         if (LeftPoint === -1) {
                             LeftPoint = x;
                             RightPoint = x;
-                        } else {
+                        }
+                        else {
                             RightPoint = x;
                         }
                     }
-
                     LastWasEdge = false;
                 }
             }
         }
     };
-
     Graph.FloodFill = function (AX, AY, ABorder) {
         if ((this._ViewPortSettings.Clip) && (!this._ViewPortSettings.FullScreen)) {
             AX += this._ViewPortSettings.x1;
             AY += this._ViewPortSettings.y1;
-
             if ((AX < this._ViewPortSettings.x1) || (AX > this._ViewPortSettings.x2) || (AY < this._ViewPortSettings.y1) || (AY > this._ViewPortSettings.y2))
                 return;
         }
-
         var IsLittleEndian = true;
         var EndianBuffer = new ArrayBuffer(4);
         var Endian8 = new Uint8Array(EndianBuffer);
@@ -2019,7 +2042,6 @@ var Graph = (function () {
         if (Endian8[0] === 0x0a && Endian8[1] === 0x0b && Endian8[2] === 0x0c && Endian8[3] === 0x0d) {
             IsLittleEndian = false;
         }
-
         var BorderColour = this.CURRENT_PALETTE[ABorder];
         var ColourOn = this.CURRENT_PALETTE[this._FillSettings.Colour];
         var ColourOff = this.CURRENT_PALETTE[0];
@@ -2028,37 +2050,31 @@ var Graph = (function () {
             var G = (BorderColour & 0x00FF00) >> 8;
             var B = (BorderColour & 0x0000FF) >> 0;
             BorderColour = 0xFF000000 + (B << 16) + (G << 8) + (R << 0);
-
             var R = (ColourOn & 0xFF0000) >> 16;
             var G = (ColourOn & 0x00FF00) >> 8;
             var B = (ColourOn & 0x0000FF) >> 0;
             ColourOn = 0xFF000000 + (B << 16) + (G << 8) + (R << 0);
-
             var R = (ColourOff & 0xFF0000) >> 16;
             var G = (ColourOff & 0x00FF00) >> 8;
             var B = (ColourOff & 0x0000FF) >> 0;
             ColourOff = 0xFF000000 + (B << 16) + (G << 8) + (R << 0);
-        } else {
+        }
+        else {
             BorderColour = (BorderColour << 8) + 0x000000FF;
             ColourOn = (ColourOn << 8) + 0x000000FF;
             ColourOff = (ColourOff << 8) + 0x000000FF;
         }
-
         var PixelData = this._CanvasContext.getImageData(0, 0, this.PIXELS_X, this.PIXELS_Y);
-        var Pixels = new Uint32Array(PixelData.data.buffer);
-
+        var Pixels = new Uint32Array(PixelData.data);
         if (Pixels[AX + (AY * this.PIXELS_X)] === BorderColour)
             return;
-
         var Visited = [];
-
         var pixelStack = [[AX, AY]];
         while (pixelStack.length) {
             var newPos, x, y, pixelPos, reachLeft, reachRight;
             newPos = pixelStack.pop();
             x = newPos[0];
             y = newPos[1];
-
             pixelPos = (y * this.PIXELS_X + x);
             while (y-- >= this._ViewPortSettings.y1 && (Pixels[pixelPos] !== BorderColour)) {
                 pixelPos -= this.PIXELS_X;
@@ -2070,82 +2086,68 @@ var Graph = (function () {
             while (y++ < this._ViewPortSettings.y2 - 1 && (Pixels[pixelPos] !== BorderColour)) {
                 Pixels[pixelPos] = (this._FillSettings.Pattern[y & 7][x & 7] ? ColourOn : ColourOff);
                 Visited[pixelPos] = true;
-
                 if ((x > this._ViewPortSettings.x1) && (!Visited[pixelPos - 1])) {
                     if (Pixels[pixelPos - 1] !== BorderColour) {
                         if (!reachLeft) {
                             pixelStack.push([x - 1, y]);
                             reachLeft = true;
                         }
-                    } else if (reachLeft) {
+                    }
+                    else if (reachLeft) {
                         reachLeft = false;
                     }
                 }
-
                 if ((x < this._ViewPortSettings.x2 - 1) && (!Visited[pixelPos + 1])) {
                     if (Pixels[pixelPos + 1] !== BorderColour) {
                         if (!reachRight) {
                             pixelStack.push([x + 1, y]);
                             reachRight = true;
                         }
-                    } else if (reachRight) {
+                    }
+                    else if (reachRight) {
                         reachRight = false;
                     }
                 }
-
                 pixelPos += this.PIXELS_X;
             }
         }
-
         this._CanvasContext.putImageData(PixelData, 0, 0);
     };
-
     Graph.GetColour = function () {
         return this._Colour;
     };
-
     Graph.GetFillSettings = function () {
         return this._FillSettings;
     };
-
     Graph.GetImage = function (x1, y1, x2, y2) {
         return this._CanvasContext.getImageData(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
     };
-
     Graph.GraphDefaults = function () {
-        this.SetLineStyle(0 /* Solid */, 0xFFFF, 1 /* Normal */);
-        this.SetFillStyle(1 /* Solid */, 15);
-
+        this.SetLineStyle(LineStyle.Solid, 0xFFFF, LineThickness.Normal);
+        this.SetFillStyle(FillStyle.Solid, 15);
         this.SetColour(15);
         this.SetBkColour(0);
-
         this.SetAllPalette([0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63], false);
         this.SetViewPort(0, 0, (this.PIXELS_X - 1), (this.PIXELS_Y - 1), true);
         this.ClearViewPort();
-
         this.MoveTo(0, 0);
-        this.SetWriteMode(0 /* Copy */);
-        this.SetTextStyle(0, 0 /* Horizontal */, 1);
-        this.SetTextJustify(0 /* Left */, 2 /* Top */);
+        this.SetWriteMode(WriteMode.Copy);
+        this.SetTextStyle(0, TextOrientation.Horizontal, 1);
+        this.SetTextJustify(TextJustification.Left, TextJustification.Top);
     };
-
     Graph.Invert = function (AX1, AY1, AX2, AY2) {
         if ((this._ViewPortSettings.Clip) && (!this._ViewPortSettings.FullScreen)) {
             AX1 += this._ViewPortSettings.x1;
             AY1 += this._ViewPortSettings.y1;
             AX2 += this._ViewPortSettings.x1;
             AY2 += this._ViewPortSettings.y1;
-
             if ((AX1 > this._ViewPortSettings.x2) || (AY1 > this._ViewPortSettings.y2))
                 return;
-
             AX2 = Math.min(AX2, this._ViewPortSettings.x2);
             AY2 = Math.min(AY2, this._ViewPortSettings.y2);
         }
-
         var PixelData = this._CanvasContext.getImageData(0, 0, this.PIXELS_X, this.PIXELS_Y);
         var Pixels = PixelData.data;
-
         for (var y = AY1; y <= AY2; y++) {
             for (var i = (y * this.PIXELS_X * 4) + (AX1 * 4), n = (y * this.PIXELS_X * 4) + (AX2 * 4); i <= n; i += 4) {
                 Pixels[i] = 255 - Pixels[i];
@@ -2153,38 +2155,30 @@ var Graph = (function () {
                 Pixels[i + 2] = 255 - Pixels[i + 2];
             }
         }
-
         this._CanvasContext.putImageData(PixelData, 0, 0);
     };
-
     Graph.HLine = function (x, x2, y) {
         var xtmp;
-
         if (x >= x2) {
             xtmp = x2;
             x2 = x;
             x = xtmp;
         }
-
         for (x = x; x <= x2; x++) {
             this.PutPixel(x, y, this._Colour);
         }
     };
-
     Graph.VLine = function (x, y, y2) {
         var ytmp;
-
         if (y >= y2) {
             ytmp = y2;
             y2 = y;
             y = ytmp;
         }
-
         for (y = y; y <= y2; y++) {
             this.PutPixel(x, y, this._Colour);
         }
     };
-
     Graph.Line = function (x1, y1, x2, y2) {
         var x;
         var y;
@@ -2203,31 +2197,32 @@ var Graph = (function () {
         var pixelcount;
         var swtmp;
         var tmpnumpixels;
-
-        if (this._LineSettings.Style === 0 /* Solid */) {
+        if (this._LineSettings.Style === LineStyle.Solid) {
             if (y1 === y2) {
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     this.HLine(x1, x2, y2);
-                } else {
+                }
+                else {
                     this.HLine(x1, x2, y2 - 1);
                     this.HLine(x1, x2, y2);
                     this.HLine(x2, x2, y2 + 1);
                 }
-            } else if (x1 === x2) {
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+            }
+            else if (x1 === x2) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     this.VLine(x1, y1, y2);
-                } else {
+                }
+                else {
                     this.VLine(x1 - 1, y1, y2);
                     this.VLine(x1, y1, y2);
                     this.VLine(x1 + 1, y1, y2);
                 }
-            } else {
+            }
+            else {
                 deltax = Math.abs(x2 - x1);
                 deltay = Math.abs(y2 - y1);
-
                 if (deltax >= deltay) {
                     flag = false;
-
                     numpixels = deltax + 1;
                     d = (2 * deltay) - deltax;
                     dinc1 = deltay << 1;
@@ -2236,9 +2231,9 @@ var Graph = (function () {
                     xinc2 = 1;
                     yinc1 = 0;
                     yinc2 = 1;
-                } else {
+                }
+                else {
                     flag = true;
-
                     numpixels = deltay + 1;
                     d = (2 * deltax) - deltay;
                     dinc1 = deltax << 1;
@@ -2248,7 +2243,6 @@ var Graph = (function () {
                     yinc1 = 1;
                     yinc2 = 1;
                 }
-
                 if (x1 > x2) {
                     xinc1 = -xinc1;
                     xinc2 = -xinc2;
@@ -2257,40 +2251,41 @@ var Graph = (function () {
                     yinc1 = -yinc1;
                     yinc2 = -yinc2;
                 }
-
                 x = x1;
                 y = y1;
-
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (i = 1; i <= numpixels; i++) {
                         this.PutPixel(x, y, this._Colour);
                         if (d < 0) {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
                         }
                     }
-                } else {
+                }
+                else {
                     for (i = 1; i <= numpixels; i++) {
                         if (flag) {
                             this.PutPixel(x - 1, y, this._Colour);
                             this.PutPixel(x, y, this._Colour);
                             this.PutPixel(x + 1, y, this._Colour);
-                        } else {
+                        }
+                        else {
                             this.PutPixel(x, y - 1, this._Colour);
                             this.PutPixel(x, y, this._Colour);
                             this.PutPixel(x, y + 1, this._Colour);
                         }
-
                         if (d < 0) {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
@@ -2298,7 +2293,8 @@ var Graph = (function () {
                     }
                 }
             }
-        } else {
+        }
+        else {
             pixelcount = 0;
             if (y1 === y2) {
                 if (x1 >= x2) {
@@ -2306,13 +2302,14 @@ var Graph = (function () {
                     x1 = x2;
                     x2 = swtmp;
                 }
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (pixelcount = x1; pixelcount <= x2; pixelcount++) {
                         if ((this._LineSettings.Pattern & (1 << (pixelcount & 15))) !== 0) {
                             this.PutPixel(pixelcount, y2, this._Colour);
                         }
                     }
-                } else {
+                }
+                else {
                     for (i = -1; i <= 1; i++) {
                         for (pixelcount = x1; pixelcount <= x2; pixelcount++) {
                             if ((this._LineSettings.Pattern & (1 << (pixelcount & 15))) !== 0) {
@@ -2321,19 +2318,21 @@ var Graph = (function () {
                         }
                     }
                 }
-            } else if (x1 === x2) {
+            }
+            else if (x1 === x2) {
                 if (y1 >= y2) {
                     swtmp = y1;
                     y1 = y2;
                     y2 = swtmp;
                 }
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (pixelcount = y1; pixelcount <= y2; pixelcount++) {
                         if ((this._LineSettings.Pattern & (1 << (pixelcount & 15))) !== 0) {
                             this.PutPixel(x1, pixelcount, this._Colour);
                         }
                     }
-                } else {
+                }
+                else {
                     for (i = -1; i <= 1; i++) {
                         for (pixelcount = y1; pixelcount <= y2; pixelcount++) {
                             if ((this._LineSettings.Pattern & (1 << (pixelcount & 15))) !== 0) {
@@ -2342,13 +2341,12 @@ var Graph = (function () {
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 deltax = Math.abs(x2 - x1);
                 deltay = Math.abs(y2 - y1);
-
                 if (deltax >= deltay) {
                     flag = false;
-
                     numpixels = deltax + 1;
                     d = (2 * deltay) - deltax;
                     dinc1 = deltay << 1;
@@ -2357,9 +2355,9 @@ var Graph = (function () {
                     xinc2 = 1;
                     yinc1 = 0;
                     yinc2 = 1;
-                } else {
+                }
+                else {
                     flag = true;
-
                     numpixels = deltay + 1;
                     d = (2 * deltax) - deltay;
                     dinc1 = deltax << 1;
@@ -2369,7 +2367,6 @@ var Graph = (function () {
                     yinc1 = 1;
                     yinc2 = 1;
                 }
-
                 if (x1 > x2) {
                     xinc1 = -xinc1;
                     xinc2 = -xinc2;
@@ -2378,13 +2375,10 @@ var Graph = (function () {
                     yinc1 = -yinc1;
                     yinc2 = -yinc2;
                 }
-
                 x = x1;
                 y = y1;
-
-                if (this._LineSettings.Thickness === 3 /* Thick */) {
+                if (this._LineSettings.Thickness === LineThickness.Thick) {
                     tmpnumpixels = numpixels - 1;
-
                     for (i = 0; i <= tmpnumpixels; i++) {
                         if (flag) {
                             if ((this._LineSettings.Pattern & (1 << (i & 15))) !== 0) {
@@ -2392,27 +2386,28 @@ var Graph = (function () {
                                 this.PutPixel(x, y, this._Colour);
                                 this.PutPixel(x + 1, y, this._Colour);
                             }
-                        } else {
+                        }
+                        else {
                             if ((this._LineSettings.Pattern & (1 << (i & 15))) !== 0) {
                                 this.PutPixel(x, y - 1, this._Colour);
                                 this.PutPixel(x, y, this._Colour);
                                 this.PutPixel(x, y + 1, this._Colour);
                             }
                         }
-
                         if (d < 0) {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
                         }
                     }
-                } else {
+                }
+                else {
                     tmpnumpixels = numpixels - 1;
-
                     for (i = 0; i <= tmpnumpixels; i++) {
                         if ((this._LineSettings.Pattern & (1 << (i & 15))) !== 0) {
                             this.PutPixel(x, y, this._Colour);
@@ -2421,7 +2416,8 @@ var Graph = (function () {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
@@ -2431,11 +2427,9 @@ var Graph = (function () {
             }
         }
     };
-
     Graph.yLine = function (x0, y0, x1, y1) {
-        if (this._WriteMode === 1 /* XOR */) {
+        if (this._WriteMode === WriteMode.XOR) {
         }
-
         var x;
         var y;
         var Start;
@@ -2448,20 +2442,19 @@ var Graph = (function () {
         var y0plus;
         var m;
         var b;
-
-        if (this._LineSettings.Style === 0 /* Solid */) {
+        if (this._LineSettings.Style === LineStyle.Solid) {
             dx = x1 - x0;
             if (dx === 0) {
                 Start = Math.min(y0, y1);
                 End = Math.max(y0, y1);
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (y = Start; y <= End; y++) {
                         this.PutPixel(x0, y, this._Colour);
                     }
-                } else {
+                }
+                else {
                     x0minus = x0 - 1;
                     x0plus = x0 + 1;
-
                     for (y = Start; y <= End; y++) {
                         this.PutPixel(x0minus, y, this._Colour);
                         this.PutPixel(x0, y, this._Colour);
@@ -2470,19 +2463,18 @@ var Graph = (function () {
                 }
                 return;
             }
-
             dy = y1 - y0;
             if (dy === 0) {
                 Start = Math.min(x0, x1);
                 End = Math.max(x0, x1);
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (x = Start; x <= End; x++) {
                         this.PutPixel(x, y0, this._Colour);
                     }
-                } else {
+                }
+                else {
                     y0minus = y0 - 1;
                     y0plus = y0 + 1;
-
                     for (x = Start; x <= End; x++) {
                         this.PutPixel(x, y0minus, this._Colour);
                         this.PutPixel(x, y0, this._Colour);
@@ -2491,18 +2483,17 @@ var Graph = (function () {
                 }
                 return;
             }
-
             m = dy / dx;
             b = y0 - (m * x0);
-
             Start = Math.min(x0, x1);
             End = Math.max(x0, x1);
-            if (this._LineSettings.Thickness === 1 /* Normal */) {
+            if (this._LineSettings.Thickness === LineThickness.Normal) {
                 for (x = Start; x <= End; x++) {
                     y = Math.round((m * x) + b);
                     this.PutPixel(x, y, this._Colour);
                 }
-            } else {
+            }
+            else {
                 if (dx >= dy) {
                     for (x = Start; x <= End; x++) {
                         y = Math.round((m * x) + b);
@@ -2510,7 +2501,8 @@ var Graph = (function () {
                         this.PutPixel(x, y, this._Colour);
                         this.PutPixel(x, y + 1, this._Colour);
                     }
-                } else {
+                }
+                else {
                     for (x = Start; x <= End; x++) {
                         y = Math.round((m * x) + b);
                         this.PutPixel(x - 1, y, this._Colour);
@@ -2519,15 +2511,15 @@ var Graph = (function () {
                     }
                 }
             }
-
             Start = Math.min(y0, y1);
             End = Math.max(y0, y1);
-            if (this._LineSettings.Thickness === 1 /* Normal */) {
+            if (this._LineSettings.Thickness === LineThickness.Normal) {
                 for (y = Start; y <= End; y++) {
                     x = Math.round((y - b) / m);
                     this.PutPixel(x, y, this._Colour);
                 }
-            } else {
+            }
+            else {
                 if (dx >= dy) {
                     for (y = Start; y <= End; y++) {
                         x = Math.round((y - b) / m);
@@ -2535,7 +2527,8 @@ var Graph = (function () {
                         this.PutPixel(x, y, this._Colour);
                         this.PutPixel(x, y + 1, this._Colour);
                     }
-                } else {
+                }
+                else {
                     for (y = Start; y <= End; y++) {
                         x = Math.round((y - b) / m);
                         this.PutPixel(x - 1, y, this._Colour);
@@ -2544,22 +2537,22 @@ var Graph = (function () {
                     }
                 }
             }
-        } else {
+        }
+        else {
             var i = 0;
-
             dx = x1 - x0;
             if (dx === 0) {
                 Start = Math.min(y0, y1);
                 End = Math.max(y0, y1);
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (y = Start; y <= End; y++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0)
                             this.PutPixel(x0, y, this._Colour);
                     }
-                } else {
+                }
+                else {
                     x0minus = x0 - 1;
                     x0plus = x0 + 1;
-
                     for (y = Start; y <= End; y++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                             this.PutPixel(x0minus, y, this._Colour);
@@ -2570,20 +2563,19 @@ var Graph = (function () {
                 }
                 return;
             }
-
             dy = y1 - y0;
             if (dy === 0) {
                 Start = Math.min(x0, x1);
                 End = Math.max(x0, x1);
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (x = Start; x <= End; x++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0)
                             this.PutPixel(x, y0, this._Colour);
                     }
-                } else {
+                }
+                else {
                     y0minus = y0 - 1;
                     y0plus = y0 + 1;
-
                     for (x = Start; x <= End; x++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                             this.PutPixel(x, y0minus, this._Colour);
@@ -2594,20 +2586,19 @@ var Graph = (function () {
                 }
                 return;
             }
-
             m = dy / dx;
             b = y0 - (m * x0);
-
             Start = Math.min(x0, x1);
             End = Math.max(x0, x1);
-            if (this._LineSettings.Thickness === 1 /* Normal */) {
+            if (this._LineSettings.Thickness === LineThickness.Normal) {
                 for (x = Start; x <= End; x++) {
                     if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                         y = Math.round((m * x) + b);
                         this.PutPixel(x, y, this._Colour);
                     }
                 }
-            } else {
+            }
+            else {
                 if (dx >= dy) {
                     for (x = Start; x <= End; x++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
@@ -2617,7 +2608,8 @@ var Graph = (function () {
                             this.PutPixel(x, y + 1, this._Colour);
                         }
                     }
-                } else {
+                }
+                else {
                     for (x = Start; x <= End; x++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                             y = Math.round((m * x) + b);
@@ -2628,17 +2620,17 @@ var Graph = (function () {
                     }
                 }
             }
-
             Start = Math.min(y0, y1);
             End = Math.max(y0, y1);
-            if (this._LineSettings.Thickness === 1 /* Normal */) {
+            if (this._LineSettings.Thickness === LineThickness.Normal) {
                 for (y = Start; y <= End; y++) {
                     if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                         x = Math.round((y - b) / m);
                         this.PutPixel(x, y, this._Colour);
                     }
                 }
-            } else {
+            }
+            else {
                 if (dx >= dy) {
                     for (y = Start; y <= End; y++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
@@ -2648,7 +2640,8 @@ var Graph = (function () {
                             this.PutPixel(x, y + 1, this._Colour);
                         }
                     }
-                } else {
+                }
+                else {
                     for (y = Start; y <= End; y++) {
                         if ((this._LineSettings.Pattern & (1 << (i++ & 15))) !== 0) {
                             x = Math.round((y - b) / m);
@@ -2661,54 +2654,52 @@ var Graph = (function () {
             }
         }
     };
-
     Graph.xLine = function (AX1, AY1, AX2, AY2) {
-        if (this._LineSettings.Style !== 0 /* Solid */) {
-            this._LineSettings.Style = 0 /* Solid */;
+        if (this._LineSettings.Style !== LineStyle.Solid) {
+            this._LineSettings.Style = LineStyle.Solid;
             this._LineSettings.Pattern = 0xFFFF;
         }
-        if (this._WriteMode === 1 /* XOR */) {
+        if (this._WriteMode === WriteMode.XOR) {
         }
-
         var i;
         var x;
         var y;
-
-        if (this._LineSettings.Style === 0 /* Solid */) {
+        if (this._LineSettings.Style === LineStyle.Solid) {
             if (AX1 === AX2) {
                 var YStart = Math.min(AY1, AY2);
                 var YEnd = Math.max(AY1, AY2);
-
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (y = YStart; y <= YEnd; y++) {
                         this.PutPixel(AX1, y, this._Colour);
                     }
-                } else {
+                }
+                else {
                     for (y = YStart; y <= YEnd; y++) {
                         this.PutPixel(AX1 - 1, y, this._Colour);
                         this.PutPixel(AX1, y, this._Colour);
                         this.PutPixel(AX1 + 1, y, this._Colour);
                     }
                 }
-            } else if (AY1 === AY2) {
+            }
+            else if (AY1 === AY2) {
                 var XStart = Math.min(AX1, AX2);
                 var XEnd = Math.max(AX1, AX2);
-
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (x = XStart; x <= XEnd; x++) {
                         this.PutPixel(x, AY1, this._Colour);
                     }
-                } else {
+                }
+                else {
                     for (x = XStart; x <= XEnd; x++) {
                         this.PutPixel(x, AY1 - 1, this._Colour);
                         this.PutPixel(x, AY1, this._Colour);
                         this.PutPixel(x, AY1 + 1, this._Colour);
                     }
                 }
-            } else {
+            }
+            else {
                 var deltax = Math.abs(AX2 - AX1);
                 var deltay = Math.abs(AY2 - AY1);
-
                 var yslopesmore;
                 var numpixels;
                 var d;
@@ -2728,7 +2719,8 @@ var Graph = (function () {
                     xinc2 = 1;
                     yinc1 = 0;
                     yinc2 = 1;
-                } else {
+                }
+                else {
                     yslopesmore = true;
                     numpixels = deltay + 1;
                     d = (2 * deltax) - deltay;
@@ -2739,7 +2731,6 @@ var Graph = (function () {
                     yinc1 = 1;
                     yinc2 = 1;
                 }
-
                 if (AX1 > AX2) {
                     xinc1 *= -1;
                     xinc2 *= -1;
@@ -2748,41 +2739,41 @@ var Graph = (function () {
                     yinc1 *= -1;
                     yinc2 *= -1;
                 }
-
                 x = AX1;
                 y = AY1;
-
-                if (this._LineSettings.Thickness === 1 /* Normal */) {
+                if (this._LineSettings.Thickness === LineThickness.Normal) {
                     for (i = 1; i <= numpixels; i++) {
                         this.PutPixel(x, y, this._Colour);
-
                         if (d <= 0) {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
                         }
                     }
-                } else {
+                }
+                else {
                     for (i = 1; i <= numpixels; i++) {
                         if (yslopesmore) {
                             this.PutPixel(x - 1, y, this._Colour);
                             this.PutPixel(x, y, this._Colour);
                             this.PutPixel(x + 1, y, this._Colour);
-                        } else {
+                        }
+                        else {
                             this.PutPixel(x, y - 1, this._Colour);
                             this.PutPixel(x, y, this._Colour);
                             this.PutPixel(x, y + 1, this._Colour);
                         }
-
                         if (d <= 0) {
                             d = d + dinc1;
                             x = x + xinc1;
                             y = y + yinc1;
-                        } else {
+                        }
+                        else {
                             d = d + dinc2;
                             x = x + xinc2;
                             y = y + yinc2;
@@ -2790,47 +2781,42 @@ var Graph = (function () {
                     }
                 }
             }
-        } else {
+        }
+        else {
         }
     };
-
     Graph.MoveTo = function (AX, AY) {
         this._CursorPosition.x = AX;
         this._CursorPosition.y = AY;
     };
-
     Graph.OutText = function (AText) {
         this.OutTextXY(this._CursorPosition.x, this._CursorPosition.y, AText);
-        if ((this._TextSettings.Direction === 0 /* Horizontal */) && (this._TextSettings.HorizontalAlign === 0 /* Left */)) {
+        if ((this._TextSettings.Direction === TextOrientation.Horizontal) && (this._TextSettings.HorizontalAlign === TextJustification.Left)) {
             this._CursorPosition.x += this.TextWidth(AText);
             if (this._CursorPosition.x > 639)
                 this._CursorPosition.x = 639;
         }
     };
-
     Graph.OutTextXY = function (AX, AY, AText) {
         var ATextlength = AText.length;
-
         var OldLinePattern = this._LineSettings.Pattern;
         var OldLineStyle = this._LineSettings.Style;
         var OldLineThickness = this._LineSettings.Thickness;
-
         this._LineSettings.Pattern = 0xFFFF;
-        this._LineSettings.Style = 0 /* Solid */;
-        this._LineSettings.Thickness = 1 /* Normal */;
-
+        this._LineSettings.Style = LineStyle.Solid;
+        this._LineSettings.Thickness = LineThickness.Normal;
         var i;
         if (this._TextSettings.Font === 0) {
             for (i = 0; i < ATextlength; i++) {
                 var Code = AText.charCodeAt(i);
-
-                if (this._TextSettings.Direction === 1 /* Vertical */) {
+                if (this._TextSettings.Direction === TextOrientation.Vertical) {
                     if (this._TextSettings.Size === 1) {
-                    } else {
                     }
-
+                    else {
+                    }
                     AY -= 8 * this._TextSettings.Size;
-                } else {
+                }
+                else {
                     if (this._TextSettings.Size === 1) {
                         for (var y = 0; y < 8; y++) {
                             for (var x = 0; x < 8; x++) {
@@ -2839,10 +2825,10 @@ var Graph = (function () {
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         var yy = 0;
                         var cnt3 = 0;
-
                         while (yy <= 7) {
                             for (var cnt4 = 0; cnt4 < this._TextSettings.Size; cnt4++) {
                                 var xx = 0;
@@ -2861,56 +2847,50 @@ var Graph = (function () {
                             cnt3 += this._TextSettings.Size;
                         }
                     }
-
                     AX += 8 * this._TextSettings.Size;
                 }
             }
-        } else {
+        }
+        else {
             for (i = 0; i < ATextlength; i++) {
                 var LastPoint = new Point(AX, AY);
                 var NextPoint = new Point(AX, AY);
-
                 var Strokes = StrokeFont.Strokes[this._TextSettings.Font - 1][AText.charCodeAt(i)];
                 var Strokeslength = Strokes.length;
                 for (var j = 1; j < Strokeslength; j++) {
-                    if (this._TextSettings.Direction === 1 /* Vertical */) {
+                    if (this._TextSettings.Direction === TextOrientation.Vertical) {
                         NextPoint.x = AX + Math.floor(Strokes[j][2] * this._TextSettings.StrokeScaleY);
                         NextPoint.y = AY - Math.floor(Strokes[j][1] * this._TextSettings.StrokeScaleX);
-                    } else {
+                    }
+                    else {
                         NextPoint.x = AX + Math.floor(Strokes[j][1] * this._TextSettings.StrokeScaleX);
                         NextPoint.y = AY + Math.floor(Strokes[j][2] * this._TextSettings.StrokeScaleY);
                     }
-
                     if (Strokes[j][0] === StrokeFont.DRAW) {
                         this.Line(LastPoint.x, LastPoint.y, NextPoint.x, NextPoint.y);
                     }
-
                     LastPoint.x = NextPoint.x;
                     LastPoint.y = NextPoint.y;
                 }
-
-                if (this._TextSettings.Direction === 1 /* Vertical */) {
+                if (this._TextSettings.Direction === TextOrientation.Vertical) {
                     AY -= Math.floor(Strokes[0] * this._TextSettings.StrokeScaleX);
-                } else {
+                }
+                else {
                     AX += Math.floor(Strokes[0] * this._TextSettings.StrokeScaleX);
                 }
             }
         }
-
         this._LineSettings.Pattern = OldLinePattern;
         this._LineSettings.Style = OldLineStyle;
         this._LineSettings.Thickness = OldLineThickness;
     };
-
     Graph.PieSlice = function (AX, AY, AStartAngle, AEndAngle, ARadius) {
         this.Sector(AX, AY, AStartAngle, AEndAngle, ARadius, Math.floor(ARadius * this.ASPECT_RATIO));
     };
-
     Graph.xPointInPoly = function (AX, AY, APoints) {
         var i;
         var j = APoints.length - 1;
         var oddNodes = false;
-
         var APointslength = APoints.length;
         for (i = 0; i < APointslength; i++) {
             if ((APoints[i].y < AY && APoints[j].y >= AY || APoints[j].y < AY && APoints[i].y >= AY) && (APoints[i].x <= AX || APoints[j].x <= AX)) {
@@ -2920,15 +2900,12 @@ var Graph = (function () {
             }
             j = i;
         }
-
         return oddNodes;
     };
-
     Graph.PointInPoly = function (AX, AY, APoints) {
         var i = 0;
         var j = 0;
         var c = false;
-
         var APointslength = APoints.length;
         for (i = 0, j = APointslength - 1; i < APointslength; j = i++) {
             if (((APoints[i].y > AY) !== (APoints[j].y > AY)) && (AX < (APoints[j].x - APoints[i].x) * (AY - APoints[i].y) / (APoints[j].y - APoints[i].y) + APoints[i].x))
@@ -2936,111 +2913,90 @@ var Graph = (function () {
         }
         return c;
     };
-
     Graph.PutImage = function (AX, AY, ABitMap, ABitBlt) {
         if ((AX < 0) || (AY < 0) || (AX >= this.PIXELS_X) || (AY >= this.PIXELS_Y))
             return;
-
-        if (ABitBlt !== 0 /* Copy */) {
-            ABitBlt = 0 /* Copy */;
+        if (ABitBlt !== WriteMode.Copy) {
+            ABitBlt = WriteMode.Copy;
         }
-
         if (ABitMap !== null) {
             var AX1 = AX;
             var AY1 = AY;
             var AX2 = AX1 + ABitMap.width - 1;
             var AY2 = AY1 + ABitMap.height - 1;
-
             if (AX2 >= this.PIXELS_X)
                 AX2 = (this.PIXELS_X - 1);
             if (AY2 >= this.PIXELS_Y)
                 AY2 = (this.PIXELS_Y - 1);
-
             this._CanvasContext.putImageData(ABitMap, AX, AY);
         }
     };
-
     Graph.PutPixelDefault = function (AX, AY, APaletteIndex) {
         if ((AX < 0) || (AY < 0) || (AX >= this.PIXELS_X) || (AY >= this.PIXELS_Y))
             return;
-
         if ((this._ViewPortSettings.Clip) && (!this._ViewPortSettings.FullScreen)) {
             AX += this._ViewPortSettings.x1;
             AY += this._ViewPortSettings.y1;
-
             if (AX > this._ViewPortSettings.x2)
                 return;
             if (AY > this._ViewPortSettings.y2)
                 return;
         }
-
         var Pos = AX + (AY * this.PIXELS_X);
         if ((Pos >= 0) && (Pos < this.PIXELS)) {
             this._CanvasContext.fillStyle = '#' + StringUtils.PadLeft(this.CURRENT_PALETTE[APaletteIndex].toString(16), '0', 6);
             this._CanvasContext.fillRect(AX, AY, 1, 1);
         }
     };
-
     Graph.PutPixelPoly = function (AX, AY, APaletteIndex) {
         if ((AX < 0) || (AY < 0) || (AX >= this.PIXELS_X) || (AY >= this.PIXELS_Y))
             return;
-
         this.PutPixelDefault(AX, AY, APaletteIndex);
-
         this._FillPolyMap[AY][AX] = true;
     };
-
     Graph.Rectangle = function (x1, y1, x2, y2) {
         this.Line(x1, y1, x2, y1);
         this.Line(x2, y1, x2, y2);
         this.Line(x2, y2, x1, y2);
         this.Line(x1, y2, x1, y1);
     };
-
     Graph.Sector = function (AX, AY, AStartAngle, AEndAngle, AXRadius, AYRadius) {
         this.Ellipse(AX, AY, AStartAngle, AEndAngle, AXRadius, AYRadius);
     };
-
     Graph.SetAllPalette = function (APalette, AUpdateScreen) {
-        if (typeof AUpdateScreen === "undefined") { AUpdateScreen = true; }
+        if (AUpdateScreen === void 0) { AUpdateScreen = true; }
         var APalettelength = APalette.length;
         for (var i = 0; i < APalettelength; i++) {
             this.SetPalette(i, APalette[i], AUpdateScreen);
         }
     };
-
     Graph.SetBkColour = function (AColour) {
         this._BackColour = AColour;
     };
-
     Graph.SetColour = function (AColour) {
         if ((AColour < 0) || (AColour > 15)) {
             return;
         }
         this._Colour = AColour;
     };
-
     Graph.SetFillPattern = function (APattern, AColour) {
         var ANDArray = [128, 64, 32, 16, 8, 4, 2, 1];
-
         var XOffset = 0;
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
                 this._FillSettings.Pattern[y][x] = ((APattern[y] & ANDArray[x]) === 0) ? false : true;
             }
         }
-
         if ((AColour < 0) || (AColour > 15)) {
-        } else {
+        }
+        else {
             this._FillSettings.Colour = AColour;
         }
-        this._FillSettings.Style = 12 /* User */;
+        this._FillSettings.Style = FillStyle.User;
     };
-
     Graph.SetFillSettings = function (AFillSettings) {
         this._FillSettings = AFillSettings;
     };
-
     Graph.SetFillStyle = function (AStyle, AColour) {
         switch (AStyle) {
             case 0:
@@ -3081,12 +3037,12 @@ var Graph = (function () {
                 break;
         }
         if ((AColour < 0) || (AColour > 15)) {
-        } else {
+        }
+        else {
             this._FillSettings.Colour = AColour;
         }
         this._FillSettings.Style = AStyle;
     };
-
     Graph.SetLineStyle = function (AStyle, APattern, AThickness) {
         this._LineSettings.Style = AStyle;
         switch (AStyle) {
@@ -3108,52 +3064,48 @@ var Graph = (function () {
         }
         this._LineSettings.Thickness = AThickness;
     };
-
     Graph.SetPalette = function (ACurrentPaletteIndex, AEGAPaletteIndex, AUpdateScreen) {
-        if (typeof AUpdateScreen === "undefined") { AUpdateScreen = true; }
+        if (AUpdateScreen === void 0) { AUpdateScreen = true; }
         if (this.CURRENT_PALETTE[ACurrentPaletteIndex] !== this.EGA_PALETTE[AEGAPaletteIndex]) {
             if (AUpdateScreen) {
                 var OldColour = this.CURRENT_PALETTE[ACurrentPaletteIndex];
                 var NewColour = this.EGA_PALETTE[AEGAPaletteIndex];
-
                 var PixelData = this._CanvasContext.getImageData(0, 0, this.PIXELS_X, this.PIXELS_Y);
                 var Pixels = PixelData.data;
-
                 var Pixelslength = Pixels.length;
                 for (var i = 0; i < Pixelslength; i++) {
                     if (Pixels[i] === OldColour) {
                         Pixels[i] = NewColour;
                     }
                 }
-
                 this._CanvasContext.putImageData(PixelData, 0, 0);
             }
-
             this.CURRENT_PALETTE[ACurrentPaletteIndex] = this.EGA_PALETTE[AEGAPaletteIndex];
         }
     };
-
     Graph.SetTextJustify = function (AHorizontal, AVertical) {
         this._TextSettings.HorizontalAlign = AHorizontal;
         this._TextSettings.VerticalAlign = AVertical;
     };
-
     Graph.SetTextStyle = function (AFont, ADirection, ASize) {
         this._TextSettings.Font = AFont;
         this._TextSettings.Direction = ADirection;
         this._TextSettings.Size = ASize;
         this._TextSettings.SetStrokeScale();
     };
-
     Graph.SetTextWindow = function (AX1, AY1, AX2, AY2, AWrap, ASize) {
         if ((AX1 === 0) && (AY1 === 0) && (AX2 === 0) && (AY2 === 0)) {
             Crt.Canvas.style.opacity = '0';
-        } else if ((AX2 === 0) || (AY2 === 0)) {
+        }
+        else if ((AX2 === 0) || (AY2 === 0)) {
             Crt.Canvas.style.opacity = '0';
-        } else if ((AX1 > AX2) || (AY1 > AY2)) {
-        } else {
+        }
+        else if ((AX1 > AX2) || (AY1 > AY2)) {
+        }
+        else {
             if ((AX1 === this._TextWindow.left) && (AY1 === this._TextWindow.top) && (AX2 === this._TextWindow.right) && (AY2 === this._TextWindow.bottom) && (ASize === this._TextSettings.Size)) {
-            } else {
+            }
+            else {
                 Crt.SetScreenSize(AX2 - AX1 + 1, AY2 - AY1 + 1);
                 switch (ASize) {
                     case 0:
@@ -3188,7 +3140,6 @@ var Graph = (function () {
             }
         }
     };
-
     Graph.SetViewPort = function (AX1, AY1, AX2, AY2, AClip) {
         if ((AX1 < 0) || (AX1 > AX2))
             return;
@@ -3198,41 +3149,37 @@ var Graph = (function () {
             return;
         if (AY2 > (this.PIXELS_Y - 1))
             return;
-
         this._ViewPortSettings.x1 = AX1;
         this._ViewPortSettings.y1 = AY1;
         this._ViewPortSettings.x2 = AX2;
         this._ViewPortSettings.y2 = AY2;
         this._ViewPortSettings.Clip = AClip;
-
         this._ViewPortSettings.FromBottom = (this.PIXELS_Y - 1) - AY2;
         this._ViewPortSettings.FromLeft = AX1;
         this._ViewPortSettings.FromRight = (this.PIXELS_X - 1) - AX2;
         this._ViewPortSettings.FromTop = AY1;
         this._ViewPortSettings.FullScreen = ((AX1 === 0) && (AY1 === 0) && (AX2 === (this.PIXELS_X - 1)) && (AY2 === (this.PIXELS_Y - 1)));
     };
-
     Graph.SetWriteMode = function (AMode) {
-        if (AMode !== 0 /* Normal */) {
-            AMode = 0 /* Normal */;
+        if (AMode !== WriteMode.Normal) {
+            AMode = WriteMode.Normal;
         }
         this._WriteMode = AMode;
     };
-
     Graph.TextHeight = function (AText) {
         if (this._TextSettings.Font === 0) {
             return this._TextSettings.Size * 8;
-        } else {
+        }
+        else {
             return StrokeFont.Heights[this._TextSettings.Font - 1] * this._TextSettings.StrokeScaleY;
         }
     };
-
     Graph.TextWidth = function (AText) {
         var ATextlength = AText.length;
-
         if (this._TextSettings.Font === 0) {
             return ATextlength * (this._TextSettings.Size * 8);
-        } else {
+        }
+        else {
             var Result = 0;
             for (var i = 0; i < ATextlength; i++) {
                 var Strokes = StrokeFont.Strokes[this._TextSettings.Font - 1][AText.charCodeAt(i)];
@@ -3245,7 +3192,6 @@ var Graph = (function () {
     Graph.PIXELS_X = 640;
     Graph.PIXELS_Y = 350;
     Graph.PIXELS = Graph.PIXELS_X * Graph.PIXELS_Y;
-
     Graph.EGA_PALETTE = [
         0x000000, 0x0000AA, 0x00AA00, 0x00AAAA, 0xAA0000, 0xAA00AA, 0xAAAA00, 0xAAAAAA,
         0x000055, 0x0000FF, 0x00AA55, 0x00AAFF, 0xAA0055, 0xAA00FF, 0xAAAA55, 0xAAAAFF,
@@ -3256,19 +3202,16 @@ var Graph = (function () {
         0x555500, 0x5555AA, 0x55FF00, 0x55FFAA, 0xFF5500, 0xFF55AA, 0xFFFF00, 0xFFFFAA,
         0x555555, 0x5555FF, 0x55FF55, 0x55FFFF, 0xFF5555, 0xFF55FF, 0xFFFF55, 0xFFFFFF
     ];
-
     Graph.CURRENT_PALETTE = [
         Graph.EGA_PALETTE[0], Graph.EGA_PALETTE[1], Graph.EGA_PALETTE[2], Graph.EGA_PALETTE[3],
         Graph.EGA_PALETTE[4], Graph.EGA_PALETTE[5], Graph.EGA_PALETTE[20], Graph.EGA_PALETTE[7],
         Graph.EGA_PALETTE[56], Graph.EGA_PALETTE[57], Graph.EGA_PALETTE[58], Graph.EGA_PALETTE[59],
         Graph.EGA_PALETTE[60], Graph.EGA_PALETTE[61], Graph.EGA_PALETTE[62], Graph.EGA_PALETTE[63]
     ];
-
     Graph._FillSettings = new FillSettings();
     Graph._LineSettings = new LineSettings();
     Graph._TextSettings = new TextSettings();
     Graph._ViewPortSettings = new ViewPortSettings();
-
     Graph._BackColour = 0;
     Graph._Canvas = null;
     Graph._CanvasContext = null;
@@ -3278,29 +3221,10 @@ var Graph = (function () {
     Graph._FillEllipse = false;
     Graph._FillPolyMap = [];
     Graph._TextWindow = null;
-    Graph._WriteMode = 0 /* Normal */;
-
+    Graph._WriteMode = WriteMode.Normal;
     Graph.PutPixel = Graph.PutPixelDefault;
     return Graph;
 })();
-var LineStyle;
-(function (LineStyle) {
-    LineStyle[LineStyle["Normal"] = 0] = "Normal";
-    LineStyle[LineStyle["Solid"] = 0] = "Solid";
-    LineStyle[LineStyle["Dotted"] = 1] = "Dotted";
-    LineStyle[LineStyle["Center"] = 2] = "Center";
-    LineStyle[LineStyle["Dashed"] = 3] = "Dashed";
-    LineStyle[LineStyle["User"] = 4] = "User";
-})(LineStyle || (LineStyle = {}));
-var TextJustification;
-(function (TextJustification) {
-    TextJustification[TextJustification["Left"] = 0] = "Left";
-    TextJustification[TextJustification["Center"] = 1] = "Center";
-    TextJustification[TextJustification["Right"] = 2] = "Right";
-
-    TextJustification[TextJustification["Bottom"] = 0] = "Bottom";
-    TextJustification[TextJustification["Top"] = 2] = "Top";
-})(TextJustification || (TextJustification = {}));
 var CharInfo = (function () {
     function CharInfo(ch, attr, blink, underline, reverse) {
         if (typeof blink === 'undefined') {
@@ -3312,7 +3236,6 @@ var CharInfo = (function () {
         if (typeof reverse === 'undefined') {
             reverse = false;
         }
-
         this.Ch = ch;
         this.Attr = attr;
         this.Blink = blink;
@@ -3342,73 +3265,59 @@ var Offset;
     'use strict';
     function getOffsetSum(elem) {
         var top = 0, left = 0;
-
         while (elem) {
             top = top + elem.offsetTop;
             left = left + elem.offsetLeft;
             elem = elem.offsetParent;
         }
-
         return { y: top, x: left };
     }
-
     function getOffsetRect(elem) {
         var box = elem.getBoundingClientRect();
-
         var body = document.body;
         var docElem = document.documentElement;
-
         var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
         var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
-
         var clientTop = docElem.clientTop || body.clientTop || 0;
         var clientLeft = docElem.clientLeft || body.clientLeft || 0;
-
         var top = box.top + scrollTop - clientTop;
         var left = box.left + scrollLeft - clientLeft;
-
         return { y: Math.round(top), x: Math.round(left) };
     }
-
     function getOffset(elem) {
         if (elem.getBoundingClientRect) {
             return getOffsetRect(elem);
-        } else {
+        }
+        else {
             return getOffsetSum(elem);
         }
     }
     Offset.getOffset = getOffset;
 })(Offset || (Offset = {}));
+/// <reference path='BlinkState.ts' />
+/// <reference path='../../../3rdparty/Offset.ts' />
 var Cursor = (function () {
     function Cursor(parent, colour, size) {
         var _this = this;
         this.onhide = new TypedEvent();
         this.onshow = new TypedEvent();
         this._BlinkRate = 500;
-        this._BlinkState = 1 /* Hide */;
-
+        this._BlinkState = BlinkState.Hide;
         this._Colour = '#' + StringUtils.PadLeft(colour.toString(16), '0', 6);
-
         this._Position = new Point(1, 1);
         this._Size = size;
-
         this._Visible = true;
         this._WindowOffset = new Point(0, 0);
         this._WindowOffsetAdjusted = new Point(0, 0);
-
         this._Canvas = document.createElement('canvas');
         if (this._Canvas.getContext) {
             this._Canvas.style.position = 'absolute';
             this._Canvas.style.zIndex = '100';
             this._Context = this._Canvas.getContext('2d');
             parent.appendChild(this._Canvas);
-
             this.Update();
             this.Draw();
-
-            this._Timer = setInterval(function () {
-                _this.OnTimer();
-            }, this._BlinkRate);
+            this._Timer = setInterval(function () { _this.OnTimer(); }, this._BlinkRate);
         }
     }
     Object.defineProperty(Cursor.prototype, "BlinkRate", {
@@ -3416,14 +3325,11 @@ var Cursor = (function () {
             var _this = this;
             this._BlinkRate = value;
             clearInterval(this._Timer);
-            this._Timer = setInterval(function () {
-                _this.OnTimer();
-            }, this._BlinkRate);
+            this._Timer = setInterval(function () { _this.OnTimer(); }, this._BlinkRate);
         },
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Cursor.prototype, "Colour", {
         set: function (value) {
             this._Colour = value;
@@ -3432,36 +3338,31 @@ var Cursor = (function () {
         enumerable: true,
         configurable: true
     });
-
     Cursor.prototype.Draw = function () {
         if (this._Context) {
             this._Canvas.width = this._Size.x;
             this._Canvas.height = this._Size.y;
-
             this._Context.fillStyle = this._Colour;
             this._Context.fillRect(0, this._Size.y - (this._Size.y * 0.20), this._Size.x, this._Size.y * 0.20);
         }
     };
-
     Cursor.prototype.OnTimer = function () {
-        this._BlinkState = (this._BlinkState === 1 /* Hide */) ? 0 /* Show */ : 1 /* Hide */;
-
+        this._BlinkState = (this._BlinkState === BlinkState.Hide) ? BlinkState.Show : BlinkState.Hide;
         if (this._Visible) {
-            this._Canvas.style.opacity = (this._BlinkState === 1 /* Hide */) ? '0' : '1';
-        } else {
+            this._Canvas.style.opacity = (this._BlinkState === BlinkState.Hide) ? '0' : '1';
+        }
+        else {
             this._Canvas.style.opacity = '0';
         }
-
         switch (this._BlinkState) {
-            case 1 /* Hide */:
+            case BlinkState.Hide:
                 this.onhide.trigger();
                 break;
-            case 0 /* Show */:
+            case BlinkState.Show:
                 this.onshow.trigger();
                 break;
         }
     };
-
     Object.defineProperty(Cursor.prototype, "Position", {
         get: function () {
             return this._Position;
@@ -3473,8 +3374,6 @@ var Cursor = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(Cursor.prototype, "Size", {
         set: function (value) {
             this._Size = value;
@@ -3484,14 +3383,12 @@ var Cursor = (function () {
         enumerable: true,
         configurable: true
     });
-
     Cursor.prototype.Update = function () {
         if (this._Canvas && this._Visible) {
             this._Canvas.style.left = (this._Position.x - 1) * this._Size.x + this._WindowOffsetAdjusted.x + 'px';
             this._Canvas.style.top = (this._Position.y - 1) * this._Size.y + this._WindowOffsetAdjusted.y + 'px';
         }
     };
-
     Object.defineProperty(Cursor.prototype, "Visible", {
         set: function (value) {
             this._Visible = value;
@@ -3502,19 +3399,15 @@ var Cursor = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Cursor.prototype, "WindowOffset", {
         set: function (value) {
             if ((value.x !== this._WindowOffset.x) || (value.y !== this._WindowOffset.y)) {
                 this._WindowOffset = value;
-
                 this._Canvas.style.left = '0px';
                 this._Canvas.style.top = '0px';
                 var CursorPosition = Offset.getOffset(this._Canvas);
-
                 this._WindowOffsetAdjusted.x = value.x - CursorPosition.x;
                 this._WindowOffsetAdjusted.y = value.y - CursorPosition.y;
-
                 this.Update();
             }
         },
@@ -3535,7 +3428,6 @@ var CrtFont = (function () {
         this._NewSize = new Point(9, 16);
         this._Png = null;
         this._Size = new Point(9, 16);
-
         this._Canvas = document.createElement('canvas');
         if (this._Canvas.getContext) {
             this._CanvasContext = this._Canvas.getContext('2d');
@@ -3546,39 +3438,40 @@ var CrtFont = (function () {
         if (this._Loading > 0) {
             return null;
         }
-
-        if ((charCode < 0) || (charCode > 255) || (charInfo.Attr < 0) || (charInfo.Attr > 255)) {
+        var Alpha = 255;
+        if (charCode === CrtFont.TRANSPARENT_CHARCODE) {
+            Alpha = 0;
+            charCode = 32;
+            charInfo.Attr = 0;
+            charInfo.Reverse = false;
+        }
+        else if ((charCode < 0) || (charCode > 255) || (charInfo.Attr < 0) || (charInfo.Attr > 255)) {
             return null;
         }
-
         var CharMapKey = charCode + '-' + charInfo.Attr + '-' + charInfo.Reverse;
-
         if (!this._CharMap[CharMapKey]) {
             this._CharMap[CharMapKey] = this._CanvasContext.getImageData(charCode * this._Size.x, 0, this._Size.x, this._Size.y);
-
             var Back;
             var Fore;
             if (this._Name.indexOf('C64') === 0) {
                 Back = CrtFont.PETSCII_COLOURS[(charInfo.Attr & 0xF0) >> 4];
                 Fore = CrtFont.PETSCII_COLOURS[(charInfo.Attr & 0x0F)];
-            } else {
+            }
+            else {
                 Back = CrtFont.ANSI_COLOURS[(charInfo.Attr & 0xF0) >> 4];
                 Fore = CrtFont.ANSI_COLOURS[(charInfo.Attr & 0x0F)];
             }
-
             if (charInfo.Reverse) {
                 var Temp = Fore;
                 Fore = Back;
                 Back = Temp;
             }
-
             var BackR = Back >> 16;
             var BackG = (Back >> 8) & 0xFF;
             var BackB = Back & 0xFF;
             var ForeR = Fore >> 16;
             var ForeG = (Fore >> 8) & 0xFF;
             var ForeB = Fore & 0xFF;
-
             var R = 0;
             var G = 0;
             var B = 0;
@@ -3587,22 +3480,20 @@ var CrtFont = (function () {
                     R = ForeR;
                     G = ForeG;
                     B = ForeB;
-                } else {
+                }
+                else {
                     R = BackR;
                     G = BackG;
                     B = BackB;
                 }
-
                 this._CharMap[CharMapKey].data[i] = R;
                 this._CharMap[CharMapKey].data[i + 1] = G;
                 this._CharMap[CharMapKey].data[i + 2] = B;
-                this._CharMap[CharMapKey].data[i + 3] = 255;
+                this._CharMap[CharMapKey].data[i + 3] = Alpha;
             }
         }
-
         return this._CharMap[CharMapKey];
     };
-
     Object.defineProperty(CrtFont.prototype, "Height", {
         get: function () {
             return this._Size.y;
@@ -3610,7 +3501,6 @@ var CrtFont = (function () {
         enumerable: true,
         configurable: true
     });
-
     CrtFont.prototype.Load = function (font, maxWidth, maxHeight) {
         var _this = this;
         var BestFit = null;
@@ -3621,44 +3511,35 @@ var CrtFont = (function () {
                 BestFit = new Point(parseInt(WidthHeight[0], 10), parseInt(WidthHeight[1], 10));
                 font = NameSize[0];
             }
-        } else {
+        }
+        else {
             BestFit = CrtFonts.GetBestFit(font, maxWidth, maxHeight);
         }
-
         if (BestFit === null) {
             console.log('fTelnet Error: Font CP=' + font + ' does not exist');
             return false;
-        } else {
+        }
+        else {
             if ((this._Png != null) && (this._Name === font) && (this._Size.x === BestFit.x) && (this._Size.y === BestFit.y)) {
                 return true;
             }
-
             CrtFont.ANSI_COLOURS[7] = 0xA8A8A8;
             CrtFont.ANSI_COLOURS[0] = 0x000000;
-
             this._Loading += 1;
             this._NewName = font;
             this._NewSize = new Point(BestFit.x, BestFit.y);
-
             if (font.indexOf('Atari') === 0) {
                 CrtFont.ANSI_COLOURS[7] = 0x63B6E7;
                 CrtFont.ANSI_COLOURS[0] = 0x005184;
             }
-
             this._Png = new Image();
             this._Png.crossOrigin = 'Anonymous';
-            this._Png.onload = function () {
-                _this.OnPngLoad();
-            };
-            this._Png.onerror = function () {
-                _this.OnPngError();
-            };
+            this._Png.onload = function () { _this.OnPngLoad(); };
+            this._Png.onerror = function () { _this.OnPngError(); };
             this._Png.src = CrtFonts.GetLocalUrl(font, this._NewSize.x, this._NewSize.y);
-
             return true;
         }
     };
-
     Object.defineProperty(CrtFont.prototype, "Name", {
         get: function () {
             return this._Name;
@@ -3666,39 +3547,32 @@ var CrtFont = (function () {
         enumerable: true,
         configurable: true
     });
-
     CrtFont.prototype.OnPngError = function () {
         var _this = this;
         this._Png = new Image();
         this._Png.crossOrigin = 'Anonymous';
-        this._Png.onload = function () {
-            _this.OnPngLoad();
-        };
+        this._Png.onload = function () { _this.OnPngLoad(); };
         this._Png.onerror = function () {
             alert('fTelnet Error: Unable to load requested font');
             _this._Loading -= 1;
         };
         this._Png.src = CrtFonts.GetRemoteUrl(this._NewName, this._NewSize.x, this._NewSize.y);
     };
-
     CrtFont.prototype.OnPngLoad = function () {
         if (this._Loading === 1) {
             this._Name = this._NewName;
             this._Size = this._NewSize;
-
             this._Canvas.width = this._Png.width;
             this._Canvas.height = this._Png.height;
             this._CanvasContext.drawImage(this._Png, 0, 0);
-
             this._CharMap = [];
-
             this._Loading -= 1;
             this.onchange.trigger();
-        } else {
+        }
+        else {
             this._Loading -= 1;
         }
     };
-
     Object.defineProperty(CrtFont.prototype, "Size", {
         get: function () {
             return this._Size;
@@ -3706,7 +3580,6 @@ var CrtFont = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CrtFont.prototype, "Width", {
         get: function () {
             return this._Size.x;
@@ -3714,10 +3587,10 @@ var CrtFont = (function () {
         enumerable: true,
         configurable: true
     });
+    CrtFont.TRANSPARENT_CHARCODE = 1000;
     CrtFont.ANSI_COLOURS = [
         0x000000, 0x0000A8, 0x00A800, 0x00A8A8, 0xA80000, 0xA800A8, 0xA85400, 0xA8A8A8,
         0x545454, 0x5454FC, 0x54FC54, 0x54FCFC, 0xFC5454, 0xFC54FC, 0xFCFC54, 0xFCFCFC];
-
     CrtFont.PETSCII_COLOURS = [
         0x000000, 0xFDFEFC, 0xBE1A24, 0x30E6C6, 0xB41AE2, 0x1FD21E, 0x211BAE, 0xDFF60A,
         0xB84104, 0x6A3304, 0xFE4A57, 0x424540, 0x70746F, 0x59FE59, 0x5F53FE, 0xA4A7A2];
@@ -3729,60 +3602,56 @@ var CrtFonts = (function () {
     CrtFonts.GetBestFit = function (font, maxWidth, maxHeight) {
         if (typeof this._Fonts[font] === 'undefined') {
             return null;
-        } else if (this._Fonts[font].length === 1) {
+        }
+        else if (this._Fonts[font].length === 1) {
             return this._Fonts[font][0];
-        } else {
+        }
+        else {
             for (var i = 0; i < this._Fonts[font].length; i++) {
                 if ((this._Fonts[font][i].x <= maxWidth) && (this._Fonts[font][i].y <= maxHeight)) {
                     return this._Fonts[font][i];
                 }
             }
-
             return this._Fonts[font][this._Fonts[font].length - 1];
         }
     };
-
     CrtFonts.GetLocalUrl = function (font, width, height) {
         if (document.getElementById('fTelnetScript') === null) {
             return this.GetRemoteUrl(font, width, height);
-        } else {
+        }
+        else {
             var ScriptUrl = document.getElementById('fTelnetScript').src;
             var PngUrl = ScriptUrl.replace('/ftelnet.min.js', '/fonts/' + font + '_' + width.toString(10) + 'x' + height.toString(10) + '.png');
             PngUrl = PngUrl.replace('/ftelnet.debug.js', '/fonts/' + font + '_' + width.toString(10) + 'x' + height.toString(10) + '.png');
             return PngUrl;
         }
     };
-
     CrtFonts.GetRemoteUrl = function (font, width, height) {
         var PngUrl = '//embed.ftelnet.ca/ftelnet/fonts/' + font + '_' + width.toString(10) + 'x' + height.toString(10) + '.png';
         return PngUrl;
     };
-
     CrtFonts.HasFont = function (font) {
         return (this._FontNames.indexOf(font) >= 0);
     };
     CrtFonts._FontNames = ['Amiga-BStrict_8x8', 'Amiga-BStruct_8x8', 'Amiga-MicroKnight_8x16', 'Amiga-MicroKnight_8x8', 'Amiga-MoSoul_8x16', 'Amiga-MoSoul_8x8', 'Amiga-PotNoodle_8x11', 'Amiga-PotNoodle_8x16', 'Amiga-TopazPlus_8x11', 'Amiga-Topaz_8x11', 'Amiga-Topaz_8x16', 'Atari-Arabic_16x16', 'Atari-Arabic_8x16', 'Atari-Graphics_16x16', 'Atari-Graphics_8x16', 'Atari-Graphics_8x8', 'Atari-International_16x16', 'Atari-International_8x16', 'C128-Lower_8x16', 'C128-Upper_8x16', 'C128-Upper_8x8', 'C128_Lower_8x8', 'C64-Lower_16x16', 'C64-Lower_8x16', 'C64-Lower_8x8', 'C64-Upper_16x16', 'C64-Upper_8x16', 'C64-Upper_8x8', 'CP437_10x19', 'CP437_12x23', 'CP437_6x8', 'CP437_7x12', 'CP437_8x12', 'CP437_8x13', 'CP437_8x14', 'CP437_8x16', 'CP437_8x8', 'CP437_9x16', 'CP737_12x23', 'CP737_9x16', 'CP775_9x16', 'CP850_10x19', 'CP850_12x23', 'CP850_8x13', 'CP850_9x16', 'CP852_10x19', 'CP852_12x23', 'CP852_9x16', 'CP855_9x16', 'CP857_9x16', 'CP860_9x16', 'CP861_9x16', 'CP862_10x19', 'CP863_9x16', 'CP865_10x19', 'CP865_12x23', 'CP865_8x13', 'CP865_9x16', 'CP866_9x16', 'CP869_9x16', 'RIP_7x8', 'RIP_7x14', 'RIP_8x8', 'RIP_8x14', 'RIP_16x14', 'SyncTerm-0_8x14', 'SyncTerm-0_8x16', 'SyncTerm-0_8x8', 'SyncTerm-10_8x16', 'SyncTerm-11_8x14', 'SyncTerm-11_8x16', 'SyncTerm-11_8x8', 'SyncTerm-12_8x16', 'SyncTerm-13_8x16', 'SyncTerm-14_8x14', 'SyncTerm-14_8x16', 'SyncTerm-14_8x8', 'SyncTerm-15_8x14', 'SyncTerm-15_8x16', 'SyncTerm-15_8x8', 'SyncTerm-16_8x14', 'SyncTerm-16_8x16', 'SyncTerm-16_8x8', 'SyncTerm-17_8x16', 'SyncTerm-17_8x8', 'SyncTerm-18_8x14', 'SyncTerm-18_8x16', 'SyncTerm-18_8x8', 'SyncTerm-19_8x16', 'SyncTerm-19_8x8', 'SyncTerm-1_8x16', 'SyncTerm-20_8x14', 'SyncTerm-20_8x16', 'SyncTerm-20_8x8', 'SyncTerm-21_8x14', 'SyncTerm-21_8x16', 'SyncTerm-21_8x8', 'SyncTerm-22_8x16', 'SyncTerm-23_8x14', 'SyncTerm-23_8x16', 'SyncTerm-23_8x8', 'SyncTerm-24_8x14', 'SyncTerm-24_8x16', 'SyncTerm-24_8x8', 'SyncTerm-25_8x14', 'SyncTerm-25_8x16', 'SyncTerm-25_8x8', 'SyncTerm-26_8x16', 'SyncTerm-26_8x8', 'SyncTerm-27_8x16', 'SyncTerm-28_8x14', 'SyncTerm-28_8x16', 'SyncTerm-28_8x8', 'SyncTerm-29_8x14', 'SyncTerm-29_8x16', 'SyncTerm-29_8x8', 'SyncTerm-2_8x14', 'SyncTerm-2_8x16', 'SyncTerm-2_8x8', 'SyncTerm-30_8x16', 'SyncTerm-31_8x16', 'SyncTerm-32_8x16', 'SyncTerm-32_8x8', 'SyncTerm-33_8x16', 'SyncTerm-33_8x8', 'SyncTerm-34_8x16', 'SyncTerm-34_8x8', 'SyncTerm-35_8x16', 'SyncTerm-35_8x8', 'SyncTerm-36_8x16', 'SyncTerm-36_8x8', 'SyncTerm-37_8x16', 'SyncTerm-38_8x16', 'SyncTerm-39_8x16', 'SyncTerm-3_8x14', 'SyncTerm-3_8x16', 'SyncTerm-3_8x8', 'SyncTerm-40_8x16', 'SyncTerm-4_8x16', 'SyncTerm-5_8x16', 'SyncTerm-6_8x16', 'SyncTerm-7_8x14', 'SyncTerm-7_8x16', 'SyncTerm-7_8x8', 'SyncTerm-8_8x14', 'SyncTerm-8_8x16', 'SyncTerm-8_8x8', 'SyncTerm-9_8x14', 'SyncTerm-9_8x16', 'SyncTerm-9_8x8'];
     CrtFonts._Fonts = [];
-
     CrtFonts.__ctor = (function () {
         for (var i = 0; i < CrtFonts._FontNames.length; i++) {
             var NameSize = CrtFonts._FontNames[i].split('_');
             var WidthHeight = NameSize[1].split('x');
             var Width = parseInt(WidthHeight[0], 10);
             var Height = parseInt(WidthHeight[1], 10);
-
             if (typeof CrtFonts._Fonts[NameSize[0]] === 'undefined') {
                 CrtFonts._Fonts[NameSize[0]] = [];
             }
-
             CrtFonts._Fonts[NameSize[0]].push(new Point(Width, Height));
         }
-
         for (var key in CrtFonts._Fonts) {
             CrtFonts._Fonts[key].sort(function (a, b) {
                 if (b.x - a.x === 0) {
                     return b.y - a.y;
-                } else {
+                }
+                else {
                     return b.x - a.x;
                 }
             });
@@ -3836,7 +3705,6 @@ var StringUtils = (function () {
     }
     StringUtils.AddCommas = function (value) {
         var Result = '';
-
         var Position = 1;
         for (var i = value.toString().length - 1; i >= 0; i--) {
             if ((Position > 3) && (Position % 3 === 1)) {
@@ -3845,118 +3713,111 @@ var StringUtils = (function () {
             Result = value.toString().charAt(i) + Result;
             Position++;
         }
-
         return Result;
     };
-
     StringUtils.FormatPercent = function (value, fractionDigits) {
         return (value * 100).toFixed(fractionDigits) + '%';
     };
-
     StringUtils.NewString = function (ch, length) {
         if (ch.length === 0) {
             return '';
         }
-
         var Result = '';
         for (var i = 0; i < length; i++) {
             Result += ch.charAt(0);
         }
         return Result;
     };
-
     StringUtils.PadLeft = function (text, ch, length) {
         if (ch.length === 0) {
             return text;
         }
-
         while (text.length < length) {
             text = ch.charAt(0) + text;
         }
         return text.substring(0, length);
     };
-
     StringUtils.PadRight = function (text, ch, length) {
         if (ch.length === 0) {
             return text;
         }
-
         while (text.length < length) {
             text += ch.charAt(0);
         }
         return text.substring(0, length);
     };
-
     StringUtils.Trim = function (text) {
         return this.TrimLeft(this.TrimRight(text));
     };
-
     StringUtils.TrimLeft = function (text) {
         return text.replace(/^\s+/g, '');
     };
-
     StringUtils.TrimRight = function (text) {
         return text.replace(/\s+$/g, '');
     };
     return StringUtils;
 })();
+/// <reference path='CharInfo.ts' />
+/// <reference path='KeyPressEvent.ts' />
+/// <reference path='cursor/Cursor.ts' />
+/// <reference path='font/CrtFont.ts' />
+/// <reference path='font/CrtFonts.ts' />
+/// <reference path='../actionscript/Keyboard.ts' />
+/// <reference path='../StringUtils.ts' />
 var Crt = (function () {
     function Crt() {
     }
     Crt.Init = function (container) {
         var _this = this;
         this._Container = container;
-
         this._Font = new CrtFont();
-        this._Font.onchange.on(function () {
-            _this.OnFontChanged();
-        });
-
+        this._Font.onchange.on(function () { _this.OnFontChanged(); });
         this._Canvas = document.createElement('canvas');
         this._Canvas.id = 'fTelnetCrtCanvas';
         this._Canvas.innerHTML = 'Your browser does not support the HTML5 Canvas element!<br>The latest version of every major web browser supports this element, so please consider upgrading now:<ul><li><a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a></li><li><a href="http://www.google.com/chrome">Google Chrome</a></li><li><a href="http://www.apple.com/safari/">Apple Safari</a></li><li><a href="http://www.opera.com/">Opera</a></li><li><a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">MS Internet Explorer</a></li></ul>';
         this._Canvas.style.zIndex = '50';
         this._Canvas.width = this._Font.Width * this._ScreenSize.x;
-        this._Canvas.height = this._Font.Height * this._ScreenSize.y;
-
+        if (DetectMobileBrowser.IsMobile) {
+            this._Canvas.height = this._Font.Height * this._ScreenSize.y;
+        }
+        else {
+            this._Canvas.height = this._Font.Height * (this._ScreenSize.y + this._ScrollbackSize);
+        }
+        if (!DetectMobileBrowser.IsMobile) {
+            this._Canvas.addEventListener('mousedown', function (me) { _this.OnMouseDown(me); }, false);
+            this._Canvas.addEventListener('mousemove', function (me) { _this.OnMouseMove(me); }, false);
+            this._Canvas.addEventListener('mouseup', function (me) { _this.OnMouseUp(me); }, false);
+        }
         if (!this._Canvas.getContext) {
             console.log('fTelnet Error: Canvas not supported');
             return false;
         }
-
         this._Container.appendChild(this._Canvas);
-
-        window.addEventListener('keydown', function (ke) {
-            _this.OnKeyDown(ke);
-        }, false);
-        window.addEventListener('keypress', function (ke) {
-            _this.OnKeyPress(ke);
-        }, false);
-        window.addEventListener('resize', function () {
-            _this.OnResize();
-        }, false);
-
+        window.addEventListener('keydown', function (ke) { _this.OnKeyDown(ke); }, false);
+        window.addEventListener('keypress', function (ke) { _this.OnKeyPress(ke); }, false);
+        window.addEventListener('resize', function () { _this.OnResize(); }, false);
         this.InitBuffers(true);
-
         this._Cursor = new Cursor(this._Container, CrtFont.ANSI_COLOURS[this.LIGHTGRAY], this._Font.Size);
-        this._Cursor.onhide.on(function () {
-            _this.OnBlinkHide();
-        });
-        this._Cursor.onshow.on(function () {
-            _this.OnBlinkShow();
-        });
-
+        this._Cursor.onhide.on(function () { _this.OnBlinkHide(); });
+        this._Cursor.onshow.on(function () { _this.OnBlinkShow(); });
         this._WindMin = 0;
         this._WindMax = (this._ScreenSize.x - 1) | ((this._ScreenSize.y - 1) << 8);
-
         this._CanvasContext = this._Canvas.getContext('2d');
         this._CanvasContext.font = '12pt monospace';
         this._CanvasContext.textBaseline = 'top';
+        if (!DetectMobileBrowser.IsMobile) {
+            this._TempCanvas = document.createElement('canvas');
+            this._TempCanvas.width = this._Canvas.width;
+            this._TempCanvas.height = this._Canvas.height;
+            this._TempCanvasContext = this._TempCanvas.getContext('2d');
+            this._TempCanvasContext.font = '12pt monospace';
+            this._TempCanvasContext.textBaseline = 'top';
+            this._CanvasContext.fillStyle = 'black';
+            this._CanvasContext.fillRect(0, 0, this._Canvas.width, this._Canvas.height);
+        }
         this.ClrScr();
-
         return true;
     };
-
     Object.defineProperty(Crt, "Atari", {
         get: function () {
             return this._Atari;
@@ -3967,11 +3828,8 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Crt.Beep = function () {
     };
-
     Object.defineProperty(Crt, "Blink", {
         get: function () {
             return this._Blink;
@@ -3982,8 +3840,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(Crt, "BareLFtoCRLF", {
         get: function () {
             return this._BareLFtoCRLF;
@@ -3994,8 +3850,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(Crt, "C64", {
         get: function () {
             return this._C64;
@@ -4006,8 +3860,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(Crt, "Canvas", {
         get: function () {
             return this._Canvas;
@@ -4015,42 +3867,39 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
+    Object.defineProperty(Crt, "ClipboardText", {
+        get: function () {
+            return this._ClipboardText;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Crt.ClrBol = function () {
         this.FastWrite(StringUtils.NewString(' ', this.WhereX()), this.WindMinX + 1, this.WhereYA(), this._CharInfo);
     };
-
     Crt.ClrBos = function () {
         this.ScrollUpWindow(this.WhereY() - 1);
         this.ScrollDownWindow(this.WhereY() - 1);
-
         this.ClrBol();
     };
-
     Crt.ClrEol = function () {
         this.FastWrite(StringUtils.NewString(' ', (this.WindMaxX + 1) - this.WhereX() + 1), this.WhereXA(), this.WhereYA(), this._CharInfo);
     };
-
     Crt.ClrEos = function () {
         this.ScrollDownWindow(this.WindRows - this.WhereY());
         this.ScrollUpWindow(this.WindRows - this.WhereY());
-
         this.ClrEol();
     };
-
     Crt.ClrLine = function () {
         this.FastWrite(StringUtils.NewString(' ', this.WindCols), this.WindMinX + 1, this.WhereYA(), this._CharInfo);
     };
-
     Crt.ClrScr = function () {
         this.ScrollUpWindow(this.WindRows);
         this.GotoXY(1, 1);
     };
-
     Crt.Conceal = function () {
         this.TextColor((this.TextAttr & 0xF0) >> 4);
     };
-
     Object.defineProperty(Crt, "Cursor", {
         get: function () {
             return this._Cursor;
@@ -4058,12 +3907,10 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Crt.DelChar = function (count) {
         if (typeof count === 'undefined') {
             count = 1;
         }
-
         var i;
         for (i = this.WhereXA(); i <= this.WindMinX + this.WindCols - count; i++) {
             this.FastWrite(this._Buffer[this.WhereYA()][i + count].Ch, i, this.WhereYA(), this._Buffer[this.WhereYA()][i + count]);
@@ -4072,80 +3919,99 @@ var Crt = (function () {
             this.FastWrite(' ', i, this.WhereYA(), this._CharInfo);
         }
     };
-
     Crt.DelLine = function (count) {
         if (typeof count === 'undefined') {
             count = 1;
         }
         this.ScrollUpCustom(this.WindMinX + 1, this.WhereYA(), this.WindMaxX + 1, this.WindMaxY + 1, count, this._CharInfo);
     };
-
-    Crt.EnterScrollBack = function () {
-        if (!this._InScrollBack) {
-            this._InScrollBack = true;
-
+    Crt.EnterScrollback = function () {
+        if (!DetectMobileBrowser.IsMobile)
+            return;
+        if (!this._InScrollback) {
+            this._InScrollback = true;
             var NewRow;
             var X;
             var Y;
-
-            this._ScrollBackTemp = [];
-            for (Y = 0; Y < this._ScrollBack.length; Y++) {
+            this._ScrollbackTemp = [];
+            for (Y = 0; Y < this._Scrollback.length; Y++) {
                 NewRow = [];
-                for (X = 0; X < this._ScrollBack[Y].length; X++) {
-                    NewRow.push(new CharInfo(this._ScrollBack[Y][X].Ch, this._ScrollBack[Y][X].Attr, this._ScrollBack[Y][X].Blink, this._ScrollBack[Y][X].Underline, this._ScrollBack[Y][X].Reverse));
+                for (X = 0; X < this._Scrollback[Y].length; X++) {
+                    NewRow.push(new CharInfo(this._Scrollback[Y][X].Ch, this._Scrollback[Y][X].Attr, this._Scrollback[Y][X].Blink, this._Scrollback[Y][X].Underline, this._Scrollback[Y][X].Reverse));
                 }
-                this._ScrollBackTemp.push(NewRow);
+                this._ScrollbackTemp.push(NewRow);
             }
-
             for (Y = 1; Y <= this._ScreenSize.y; Y++) {
                 NewRow = [];
                 for (X = 1; X <= this._ScreenSize.x; X++) {
                     NewRow.push(new CharInfo(this._Buffer[Y][X].Ch, this._Buffer[Y][X].Attr, this._Buffer[Y][X].Blink, this._Buffer[Y][X].Underline, this._Buffer[Y][X].Reverse));
                 }
-                this._ScrollBackTemp.push(NewRow);
+                this._ScrollbackTemp.push(NewRow);
             }
-
-            this._ScrollBackPosition = this._ScrollBackTemp.length;
+            this._ScrollbackPosition = this._ScrollbackTemp.length;
         }
     };
-
+    Crt.ExitScrollback = function () {
+        if (this._Buffer !== null) {
+            for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
+                for (var X = 1; X <= this._ScreenSize.x; X++) {
+                    this.FastWrite(this._Buffer[Y][X].Ch, X, Y, this._Buffer[Y][X], false);
+                }
+            }
+        }
+        this._InScrollback = false;
+    };
     Crt.FastWrite = function (text, x, y, charInfo, updateBuffer) {
         if (typeof updateBuffer === 'undefined') {
             updateBuffer = true;
         }
-
         if ((x <= this._ScreenSize.x) && (y <= this._ScreenSize.y)) {
-            for (var i = 0; i < text.length; i++) {
-                var Char = this._Font.GetChar(text.charCodeAt(i), charInfo);
+            var Chars = [];
+            var CharCodes = [];
+            var TextLength;
+            if (text === null) {
+                TextLength = 1;
+                Chars.push(null);
+                CharCodes.push(this._Transparent ? CrtFont.TRANSPARENT_CHARCODE : 32);
+            }
+            else {
+                TextLength = text.length;
+                for (var i = 0; i < TextLength; i++) {
+                    Chars.push(text.charAt(i));
+                    CharCodes.push(text.charCodeAt(i));
+                }
+            }
+            for (var i = 0; i < TextLength; i++) {
+                var Char = this._Font.GetChar(CharCodes[i], charInfo);
                 if (Char) {
-                    if ((!this._InScrollBack) || (this._InScrollBack && !updateBuffer)) {
-                        this._CanvasContext.putImageData(Char, (x - 1 + i) * this._Font.Width, (y - 1) * this._Font.Height);
+                    if (DetectMobileBrowser.IsMobile) {
+                        if ((!this._InScrollback) || (this._InScrollback && !updateBuffer)) {
+                            this._CanvasContext.putImageData(Char, (x - 1 + i) * this._Font.Width, (y - 1) * this._Font.Height);
+                        }
+                    }
+                    else {
+                        this._CanvasContext.putImageData(Char, (x - 1 + i) * this._Font.Width, (y - 1 + this._ScrollbackSize) * this._Font.Height);
                     }
                 }
-
                 if (updateBuffer) {
-                    this._Buffer[y][x + i].Ch = text.charAt(i);
+                    this._Buffer[y][x + i].Ch = Chars[i];
                     this._Buffer[y][x + i].Attr = charInfo.Attr;
                     this._Buffer[y][x + i].Blink = charInfo.Blink;
                     this._Buffer[y][x + i].Underline = charInfo.Underline;
                     this._Buffer[y][x + i].Reverse = charInfo.Reverse;
                 }
-
                 if (x + i >= this._ScreenSize.x) {
                     break;
                 }
             }
         }
     };
-
     Crt.FillScreen = function (ch) {
         var Line = StringUtils.NewString(ch.charAt(0), this.ScreenCols);
-
         for (var Y = 1; Y <= this.ScreenRows; Y++) {
             this.FastWrite(Line, 1, Y, this._CharInfo);
         }
     };
-
     Object.defineProperty(Crt, "Font", {
         get: function () {
             return this._Font;
@@ -4153,44 +4019,33 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-    Crt.GeCharInfo = function () {
-        return this._CharInfo;
-    };
-
     Crt.GotoXY = function (x, y) {
         if ((x >= 1) && (y >= 1) && ((x - 1 + this.WindMinX) <= this.WindMaxX) && ((y - 1 + this.WindMinY) <= this.WindMaxY)) {
             this._Cursor.Position = new Point(x, y);
         }
     };
-
     Crt.HideCursor = function () {
         this._Cursor.Visible = false;
     };
-
     Crt.HighVideo = function () {
         this.TextAttr |= 0x08;
     };
-
-    Crt.InitBuffers = function (initScrollBack) {
+    Crt.InitBuffers = function (initScrollback) {
         this._Buffer = [];
         for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
             this._Buffer[Y] = [];
             for (var X = 1; X <= this._ScreenSize.x; X++) {
-                this._Buffer[Y][X] = new CharInfo(' ', this.LIGHTGRAY, false, false, false);
+                this._Buffer[Y][X] = new CharInfo(null, this.LIGHTGRAY, false, false, false);
             }
         }
-
-        if (initScrollBack) {
-            this._ScrollBack = [];
+        if (initScrollback) {
+            this._Scrollback = [];
         }
     };
-
     Crt.InsChar = function (count) {
         if (typeof count === 'undefined') {
             count = 1;
         }
-
         var i;
         for (i = this.WindMinX + this.WindCols; i >= this.WhereXA() + count; i--) {
             this.FastWrite(this._Buffer[this.WhereYA()][i - count].Ch, i, this.WhereYA(), this._Buffer[this.WhereYA()][i - count]);
@@ -4199,18 +4054,15 @@ var Crt = (function () {
             this.FastWrite(' ', i, this.WhereYA(), this._CharInfo);
         }
     };
-
     Crt.InsLine = function (count) {
         if (typeof count === 'undefined') {
             count = 1;
         }
         this.ScrollDownCustom(this.WindMinX + 1, this.WhereYA(), this.WindMaxX + 1, this.WindMaxY + 1, count, this._CharInfo);
     };
-
     Crt.KeyPressed = function () {
         return (this._KeyBuf.length > 0);
     };
-
     Object.defineProperty(Crt, "LocalEcho", {
         set: function (value) {
             this._LocalEcho = value;
@@ -4218,26 +4070,29 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Crt.LowVideo = function () {
         this.TextAttr &= 0xF7;
     };
-
+    Crt.MousePositionToScreenPosition = function (x, y) {
+        if (!DetectMobileBrowser.IsMobile) {
+            y -= this._ScrollbackSize * this._Font.Height;
+        }
+        return new Point(Math.floor(x / this._Font.Width) + 1, Math.floor(y / this._Font.Height) + 1);
+    };
     Crt.NormVideo = function () {
         if (this._C64) {
             this._CharInfo.Attr = this.PETSCII_WHITE;
-        } else {
+        }
+        else {
             this._CharInfo.Attr = this.LIGHTGRAY;
         }
         this._CharInfo.Blink = false;
         this._CharInfo.Underline = false;
         this._CharInfo.Reverse = false;
     };
-
     Crt.OnBlinkHide = function () {
         if (this._Blink) {
             this._BlinkHidden = true;
-
             for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
                 for (var X = 1; X <= this._ScreenSize.x; X++) {
                     if (this._Buffer[Y][X].Blink) {
@@ -4249,11 +4104,9 @@ var Crt = (function () {
             }
         }
     };
-
     Crt.OnBlinkShow = function () {
         if (this._Blink || this._BlinkHidden) {
             this._BlinkHidden = false;
-
             for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
                 for (var X = 1; X <= this._ScreenSize.x; X++) {
                     if (this._Buffer[Y][X].Blink) {
@@ -4264,16 +4117,23 @@ var Crt = (function () {
                 }
             }
         }
-
-        this._Cursor.WindowOffset = Offset.getOffset(this._Canvas);
+        var NewOffset = Offset.getOffset(this._Canvas);
+        if (!DetectMobileBrowser.IsMobile)
+            NewOffset.y += this._ScrollbackSize * this._Font.Height;
+        this._Cursor.WindowOffset = NewOffset;
     };
-
     Crt.OnFontChanged = function () {
         this._Cursor.Size = this._Font.Size;
-
-        this._Canvas.height = this._Font.Height * this._ScreenSize.y;
         this._Canvas.width = this._Font.Width * this._ScreenSize.x;
-
+        if (DetectMobileBrowser.IsMobile) {
+            this._Canvas.height = this._Font.Height * this._ScreenSize.y;
+        }
+        else {
+            this._Canvas.height = this._Font.Height * (this._ScreenSize.y + this._ScrollbackSize);
+            this._CanvasContext.fillRect(0, 0, this._Canvas.width, this._Canvas.height);
+            this._TempCanvas.width = this._Canvas.width;
+            this._TempCanvas.height = this._Canvas.height;
+        }
         if (this._Buffer !== null) {
             for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
                 for (var X = 1; X <= this._ScreenSize.x; X++) {
@@ -4281,74 +4141,57 @@ var Crt = (function () {
                 }
             }
         }
-
         this.onfontchange.trigger();
     };
-
     Crt.OnKeyDown = function (ke) {
         if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) {
             return;
         }
-
-        if (this._InScrollBack) {
+        if (this._InScrollback) {
             var i;
             var X;
             var XEnd;
             var Y;
             var YDest;
             var YSource;
-
-            if (ke.keyCode === 40 /* DOWN */) {
-                if (this._ScrollBackPosition < this._ScrollBackTemp.length) {
-                    this._ScrollBackPosition += 1;
+            if (ke.keyCode === Keyboard.DOWN) {
+                if (this._ScrollbackPosition < this._ScrollbackTemp.length) {
+                    this._ScrollbackPosition += 1;
                     this.ScrollUpCustom(1, 1, this._ScreenSize.x, this._ScreenSize.y, 1, new CharInfo(' ', 7, false, false, false), false);
-
                     YDest = this._ScreenSize.y;
-                    YSource = this._ScrollBackPosition - 1;
-                    XEnd = Math.min(this._ScreenSize.x, this._ScrollBackTemp[YSource].length);
+                    YSource = this._ScrollbackPosition - 1;
+                    XEnd = Math.min(this._ScreenSize.x, this._ScrollbackTemp[YSource].length);
                     for (X = 0; X < XEnd; X++) {
-                        this.FastWrite(this._ScrollBackTemp[YSource][X].Ch, X + 1, YDest, this._ScrollBackTemp[YSource][X], false);
-                    }
-                }
-            } else if (ke.keyCode === 27 /* ESCAPE */) {
-                if (this._Buffer !== null) {
-                    for (Y = 1; Y <= this._ScreenSize.y; Y++) {
-                        for (X = 1; X <= this._ScreenSize.x; X++) {
-                            this.FastWrite(this._Buffer[Y][X].Ch, X, Y, this._Buffer[Y][X], false);
-                        }
-                    }
-                }
-
-                this._InScrollBack = false;
-            } else if (ke.keyCode === 34 /* PAGE_DOWN */) {
-                for (i = 0; i < this._ScreenSize.y; i++) {
-                    this.PushKeyDown(40 /* DOWN */, 40 /* DOWN */, false, false, false);
-                }
-            } else if (ke.keyCode === 33 /* PAGE_UP */) {
-                for (i = 0; i < this._ScreenSize.y; i++) {
-                    this.PushKeyDown(38 /* UP */, 38 /* UP */, false, false, false);
-                }
-            } else if (ke.keyCode === 38 /* UP */) {
-                if (this._ScrollBackPosition > this._ScreenSize.y) {
-                    this._ScrollBackPosition -= 1;
-                    this.ScrollDownCustom(1, 1, this._ScreenSize.x, this._ScreenSize.y, 1, new CharInfo(' ', 7, false, false), false);
-
-                    YDest = 1;
-                    YSource = this._ScrollBackPosition - this._ScreenSize.y;
-                    XEnd = Math.min(this._ScreenSize.x, this._ScrollBackTemp[YSource].length);
-                    for (X = 0; X < XEnd; X++) {
-                        this.FastWrite(this._ScrollBackTemp[YSource][X].Ch, X + 1, YDest, this._ScrollBackTemp[YSource][X], false);
+                        this.FastWrite(this._ScrollbackTemp[YSource][X].Ch, X + 1, YDest, this._ScrollbackTemp[YSource][X], false);
                     }
                 }
             }
-
+            else if (ke.keyCode === Keyboard.PAGE_DOWN) {
+                for (i = 0; i < this._ScreenSize.y; i++) {
+                    this.PushKeyDown(Keyboard.DOWN, Keyboard.DOWN, false, false, false);
+                }
+            }
+            else if (ke.keyCode === Keyboard.PAGE_UP) {
+                for (i = 0; i < this._ScreenSize.y; i++) {
+                    this.PushKeyDown(Keyboard.UP, Keyboard.UP, false, false, false);
+                }
+            }
+            else if (ke.keyCode === Keyboard.UP) {
+                if (this._ScrollbackPosition > this._ScreenSize.y) {
+                    this._ScrollbackPosition -= 1;
+                    this.ScrollDownCustom(1, 1, this._ScreenSize.x, this._ScreenSize.y, 1, new CharInfo(' ', 7, false, false), false);
+                    YDest = 1;
+                    YSource = this._ScrollbackPosition - this._ScreenSize.y;
+                    XEnd = Math.min(this._ScreenSize.x, this._ScrollbackTemp[YSource].length);
+                    for (X = 0; X < XEnd; X++) {
+                        this.FastWrite(this._ScrollbackTemp[YSource][X].Ch, X + 1, YDest, this._ScrollbackTemp[YSource][X], false);
+                    }
+                }
+            }
             ke.preventDefault();
-
             return;
         }
-
         var keyString = '';
-
         if (this._Atari) {
             if (ke.ctrlKey) {
                 if ((ke.keyCode >= 65) && (ke.keyCode <= 90)) {
@@ -4366,7 +4209,8 @@ var Crt = (function () {
                             keyString = String.fromCharCode(ke.keyCode - 64);
                             break;
                     }
-                } else if ((ke.keyCode >= 97) && (ke.keyCode <= 122)) {
+                }
+                else if ((ke.keyCode >= 97) && (ke.keyCode <= 122)) {
                     switch (ke.keyCode) {
                         case 104:
                             keyString = String.fromCharCode(126);
@@ -4382,246 +4226,337 @@ var Crt = (function () {
                             break;
                     }
                 }
-            } else {
+            }
+            else {
                 switch (ke.keyCode) {
-                    case 8 /* BACKSPACE */:
+                    case Keyboard.BACKSPACE:
                         keyString = '\x7E';
                         break;
-                    case 46 /* DELETE */:
+                    case Keyboard.DELETE:
                         keyString = '\x7E';
                         break;
-                    case 40 /* DOWN */:
+                    case Keyboard.DOWN:
                         keyString = '\x1D';
                         break;
-                    case 13 /* ENTER */:
+                    case Keyboard.ENTER:
                         keyString = '\x9B';
                         break;
-                    case 37 /* LEFT */:
+                    case Keyboard.LEFT:
                         keyString = '\x1E';
                         break;
-                    case 39 /* RIGHT */:
+                    case Keyboard.RIGHT:
                         keyString = '\x1F';
                         break;
-                    case 32 /* SPACE */:
+                    case Keyboard.SPACE:
                         keyString = ' ';
                         break;
-                    case 9 /* TAB */:
+                    case Keyboard.TAB:
                         keyString = '\x7F';
                         break;
-                    case 38 /* UP */:
+                    case Keyboard.UP:
                         keyString = '\x1C';
                         break;
                 }
             }
-        } else if (this._C64) {
+        }
+        else if (this._C64) {
             switch (ke.keyCode) {
-                case 8 /* BACKSPACE */:
+                case Keyboard.BACKSPACE:
                     keyString = '\x14';
                     break;
-                case 46 /* DELETE */:
+                case Keyboard.DELETE:
                     keyString = '\x14';
                     break;
-                case 40 /* DOWN */:
+                case Keyboard.DOWN:
                     keyString = '\x11';
                     break;
-                case 13 /* ENTER */:
+                case Keyboard.ENTER:
                     keyString = '\r';
                     break;
-                case 112 /* F1 */:
+                case Keyboard.F1:
                     keyString = '\x85';
                     break;
-                case 113 /* F2 */:
+                case Keyboard.F2:
                     keyString = '\x89';
                     break;
-                case 114 /* F3 */:
+                case Keyboard.F3:
                     keyString = '\x86';
                     break;
-                case 115 /* F4 */:
+                case Keyboard.F4:
                     keyString = '\x8A';
                     break;
-                case 116 /* F5 */:
+                case Keyboard.F5:
                     keyString = '\x87';
                     break;
-                case 117 /* F6 */:
+                case Keyboard.F6:
                     keyString = '\x8B';
                     break;
-                case 118 /* F7 */:
+                case Keyboard.F7:
                     keyString = '\x88';
                     break;
-                case 119 /* F8 */:
+                case Keyboard.F8:
                     keyString = '\x8C';
                     break;
-                case 36 /* HOME */:
+                case Keyboard.HOME:
                     keyString = '\x13';
                     break;
-                case 45 /* INSERT */:
+                case Keyboard.INSERT:
                     keyString = '\x94';
                     break;
-                case 37 /* LEFT */:
+                case Keyboard.LEFT:
                     keyString = '\x9D';
                     break;
-                case 39 /* RIGHT */:
+                case Keyboard.RIGHT:
                     keyString = '\x1D';
                     break;
-                case 32 /* SPACE */:
+                case Keyboard.SPACE:
                     keyString = ' ';
                     break;
-                case 38 /* UP */:
+                case Keyboard.UP:
                     keyString = '\x91';
                     break;
             }
-        } else {
+        }
+        else {
             if (ke.ctrlKey) {
                 if ((ke.keyCode >= 65) && (ke.keyCode <= 90)) {
                     keyString = String.fromCharCode(ke.keyCode - 64);
-                } else if ((ke.keyCode >= 97) && (ke.keyCode <= 122)) {
+                }
+                else if ((ke.keyCode >= 97) && (ke.keyCode <= 122)) {
                     keyString = String.fromCharCode(ke.keyCode - 96);
                 }
-            } else {
+            }
+            else {
                 switch (ke.keyCode) {
-                    case 8 /* BACKSPACE */:
+                    case Keyboard.BACKSPACE:
                         keyString = '\b';
                         break;
-                    case 46 /* DELETE */:
+                    case Keyboard.DELETE:
                         keyString = '\x7F';
                         break;
-                    case 40 /* DOWN */:
+                    case Keyboard.DOWN:
                         keyString = '\x1B[B';
                         break;
-                    case 35 /* END */:
+                    case Keyboard.END:
                         keyString = '\x1B[K';
                         break;
-                    case 13 /* ENTER */:
+                    case Keyboard.ENTER:
                         keyString = '\r\n';
                         break;
-                    case 27 /* ESCAPE */:
+                    case Keyboard.ESCAPE:
                         keyString = '\x1B';
                         break;
-                    case 112 /* F1 */:
+                    case Keyboard.F1:
                         keyString = '\x1BOP';
                         break;
-                    case 113 /* F2 */:
+                    case Keyboard.F2:
                         keyString = '\x1BOQ';
                         break;
-                    case 114 /* F3 */:
+                    case Keyboard.F3:
                         keyString = '\x1BOR';
                         break;
-                    case 115 /* F4 */:
+                    case Keyboard.F4:
                         keyString = '\x1BOS';
                         break;
-                    case 116 /* F5 */:
+                    case Keyboard.F5:
                         keyString = '\x1BOt';
                         break;
-                    case 117 /* F6 */:
+                    case Keyboard.F6:
                         keyString = '\x1B[17~';
                         break;
-                    case 118 /* F7 */:
+                    case Keyboard.F7:
                         keyString = '\x1B[18~';
                         break;
-                    case 119 /* F8 */:
+                    case Keyboard.F8:
                         keyString = '\x1B[19~';
                         break;
-                    case 120 /* F9 */:
+                    case Keyboard.F9:
                         keyString = '\x1B[20~';
                         break;
-                    case 121 /* F10 */:
+                    case Keyboard.F10:
                         keyString = '\x1B[21~';
                         break;
-                    case 122 /* F11 */:
+                    case Keyboard.F11:
                         keyString = '\x1B[23~';
                         break;
-                    case 123 /* F12 */:
+                    case Keyboard.F12:
                         keyString = '\x1B[24~';
                         break;
-                    case 36 /* HOME */:
+                    case Keyboard.HOME:
                         keyString = '\x1B[H';
                         break;
-                    case 45 /* INSERT */:
+                    case Keyboard.INSERT:
                         keyString = '\x1B@';
                         break;
-                    case 37 /* LEFT */:
+                    case Keyboard.LEFT:
                         keyString = '\x1B[D';
                         break;
-                    case 34 /* PAGE_DOWN */:
+                    case Keyboard.PAGE_DOWN:
                         keyString = '\x1B[U';
                         break;
-                    case 33 /* PAGE_UP */:
+                    case Keyboard.PAGE_UP:
                         keyString = '\x1B[V';
                         break;
-                    case 39 /* RIGHT */:
+                    case Keyboard.RIGHT:
                         keyString = '\x1B[C';
                         break;
-                    case 32 /* SPACE */:
+                    case Keyboard.SPACE:
                         keyString = ' ';
                         break;
-                    case 9 /* TAB */:
+                    case Keyboard.TAB:
                         keyString = '\t';
                         break;
-                    case 38 /* UP */:
+                    case Keyboard.UP:
                         keyString = '\x1B[A';
                         break;
                 }
             }
         }
-
         this._KeyBuf.push(new KeyPressEvent(ke, keyString));
-
         if ((keyString) || (ke.ctrlKey)) {
             ke.preventDefault();
             this.onkeypressed.trigger();
         }
     };
-
     Crt.OnKeyPress = function (ke) {
         if ((ke.target instanceof HTMLInputElement) || (ke.target instanceof HTMLTextAreaElement)) {
             return;
         }
-
-        if (this._InScrollBack) {
+        if (this._InScrollback) {
             return;
         }
-
         var keyString = '';
-
         if (ke.altKey || ke.ctrlKey) {
             return;
         }
-
         var which = (ke.charCode !== null) ? ke.charCode : ke.which;
         if (this._Atari) {
             if ((which >= 33) && (which <= 122)) {
                 keyString = String.fromCharCode(which);
             }
-        } else if (this._C64) {
+        }
+        else if (this._C64) {
             if ((which >= 33) && (which <= 64)) {
                 keyString = String.fromCharCode(which);
-            } else if ((which >= 65) && (which <= 90)) {
+            }
+            else if ((which >= 65) && (which <= 90)) {
                 keyString = String.fromCharCode(which).toLowerCase();
-            } else if ((which >= 91) && (which <= 95)) {
+            }
+            else if ((which >= 91) && (which <= 95)) {
                 keyString = String.fromCharCode(which);
-            } else if ((which >= 97) && (which <= 122)) {
+            }
+            else if ((which >= 97) && (which <= 122)) {
                 keyString = String.fromCharCode(which).toUpperCase();
             }
-        } else {
+        }
+        else {
             if (which >= 33) {
                 keyString = String.fromCharCode(which);
             }
         }
-
         this._KeyBuf.push(new KeyPressEvent(ke, keyString));
-
         if (keyString) {
             ke.preventDefault();
             this.onkeypressed.trigger();
         }
     };
-
+    Crt.OnMouseDown = function (me) {
+        if (typeof me.offsetX !== "undefined") {
+            this._MouseDownPoint = this.MousePositionToScreenPosition(me.offsetX, me.offsetY);
+        }
+        else {
+            var CanvasOffset = Offset.getOffset(this._Canvas);
+            this._MouseDownPoint = this.MousePositionToScreenPosition(me.clientX - CanvasOffset.x, me.clientY - CanvasOffset.y);
+        }
+        this._MouseMovePoint = new Point(this._MouseDownPoint.x, this._MouseDownPoint.y);
+    };
+    Crt.OnMouseMove = function (me) {
+        if (this._MouseDownPoint === null)
+            return;
+        var NewMovePoint;
+        if (typeof me.offsetX !== "undefined") {
+            NewMovePoint = this.MousePositionToScreenPosition(me.offsetX, me.offsetY);
+        }
+        else {
+            var CanvasOffset = Offset.getOffset(this._Canvas);
+            NewMovePoint = this.MousePositionToScreenPosition(me.clientX - CanvasOffset.x, me.clientY - CanvasOffset.y);
+        }
+        if ((this._MouseMovePoint.x == NewMovePoint.x) && (this._MouseMovePoint.y == NewMovePoint.y))
+            return;
+        var DownPoint = new Point(this._MouseDownPoint.x, this._MouseDownPoint.y);
+        var MovePoint = new Point(this._MouseMovePoint.x, this._MouseMovePoint.y);
+        if ((DownPoint.y > MovePoint.y) || ((DownPoint.y == MovePoint.y) && (DownPoint.x > MovePoint.x))) {
+            var TempPoint = DownPoint;
+            DownPoint = MovePoint;
+            MovePoint = TempPoint;
+        }
+        for (var y = DownPoint.y; y <= MovePoint.y; y++) {
+            var FirstX = (y == DownPoint.y) ? DownPoint.x : 1;
+            var LastX = (y == MovePoint.y) ? MovePoint.x : this._ScreenSize.x;
+            for (var x = FirstX; x <= LastX; x++) {
+                var CI = this._Buffer[y][x];
+                CI.Reverse = false;
+                this.FastWrite(CI.Ch, x, y, CI, false);
+            }
+        }
+        DownPoint = new Point(this._MouseDownPoint.x, this._MouseDownPoint.y);
+        MovePoint = new Point(NewMovePoint.x, NewMovePoint.y);
+        if ((DownPoint.y > MovePoint.y) || ((DownPoint.y == MovePoint.y) && (DownPoint.x > MovePoint.x))) {
+            var TempPoint = DownPoint;
+            DownPoint = MovePoint;
+            MovePoint = TempPoint;
+        }
+        for (var y = DownPoint.y; y <= MovePoint.y; y++) {
+            var FirstX = (y == DownPoint.y) ? DownPoint.x : 1;
+            var LastX = (y == MovePoint.y) ? MovePoint.x : this._ScreenSize.x;
+            for (var x = FirstX; x <= LastX; x++) {
+                var CI = this._Buffer[y][x];
+                CI.Reverse = true;
+                this.FastWrite(CI.Ch, x, y, CI, false);
+            }
+        }
+        this._MouseMovePoint = NewMovePoint;
+    };
+    Crt.OnMouseUp = function (me) {
+        var UpPoint;
+        if (typeof me.offsetX !== "undefined") {
+            UpPoint = this.MousePositionToScreenPosition(me.offsetX, me.offsetY);
+        }
+        else {
+            var CanvasOffset = Offset.getOffset(this._Canvas);
+            UpPoint = this.MousePositionToScreenPosition(me.clientX - CanvasOffset.x, me.clientY - CanvasOffset.y);
+        }
+        var DownPoint = new Point(this._MouseDownPoint.x, this._MouseDownPoint.y);
+        if ((DownPoint.x == UpPoint.x) && (DownPoint.y == UpPoint.y))
+            return;
+        if ((DownPoint.y > UpPoint.y) || ((DownPoint.y == UpPoint.y) && (DownPoint.x > UpPoint.x))) {
+            var TempPoint = DownPoint;
+            DownPoint = UpPoint;
+            UpPoint = TempPoint;
+        }
+        var Text = '';
+        for (var y = DownPoint.y; y <= UpPoint.y; y++) {
+            var FirstX = (y == DownPoint.y) ? DownPoint.x : 1;
+            var LastX = (y == UpPoint.y) ? UpPoint.x : this._ScreenSize.x;
+            for (var x = FirstX; x <= LastX; x++) {
+                var CI = this._Buffer[y][x];
+                CI.Reverse = false;
+                this.FastWrite(CI.Ch, x, y, CI, false);
+                Text += (this._Buffer[y][x].Ch === null) ? ' ' : this._Buffer[y][x].Ch;
+            }
+            if (y < DownPoint.y)
+                Text += "\r\n";
+        }
+        this._ClipboardText = Text;
+        Clipboard.SetData(Text);
+        this._MouseDownPoint = null;
+        this._MouseMovePoint = null;
+    };
     Crt.OnResize = function () {
         if (this._AllowDynamicFontResize) {
             Crt.SetFont(this._Font.Name);
         }
     };
-
     Crt.PushKeyDown = function (pushedCharCode, pushedKeyCode, ctrl, alt, shift) {
         this.OnKeyDown({
             altKey: alt,
@@ -4629,11 +4564,9 @@ var Crt = (function () {
             ctrlKey: ctrl,
             keyCode: pushedKeyCode,
             shiftKey: shift,
-            preventDefault: function () {
-            }
+            preventDefault: function () { }
         });
     };
-
     Crt.PushKeyPress = function (pushedCharCode, pushedKeyCode, ctrl, alt, shift) {
         this.OnKeyPress({
             altKey: alt,
@@ -4641,23 +4574,19 @@ var Crt = (function () {
             ctrlKey: ctrl,
             keyCode: pushedKeyCode,
             shiftKey: shift,
-            preventDefault: function () {
-            }
+            preventDefault: function () { }
         });
     };
-
     Crt.ReadKey = function () {
         if (this._KeyBuf.length === 0) {
             return null;
         }
-
         var KPE = this._KeyBuf.shift();
         if (this._LocalEcho) {
             this.Write(KPE.keyString);
         }
         return KPE;
     };
-
     Crt.ReDraw = function () {
         for (var Y = 1; Y <= this._ScreenSize.y; Y++) {
             for (var X = 1; X <= this._ScreenSize.x; X++) {
@@ -4665,37 +4594,30 @@ var Crt = (function () {
             }
         }
     };
-
     Crt.RestoreScreen = function (buffer, left, top, right, bottom) {
         var Height = bottom - top + 1;
         var Width = right - left + 1;
-
         for (var Y = 0; Y < Height; Y++) {
             for (var X = 0; X < Width; X++) {
                 this.FastWrite(buffer[Y][X].Ch, X + left, Y + top, buffer[Y][X]);
             }
         }
     };
-
     Crt.ReverseVideo = function () {
         this.TextAttr = ((this.TextAttr & 0xF0) >> 4) | ((this.TextAttr & 0x0F) << 4);
     };
-
     Crt.SaveScreen = function (left, top, right, bottom) {
         var Height = bottom - top + 1;
         var Width = right - left + 1;
         var Result = [];
-
         for (var Y = 0; Y < Height; Y++) {
             Result[Y] = [];
             for (var X = 0; X < Width; X++) {
                 Result[Y][X] = new CharInfo(this._Buffer[Y + top][X + left].Ch, this._Buffer[Y + top][X + left].Attr, this._Buffer[Y + top][X + left].Blink, this._Buffer[Y + top][X + left].Underline, this._Buffer[Y + top][X + left].Reverse);
             }
         }
-
         return Result;
     };
-
     Object.defineProperty(Crt, "ScreenCols", {
         get: function () {
             return this._ScreenSize.x;
@@ -4703,7 +4625,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "ScreenRows", {
         get: function () {
             return this._ScreenSize.y;
@@ -4711,17 +4632,25 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Crt.ScrollDownCustom = function (left, top, right, bottom, count, charInfo, updateBuffer) {
+        /// <summary>
+        /// Scrolls the given window down the given number of lines (leaving blank lines at the top), 
+        /// filling the void with the given character with the given text attribute
+        /// </summary>
+        /// <param name='AX1'>The 1-based left column of the window</param>
+        /// <param name='AY1'>The 1-based top row of the window</param>
+        /// <param name='AX2'>The 1-based right column of the window</param>
+        /// <param name='AY2'>The 1-based bottom row of the window</param>
+        /// <param name='ALines'>The number of lines to scroll</param>
+        /// <param name='ACh'>The character to fill the void with</param>
+        /// <param name='ACharInfo'>The text attribute to fill the void with</param>
         if (typeof updateBuffer === 'undefined') {
             updateBuffer = true;
         }
-
         var MaxLines = bottom - top + 1;
         if (count > MaxLines) {
             count = MaxLines;
         }
-
         var Left = (left - 1) * this._Font.Width;
         var Top = (top - 1) * this._Font.Height;
         var Width = (right - left + 1) * this._Font.Width;
@@ -4732,16 +4661,13 @@ var Crt = (function () {
             Top = (top - 1 + count) * this._Font.Height;
             this._CanvasContext.putImageData(Buf, Left, Top);
         }
-
         var Blanks = StringUtils.PadLeft('', ' ', right - left + 1);
         for (var Line = 0; Line < count; Line++) {
             this.FastWrite(Blanks, left, top + Line, charInfo, false);
         }
-
         if (updateBuffer) {
             var X = 0;
             var Y = 0;
-
             for (Y = bottom; Y > count; Y--) {
                 for (X = left; X <= right; X++) {
                     this._Buffer[Y][X].Ch = this._Buffer[Y - count][X].Ch;
@@ -4751,7 +4677,6 @@ var Crt = (function () {
                     this._Buffer[Y][X].Reverse = this._Buffer[Y - count][X].Reverse;
                 }
             }
-
             for (Y = top; Y <= count; Y++) {
                 for (X = left; X <= right; X++) {
                     this._Buffer[Y][X].Ch = charInfo.Ch;
@@ -4763,62 +4688,90 @@ var Crt = (function () {
             }
         }
     };
-
     Crt.ScrollDownScreen = function (count) {
         this.ScrollDownCustom(1, 1, this._ScreenSize.x, this._ScreenSize.y, count, this._CharInfo);
     };
-
     Crt.ScrollDownWindow = function (count) {
         this.ScrollDownCustom(this.WindMinX + 1, this.WindMinY + 1, this.WindMaxX + 1, this.WindMaxY + 1, count, this._CharInfo);
     };
-
     Crt.ScrollUpCustom = function (left, top, right, bottom, count, charInfo, updateBuffer) {
+        /// <summary>
+        /// Scrolls the given window up the given number of lines (leaving blank lines at the bottom), 
+        /// filling the void with the given character with the given text attribute
+        /// </summary>
+        /// <param name='AX1'>The 1-based left column of the window</param>
+        /// <param name='AY1'>The 1-based top row of the window</param>
+        /// <param name='AX2'>The 1-based right column of the window</param>
+        /// <param name='AY2'>The 1-based bottom row of the window</param>
+        /// <param name='ALines'>The number of lines to scroll</param>
+        /// <param name='ACh'>The character to fill the void with</param>
+        /// <param name='ACharInfo'>The text attribute to fill the void with</param>
         if (typeof updateBuffer === 'undefined') {
             updateBuffer = true;
         }
-
         var MaxLines = bottom - top + 1;
         if (count > MaxLines) {
             count = MaxLines;
         }
-
-        if ((!this._InScrollBack) || (this._InScrollBack && !updateBuffer)) {
-            var Left = (left - 1) * this._Font.Width;
-            var Top = (top - 1 + count) * this._Font.Height;
-            var Width = (right - left + 1) * this._Font.Width;
-            var Height = ((bottom - top + 1 - count) * this._Font.Height);
-            if (Height > 0) {
-                var Buf = this._CanvasContext.getImageData(Left, Top, Width, Height);
-                Left = (left - 1) * this._Font.Width;
-                Top = (top - 1) * this._Font.Height;
-                this._CanvasContext.putImageData(Buf, Left, Top);
+        if ((!this._InScrollback) || (this._InScrollback && !updateBuffer)) {
+            if (DetectMobileBrowser.IsMobile) {
+                var Left = (left - 1) * this._Font.Width;
+                var Top = (top - 1 + count) * this._Font.Height;
+                var Width = (right - left + 1) * this._Font.Width;
+                var Height = ((bottom - top + 1 - count) * this._Font.Height);
+                if (Height > 0) {
+                    var Buf = this._CanvasContext.getImageData(Left, Top, Width, Height);
+                    Left = (left - 1) * this._Font.Width;
+                    Top = (top - 1) * this._Font.Height;
+                    this._CanvasContext.putImageData(Buf, Left, Top);
+                }
             }
-
-            var Blanks = StringUtils.PadLeft('', ' ', right - left + 1);
-            for (var Line = 0; Line < count; Line++) {
-                this.FastWrite(Blanks, left, bottom - count + 1 + Line, charInfo, false);
+            else {
+                if ((left == 1) && (top == 1) && (right == this._ScreenSize.x) && (bottom == this._ScreenSize.y)) {
+                    var Left = 0;
+                    var Top = count * this._Font.Height;
+                    var Width = this._Canvas.width;
+                    var Height = this._Canvas.height - Top;
+                    this._TempCanvasContext.drawImage(this._Canvas, 0, 0);
+                    this._CanvasContext.drawImage(this._TempCanvas, 0, Top, Width, Height, 0, 0, Width, Height);
+                }
+                else {
+                    var Left = (left - 1) * this._Font.Width;
+                    var Top = (top - 1 + count) * this._Font.Height;
+                    var Width = (right - left + 1) * this._Font.Width;
+                    var Height = ((bottom - top + 1 - count) * this._Font.Height);
+                    if (Height > 0) {
+                        var Buf = this._CanvasContext.getImageData(Left, Top, Width, Height);
+                        Left = (left - 1) * this._Font.Width;
+                        Top = (top - 1) * this._Font.Height;
+                        this._CanvasContext.putImageData(Buf, Left, Top);
+                    }
+                }
+            }
+            for (var y = 0; y < count; y++) {
+                for (var x = left; x <= right; x++) {
+                    this.FastWrite(null, x, bottom - count + 1 + y, charInfo, false);
+                }
             }
         }
-
         if (updateBuffer) {
             var NewRow;
             var X;
             var Y;
-
-            for (Y = 0; Y < count; Y++) {
-                NewRow = [];
-                for (X = left; X <= right; X++) {
-                    NewRow.push(new CharInfo(this._Buffer[Y + top][X].Ch, this._Buffer[Y + top][X].Attr, this._Buffer[Y + top][X].Blink, this._Buffer[Y + top][X].Underline, this._Buffer[Y + top][X].Reverse));
+            if (DetectMobileBrowser.IsMobile) {
+                for (Y = 0; Y < count; Y++) {
+                    NewRow = [];
+                    for (X = left; X <= right; X++) {
+                        NewRow.push(new CharInfo(this._Buffer[Y + top][X].Ch, this._Buffer[Y + top][X].Attr, this._Buffer[Y + top][X].Blink, this._Buffer[Y + top][X].Underline, this._Buffer[Y + top][X].Reverse));
+                    }
+                    this._Scrollback.push(NewRow);
                 }
-                this._ScrollBack.push(NewRow);
+                var ScrollbackLength = this._Scrollback.length;
+                while (ScrollbackLength > (this._ScrollbackSize - 2)) {
+                    this._Scrollback.shift();
+                    ScrollbackLength -= 1;
+                }
             }
-
-            var ScrollBackLength = this._ScrollBack.length;
-            while (ScrollBackLength > (this._ScrollBackSize - 2)) {
-                this._ScrollBack.shift();
-                ScrollBackLength -= 1;
-            }
-
             for (Y = top; Y <= (bottom - count); Y++) {
                 for (X = left; X <= right; X++) {
                     this._Buffer[Y][X].Ch = this._Buffer[Y + count][X].Ch;
@@ -4828,7 +4781,6 @@ var Crt = (function () {
                     this._Buffer[Y][X].Reverse = this._Buffer[Y + count][X].Reverse;
                 }
             }
-
             for (Y = bottom; Y > (bottom - count); Y--) {
                 for (X = left; X <= right; X++) {
                     this._Buffer[Y][X].Ch = charInfo.Ch;
@@ -4840,43 +4792,41 @@ var Crt = (function () {
             }
         }
     };
-
     Crt.ScrollUpScreen = function (count) {
         this.ScrollUpCustom(1, 1, this._ScreenSize.x, this._ScreenSize.y, count, this._CharInfo);
     };
-
     Crt.ScrollUpWindow = function (count) {
         this.ScrollUpCustom(this.WindMinX + 1, this.WindMinY + 1, this.WindMaxX + 1, this.WindMaxY + 1, count, this._CharInfo);
     };
-
     Crt.SetBlink = function (value) {
         this._CharInfo.Blink = value;
     };
-
     Crt.SetBlinkRate = function (milliSeconds) {
         this._Cursor.BlinkRate = milliSeconds;
     };
-
-    Crt.SetCharInfo = function (charInfo) {
-        this._CharInfo = new CharInfo(charInfo.Ch, charInfo.Attr, charInfo.Blink, charInfo.Underline, charInfo.Reverse);
-    };
-
     Crt.SetFont = function (font) {
-        return this._Font.Load(font, Math.floor(this._Container.clientWidth / this._ScreenSize.x), Math.floor(window.innerHeight / this._ScreenSize.y));
+        /// <summary>
+        /// Try to set the console font size to characters with the given X and Y size
+        /// </summary>
+        /// <param name='AX'>The horizontal size</param>
+        /// <param name='AY'>The vertical size</param>
+        /// <returns>True if the size was found and set, False if the size was not available</returns>
+        if (DetectMobileBrowser.IsMobile) {
+            return this._Font.Load(font, Math.floor(this._Container.clientWidth / this._ScreenSize.x), Math.floor(window.innerHeight / this._ScreenSize.y));
+        }
+        else {
+            return this._Font.Load(font, Math.floor(this._Container.parentElement.clientWidth / this._ScreenSize.x), Math.floor(window.innerHeight / this._ScreenSize.y));
+        }
     };
-
     Crt.SetScreenSize = function (columns, rows) {
-        if (this._InScrollBack) {
+        if (this._InScrollback) {
             return;
         }
-
         if ((columns === this._ScreenSize.x) && (rows === this._ScreenSize.y)) {
             return;
         }
-
         var X = 0;
         var Y = 0;
-
         var OldBuffer;
         if (this._Buffer !== null) {
             OldBuffer = [];
@@ -4888,18 +4838,21 @@ var Crt = (function () {
             }
         }
         var OldScreenSize = new Point(this._ScreenSize.x, this._ScreenSize.y);
-
         this._ScreenSize.x = columns;
         this._ScreenSize.y = rows;
-
         this._WindMin = 0;
         this._WindMax = (this._ScreenSize.x - 1) | ((this._ScreenSize.y - 1) << 8);
-
         this.InitBuffers(false);
-
-        this._Canvas.height = this._Font.Height * this._ScreenSize.y;
         this._Canvas.width = this._Font.Width * this._ScreenSize.x;
-
+        if (DetectMobileBrowser.IsMobile) {
+            this._Canvas.height = this._Font.Height * this._ScreenSize.y;
+        }
+        else {
+            this._Canvas.height = this._Font.Height * (this._ScreenSize.y + this._ScrollbackSize);
+            this._CanvasContext.fillRect(0, 0, this._Canvas.width, this._Canvas.height);
+            this._TempCanvas.width = this._Canvas.width;
+            this._TempCanvas.height = this._Canvas.height;
+        }
         if (OldBuffer !== null) {
             for (Y = 1; Y <= Math.min(this._ScreenSize.y, OldScreenSize.y); Y++) {
                 for (X = 1; X <= Math.min(this._ScreenSize.x, OldScreenSize.x); X++) {
@@ -4907,14 +4860,11 @@ var Crt = (function () {
                 }
             }
         }
-
         this.onscreensizechange.trigger();
     };
-
     Crt.ShowCursor = function () {
         this._Cursor.Visible = true;
     };
-
     Object.defineProperty(Crt, "TextAttr", {
         get: function () {
             return this._CharInfo.Attr;
@@ -4925,32 +4875,31 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Crt.TextBackground = function (colour) {
         this.TextAttr = (this.TextAttr & 0x0F) | ((colour & 0x0F) << 4);
     };
-
     Crt.TextColor = function (colour) {
         this.TextAttr = (this.TextAttr & 0xF0) | (colour & 0x0F);
     };
-
+    Object.defineProperty(Crt, "Transparent", {
+        set: function (value) {
+            this._Transparent = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Crt.WhereX = function () {
         return this._Cursor.Position.x;
     };
-
     Crt.WhereXA = function () {
         return this.WhereX() + this.WindMinX;
     };
-
     Crt.WhereY = function () {
         return this._Cursor.Position.y;
     };
-
     Crt.WhereYA = function () {
         return this.WhereY() + this.WindMinY;
     };
-
     Object.defineProperty(Crt, "WindCols", {
         get: function () {
             return this.WindMaxX - this.WindMinX + 1;
@@ -4958,7 +4907,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMax", {
         get: function () {
             return this._WindMax;
@@ -4966,7 +4914,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMaxX", {
         get: function () {
             return (this.WindMax & 0x00FF);
@@ -4974,7 +4921,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMaxY", {
         get: function () {
             return ((this.WindMax & 0xFF00) >> 8);
@@ -4982,7 +4928,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMin", {
         get: function () {
             return this._WindMin;
@@ -4990,7 +4935,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMinX", {
         get: function () {
             return (this.WindMin & 0x00FF);
@@ -4998,7 +4942,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(Crt, "WindMinY", {
         get: function () {
             return ((this.WindMin & 0xFF00) >> 8);
@@ -5006,7 +4949,6 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Crt.Window = function (left, top, right, bottom) {
         if ((left >= 1) && (top >= 1) && (left <= right) && (top <= bottom)) {
             if ((right <= this._ScreenSize.x) && (bottom <= this._ScreenSize.y)) {
@@ -5017,7 +4959,6 @@ var Crt = (function () {
             }
         }
     };
-
     Object.defineProperty(Crt, "WindRows", {
         get: function () {
             return this.WindMaxY - this.WindMinY + 1;
@@ -5025,413 +4966,427 @@ var Crt = (function () {
         enumerable: true,
         configurable: true
     });
-
     Crt.Write = function (text) {
         if (this._Atari) {
             this.WriteATASCII(text);
-        } else if (this._C64) {
+        }
+        else if (this._C64) {
             this.WritePETSCII(text);
-        } else {
+        }
+        else {
             this.WriteASCII(text);
         }
     };
-
     Crt.WriteASCII = function (text) {
         if (typeof text === 'undefined') {
             text = '';
         }
-
         var X = this.WhereX();
         var Y = this.WhereY();
         var Buf = '';
-
         for (var i = 0; i < text.length; i++) {
             var DoGoto = false;
-
             if (text.charCodeAt(i) === 0x00) {
                 i += 0;
-            } else if (text.charCodeAt(i) === 0x07) {
+            }
+            else if (text.charCodeAt(i) === 0x07) {
                 this.Beep();
-            } else if (text.charCodeAt(i) === 0x08) {
+            }
+            else if (text.charCodeAt(i) === 0x08) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 if (X > 1) {
                     X -= 1;
                 }
                 DoGoto = true;
-
                 Buf = '';
-            } else if (text.charCodeAt(i) === 0x09) {
+            }
+            else if (text.charCodeAt(i) === 0x09) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Buf = '';
-
                 if (X === this.WindCols) {
                     X = 1;
                     Y += 1;
-                } else {
+                }
+                else {
                     X += 8 - (X % 8);
-
                     X = Math.min(X, this.WindCols);
                 }
                 DoGoto = true;
-            } else if (text.charCodeAt(i) === 0x0A) {
+            }
+            else if (text.charCodeAt(i) === 0x0A) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 if (this._BareLFtoCRLF && (this._LastChar !== 0x0D)) {
                     X = 1;
-                } else {
+                }
+                else {
                     X += Buf.length;
                 }
                 Y += 1;
                 DoGoto = true;
-
                 Buf = '';
-            } else if (text.charCodeAt(i) === 0x0C) {
+            }
+            else if (text.charCodeAt(i) === 0x0C) {
                 this.ClrScr();
-
                 X = 1;
                 Y = 1;
                 Buf = '';
-            } else if (text.charCodeAt(i) === 0x0D) {
+            }
+            else if (text.charCodeAt(i) === 0x0D) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X = 1;
                 DoGoto = true;
-
                 Buf = '';
-            } else if (text.charCodeAt(i) !== 0) {
+            }
+            else if (text.charCodeAt(i) !== 0) {
                 Buf += String.fromCharCode(text.charCodeAt(i) & 0xFF);
-
                 if ((X + Buf.length) > this.WindCols) {
                     this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                     Buf = '';
-
                     X = 1;
                     Y += 1;
                     DoGoto = true;
                 }
             }
-
             this._LastChar = text.charCodeAt(i);
-
             if (Y > this.WindRows) {
                 Y = this.WindRows;
                 this.ScrollUpWindow(1);
                 DoGoto = true;
             }
-
             if (DoGoto) {
                 this.GotoXY(X, Y);
             }
         }
-
         if (Buf.length > 0) {
             this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
             X += Buf.length;
             this.GotoXY(X, Y);
         }
     };
-
     Crt.WriteATASCII = function (text) {
         if (typeof text === 'undefined') {
             text = '';
         }
-
         var X = this.WhereX();
         var Y = this.WhereY();
         var Buf = '';
-
         for (var i = 0; i < text.length; i++) {
             var DoGoto = false;
-
             if (text.charCodeAt(i) === 0x00) {
                 i += 0;
             }
             if ((text.charCodeAt(i) === 0x1B) && (!this._ATASCIIEscaped)) {
                 this._ATASCIIEscaped = true;
-            } else if ((text.charCodeAt(i) === 0x1C) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x1C) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Y = (Y > 1) ? Y - 1 : this.WindRows;
                 DoGoto = true;
-
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x1D) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x1D) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Y = (Y < this.WindRows) ? Y + 1 : 1;
                 DoGoto = true;
-
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x1E) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x1E) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 X = (X > 1) ? X - 1 : this.WindCols;
                 DoGoto = true;
-
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x1F) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x1F) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 X = (X < this.WindCols) ? X + 1 : 1;
                 DoGoto = true;
-
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x7D) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x7D) && (!this._ATASCIIEscaped)) {
                 this.ClrScr();
-
                 X = 1;
                 Y = 1;
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x7E) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x7E) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Buf = '';
                 DoGoto = true;
-
                 if (X > 1) {
                     X -= 1;
                     this.FastWrite(' ', X, this.WhereYA(), this._CharInfo);
                 }
-            } else if ((text.charCodeAt(i) === 0x7F) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x7F) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Buf = '';
-
                 if (X === this.WindCols) {
                     X = 1;
                     Y += 1;
-                } else {
+                }
+                else {
                     X += 8 - (X % 8);
                 }
                 DoGoto = true;
-            } else if ((text.charCodeAt(i) === 0x9B) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x9B) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X = 1;
                 Y += 1;
                 DoGoto = true;
-
                 Buf = '';
-            } else if ((text.charCodeAt(i) === 0x9C) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x9C) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X = 1;
                 Buf = '';
-
                 this.GotoXY(X, Y);
                 this.DelLine();
-            } else if ((text.charCodeAt(i) === 0x9D) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0x9D) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X = 1;
                 Buf = '';
-
                 this.GotoXY(X, Y);
                 this.InsLine();
-            } else if ((text.charCodeAt(i) === 0xFD) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0xFD) && (!this._ATASCIIEscaped)) {
                 this.Beep();
-            } else if ((text.charCodeAt(i) === 0xFE) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0xFE) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Buf = '';
-
                 this.GotoXY(X, Y);
                 this.DelChar();
-            } else if ((text.charCodeAt(i) === 0xFF) && (!this._ATASCIIEscaped)) {
+            }
+            else if ((text.charCodeAt(i) === 0xFF) && (!this._ATASCIIEscaped)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 Buf = '';
-
                 this.GotoXY(X, Y);
                 this.InsChar();
-            } else {
+            }
+            else {
                 if ((text.charCodeAt(i) === 0x00) && (this._LastChar === 0x0D)) {
                     Buf += '';
-                } else {
+                }
+                else {
                     Buf += String.fromCharCode(text.charCodeAt(i) & 0xFF);
                 }
                 this._ATASCIIEscaped = false;
                 this._LastChar = text.charCodeAt(i);
-
                 if ((X + Buf.length) > this.WindCols) {
                     this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                     Buf = '';
-
                     X = 1;
                     Y += 1;
                     DoGoto = true;
                 }
             }
-
             if (Y > this.WindRows) {
                 Y = this.WindRows;
                 this.ScrollUpWindow(1);
                 DoGoto = true;
             }
-
             if (DoGoto) {
                 this.GotoXY(X, Y);
             }
         }
-
         if (Buf.length > 0) {
             this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
             X += Buf.length;
             this.GotoXY(X, Y);
         }
     };
-
     Crt.WritePETSCII = function (text) {
         if (typeof text === 'undefined') {
             text = '';
         }
-
         var X = this.WhereX();
         var Y = this.WhereY();
         var Buf = '';
-
         for (var i = 0; i < text.length; i++) {
             var DoGoto = false;
-
             if ((Buf !== '') && (this._FlushBeforeWritePETSCII.indexOf(text.charCodeAt(i)) !== -1)) {
                 this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                 X += Buf.length;
                 DoGoto = true;
                 Buf = '';
             }
-
             if (text.charCodeAt(i) === 0x00) {
                 i += 0;
-            } else if (text.charCodeAt(i) === 0x05) {
+            }
+            else if (text.charCodeAt(i) === 0x05) {
                 this.TextColor(this.PETSCII_WHITE);
-            } else if (text.charCodeAt(i) === 0x07) {
+            }
+            else if (text.charCodeAt(i) === 0x07) {
                 this.Beep();
-            } else if (text.charCodeAt(i) === 0x08) {
+            }
+            else if (text.charCodeAt(i) === 0x08) {
                 console.log('PETSCII 0x08');
-            } else if (text.charCodeAt(i) === 0x09) {
+            }
+            else if (text.charCodeAt(i) === 0x09) {
                 console.log('PETSCII 0x09');
-            } else if (text.charCodeAt(i) === 0x0A) {
+            }
+            else if (text.charCodeAt(i) === 0x0A) {
                 i += 0;
-            } else if ((text.charCodeAt(i) === 0x0D) || (text.charCodeAt(i) === 0x8D)) {
+            }
+            else if ((text.charCodeAt(i) === 0x0D) || (text.charCodeAt(i) === 0x8D)) {
                 X = 1;
                 Y += 1;
                 this._CharInfo.Reverse = false;
                 DoGoto = true;
-            } else if (text.charCodeAt(i) === 0x0E) {
+            }
+            else if (text.charCodeAt(i) === 0x0E) {
                 this.SetFont('C64-Lower');
-            } else if (text.charCodeAt(i) === 0x11) {
+            }
+            else if (text.charCodeAt(i) === 0x11) {
                 Y += 1;
                 DoGoto = true;
-            } else if (text.charCodeAt(i) === 0x12) {
+            }
+            else if (text.charCodeAt(i) === 0x12) {
                 this._CharInfo.Reverse = true;
-            } else if (text.charCodeAt(i) === 0x13) {
+            }
+            else if (text.charCodeAt(i) === 0x13) {
                 X = 1;
                 Y = 1;
                 DoGoto = true;
-            } else if (text.charCodeAt(i) === 0x14) {
+            }
+            else if (text.charCodeAt(i) === 0x14) {
                 if ((X > 1) || (Y > 1)) {
                     if (X === 1) {
                         X = this.WindCols;
                         Y -= 1;
-                    } else {
+                    }
+                    else {
                         X -= 1;
                     }
-
                     this.GotoXY(X, Y);
                     this.DelChar(1);
                 }
-            } else if (text.charCodeAt(i) === 0x1C) {
+            }
+            else if (text.charCodeAt(i) === 0x1C) {
                 this.TextColor(this.PETSCII_RED);
-            } else if (text.charCodeAt(i) === 0x1D) {
+            }
+            else if (text.charCodeAt(i) === 0x1D) {
                 if (X === this.WindCols) {
                     X = 1;
                     Y += 1;
-                } else {
+                }
+                else {
                     X += 1;
                 }
                 DoGoto = true;
-            } else if (text.charCodeAt(i) === 0x1E) {
+            }
+            else if (text.charCodeAt(i) === 0x1E) {
                 this.TextColor(this.PETSCII_GREEN);
-            } else if (text.charCodeAt(i) === 0x1F) {
+            }
+            else if (text.charCodeAt(i) === 0x1F) {
                 this.TextColor(this.PETSCII_BLUE);
-            } else if (text.charCodeAt(i) === 0x81) {
+            }
+            else if (text.charCodeAt(i) === 0x81) {
                 this.TextColor(this.PETSCII_ORANGE);
-            } else if (text.charCodeAt(i) === 0x8E) {
+            }
+            else if (text.charCodeAt(i) === 0x8E) {
                 this.SetFont('C64-Upper');
-            } else if (text.charCodeAt(i) === 0x90) {
+            }
+            else if (text.charCodeAt(i) === 0x90) {
                 this.TextColor(this.PETSCII_BLACK);
-            } else if (text.charCodeAt(i) === 0x91) {
+            }
+            else if (text.charCodeAt(i) === 0x91) {
                 if (Y > 1) {
                     Y -= 1;
                     DoGoto = true;
                 }
-            } else if (text.charCodeAt(i) === 0x92) {
+            }
+            else if (text.charCodeAt(i) === 0x92) {
                 this._CharInfo.Reverse = false;
-            } else if (text.charCodeAt(i) === 0x93) {
+            }
+            else if (text.charCodeAt(i) === 0x93) {
                 this.ClrScr();
                 X = 1;
                 Y = 1;
-            } else if (text.charCodeAt(i) === 0x94) {
+            }
+            else if (text.charCodeAt(i) === 0x94) {
                 this.GotoXY(X, Y);
                 this.InsChar(1);
-            } else if (text.charCodeAt(i) === 0x95) {
+            }
+            else if (text.charCodeAt(i) === 0x95) {
                 this.TextColor(this.PETSCII_BROWN);
-            } else if (text.charCodeAt(i) === 0x96) {
+            }
+            else if (text.charCodeAt(i) === 0x96) {
                 this.TextColor(this.PETSCII_LIGHTRED);
-            } else if (text.charCodeAt(i) === 0x97) {
+            }
+            else if (text.charCodeAt(i) === 0x97) {
                 this.TextColor(this.PETSCII_DARKGRAY);
-            } else if (text.charCodeAt(i) === 0x98) {
+            }
+            else if (text.charCodeAt(i) === 0x98) {
                 this.TextColor(this.PETSCII_GRAY);
-            } else if (text.charCodeAt(i) === 0x99) {
+            }
+            else if (text.charCodeAt(i) === 0x99) {
                 this.TextColor(this.PETSCII_LIGHTGREEN);
-            } else if (text.charCodeAt(i) === 0x9A) {
+            }
+            else if (text.charCodeAt(i) === 0x9A) {
                 this.TextColor(this.PETSCII_LIGHTBLUE);
-            } else if (text.charCodeAt(i) === 0x9B) {
+            }
+            else if (text.charCodeAt(i) === 0x9B) {
                 this.TextColor(this.PETSCII_LIGHTGRAY);
-            } else if (text.charCodeAt(i) === 0x9C) {
+            }
+            else if (text.charCodeAt(i) === 0x9C) {
                 this.TextColor(this.PETSCII_PURPLE);
-            } else if (text.charCodeAt(i) === 0x9D) {
+            }
+            else if (text.charCodeAt(i) === 0x9D) {
                 if ((X > 1) || (Y > 1)) {
                     if (X === 1) {
                         X = this.WindCols;
                         Y -= 1;
-                    } else {
+                    }
+                    else {
                         X -= 1;
                     }
                     DoGoto = true;
                 }
-            } else if (text.charCodeAt(i) === 0x9E) {
+            }
+            else if (text.charCodeAt(i) === 0x9E) {
                 this.TextColor(this.PETSCII_YELLOW);
-            } else if (text.charCodeAt(i) === 0x9F) {
+            }
+            else if (text.charCodeAt(i) === 0x9F) {
                 this.TextColor(this.PETSCII_CYAN);
-            } else if (text.charCodeAt(i) !== 0) {
+            }
+            else if (text.charCodeAt(i) !== 0) {
                 Buf += String.fromCharCode(text.charCodeAt(i) & 0xFF);
-
                 if ((X + Buf.length) > this.WindCols) {
                     this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
                     Buf = '';
-
                     X = 1;
                     Y += 1;
                     DoGoto = true;
                 }
             }
-
             if (Y > this.WindRows) {
                 Y = this.WindRows;
                 this.ScrollUpWindow(1);
                 DoGoto = true;
             }
-
             if (DoGoto) {
                 this.GotoXY(X, Y);
             }
         }
-
         if (Buf.length > 0) {
             this.FastWrite(Buf, this.WhereXA(), this.WhereYA(), this._CharInfo);
             X += Buf.length;
             this.GotoXY(X, Y);
         }
     };
-
     Crt.WriteLn = function (text) {
         if (typeof text === 'undefined') {
             text = '';
@@ -5441,7 +5396,6 @@ var Crt = (function () {
     Crt.onfontchange = new TypedEvent();
     Crt.onkeypressed = new TypedEvent();
     Crt.onscreensizechange = new TypedEvent();
-
     Crt.BLACK = 0;
     Crt.BLUE = 1;
     Crt.GREEN = 2;
@@ -5459,7 +5413,6 @@ var Crt = (function () {
     Crt.YELLOW = 14;
     Crt.WHITE = 15;
     Crt.BLINK = 128;
-
     Crt.PETSCII_BLACK = 0;
     Crt.PETSCII_WHITE = 1;
     Crt.PETSCII_RED = 2;
@@ -5476,7 +5429,6 @@ var Crt = (function () {
     Crt.PETSCII_LIGHTGREEN = 13;
     Crt.PETSCII_LIGHTBLUE = 14;
     Crt.PETSCII_LIGHTGRAY = 15;
-
     Crt._AllowDynamicFontResize = true;
     Crt._Atari = false;
     Crt._ATASCIIEscaped = false;
@@ -5487,35 +5439,53 @@ var Crt = (function () {
     Crt._C64 = false;
     Crt._Canvas = null;
     Crt._CanvasContext = null;
-    Crt._CharInfo = new CharInfo(' ', Crt.LIGHTGRAY);
+    Crt._CharInfo = new CharInfo(null, Crt.LIGHTGRAY);
+    Crt._ClipboardText = '';
     Crt._Container = null;
     Crt._Cursor = null;
     Crt._FlushBeforeWritePETSCII = [0x05, 0x07, 0x08, 0x09, 0x0A, 0x0D, 0x0E, 0x11, 0x12, 0x13, 0x14, 0x1c, 0x1d, 0x1e, 0x1f, 0x81, 0x8d, 0x8e, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f];
     Crt._Font = null;
-    Crt._InScrollBack = false;
+    Crt._InScrollback = false;
     Crt._KeyBuf = [];
     Crt._LastChar = 0x00;
     Crt._LocalEcho = false;
+    Crt._MouseDownPoint = null;
+    Crt._MouseMovePoint = null;
     Crt._ScreenSize = new Point(80, 25);
-    Crt._ScrollBack = null;
-    Crt._ScrollBackPosition = -1;
-    Crt._ScrollBackSize = 1000;
-    Crt._ScrollBackTemp = null;
+    Crt._Scrollback = null;
+    Crt._ScrollbackPosition = -1;
+    Crt._ScrollbackSize = 500;
+    Crt._ScrollbackTemp = null;
+    Crt._TempCanvas = null;
+    Crt._TempCanvasContext = null;
+    Crt._Transparent = false;
     Crt._WindMin = 0;
     Crt._WindMax = (80 - 1) | ((25 - 1) << 8);
     return Crt;
 })();
+/// <reference path='ButtonStyle.ts' />
+/// <reference path='MouseButton.ts' />
+/// <reference path='RIPParserState.ts' />
+/// <reference path='../BitmapFont.ts' />
+/// <reference path='../FillStyle.ts' />
+/// <reference path='../Graph.ts' />
+/// <reference path='../LineStyle.ts' />
+/// <reference path='../StrokeFont.ts' />
+/// <reference path='../TextJustification.ts' />
+/// <reference path='../../actionscript/Point.ts' />
+/// <reference path='../../actionscript/Rectangle.ts' />
+/// <reference path='../../ansi/Ansi.ts' />
+/// <reference path='../../crt/Crt.ts' />
+/// <reference path='../../Benchmark.ts' />
 var RIP = (function () {
     function RIP() {
     }
     RIP.Init = function () {
         Graph.Canvas.addEventListener('mousedown', RIP.OnGraphCanvasMouseDown);
     };
-
     RIP.BeginText = function (x1, y1, x2, y2) {
         console.log('BeginText() is not handled');
     };
-
     RIP.Button = function (x1, y1, x2, y2, hotkey, flags, text) {
         if ((x2 > 0) && (x1 > x2)) {
             var TempX = x1;
@@ -5527,11 +5497,9 @@ var RIP = (function () {
             y1 = y2;
             y2 = TempY;
         }
-
         var OldColour = Graph.GetColour();
         var OldFillSettings = Graph.GetFillSettings();
         var TempFillSettings = Graph.GetFillSettings();
-
         var iconfile = '';
         var label = '';
         var hostcommand = '';
@@ -5545,38 +5513,35 @@ var RIP = (function () {
         if (textarray.length >= 1) {
             iconfile = textarray[0];
         }
-
         if ((this._ButtonStyle.flags & 128) === 128) {
             console.log('Button() doesn\'t support the icon type');
             return;
-        } else if ((this._ButtonStyle.flags & 1) === 1) {
+        }
+        else if ((this._ButtonStyle.flags & 1) === 1) {
             console.log('Button() doesn\'t support the clipboard type');
             return;
         }
-
         var Size;
         var InvertCoords;
         if ((this._ButtonStyle.width === 0) || (this._ButtonStyle.height === 0)) {
             Size = new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
             InvertCoords = new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
-        } else {
+        }
+        else {
             Size = new Rectangle(x1, y1, this._ButtonStyle.width, this._ButtonStyle.height);
             InvertCoords = new Rectangle(x1, y1, this._ButtonStyle.width, this._ButtonStyle.height);
             x2 = Size.right;
             y2 = Size.bottom;
         }
-
-        TempFillSettings.Style = 1 /* Solid */;
+        TempFillSettings.Style = FillStyle.Solid;
         TempFillSettings.Colour = this._ButtonStyle.surface;
         Graph.SetFillSettings(TempFillSettings);
         Graph.Bar(x1, y1, x2, y2);
         Graph.SetFillSettings(OldFillSettings);
-
         if ((this._ButtonStyle.flags & 512) === 512) {
-            Graph.SetLineStyle(0 /* Solid */, 0, 1);
-            Graph.SetFillStyle(1 /* Solid */, this._ButtonStyle.bright);
+            Graph.SetLineStyle(LineStyle.Solid, 0, 1);
+            Graph.SetFillStyle(FillStyle.Solid, this._ButtonStyle.bright);
             Graph.SetColour(this._ButtonStyle.bright);
-
             var Trapezoid = [];
             Trapezoid.push(new Point(x1 - this._ButtonStyle.bevelsize, y1 - this._ButtonStyle.bevelsize));
             Trapezoid.push(new Point(x1 - 1, y1 - 1));
@@ -5586,7 +5551,7 @@ var RIP = (function () {
             Trapezoid[3] = new Point(x1 - this._ButtonStyle.bevelsize, y2 + this._ButtonStyle.bevelsize);
             Trapezoid[2] = new Point(x1 - 1, y2 + 1);
             Graph.FillPoly(Trapezoid);
-            Graph.SetFillStyle(1 /* Solid */, this._ButtonStyle.dark);
+            Graph.SetFillStyle(FillStyle.Solid, this._ButtonStyle.dark);
             Graph.SetColour(this._ButtonStyle.dark);
             Trapezoid[0] = new Point(x2 + this._ButtonStyle.bevelsize, y2 + this._ButtonStyle.bevelsize);
             Trapezoid[1] = new Point(x2 + 1, y2 + 1);
@@ -5599,7 +5564,6 @@ var RIP = (function () {
             Graph.Line(x1 - this._ButtonStyle.bevelsize, y2 + this._ButtonStyle.bevelsize, x1 - 1, y2 + 1);
             Graph.Line(x2 + 1, y1 - 1, x2 + this._ButtonStyle.bevelsize, y1 - this._ButtonStyle.bevelsize);
             Graph.Line(x2 + 1, y2 + 1, x2 + this._ButtonStyle.bevelsize, y2 + this._ButtonStyle.bevelsize);
-
             Size.left -= this._ButtonStyle.bevelsize;
             Size.top -= this._ButtonStyle.bevelsize;
             Size.width += this._ButtonStyle.bevelsize;
@@ -5609,83 +5573,78 @@ var RIP = (function () {
             InvertCoords.width += this._ButtonStyle.bevelsize;
             InvertCoords.height += this._ButtonStyle.bevelsize;
         }
-
         if ((this._ButtonStyle.flags & 8) === 8) {
             var xchisel;
             var ychisel;
-
             var Height = y2 - y1;
             if ((Height >= 0) && (Height <= 11)) {
                 xchisel = 1;
                 ychisel = 1;
-            } else if ((Height >= 12) && (Height <= 24)) {
+            }
+            else if ((Height >= 12) && (Height <= 24)) {
                 xchisel = 3;
                 ychisel = 2;
-            } else if ((Height >= 25) && (Height <= 39)) {
+            }
+            else if ((Height >= 25) && (Height <= 39)) {
                 xchisel = 4;
                 ychisel = 3;
-            } else if ((Height >= 40) && (Height <= 74)) {
+            }
+            else if ((Height >= 40) && (Height <= 74)) {
                 xchisel = 6;
                 ychisel = 5;
-            } else if ((Height >= 75) && (Height <= 149)) {
+            }
+            else if ((Height >= 75) && (Height <= 149)) {
                 xchisel = 7;
                 ychisel = 5;
-            } else if ((Height >= 150) && (Height <= 199)) {
+            }
+            else if ((Height >= 150) && (Height <= 199)) {
                 xchisel = 8;
                 ychisel = 6;
-            } else if ((Height >= 200) && (Height <= 249)) {
+            }
+            else if ((Height >= 200) && (Height <= 249)) {
                 xchisel = 10;
                 ychisel = 7;
-            } else if ((Height >= 250) && (Height <= 299)) {
+            }
+            else if ((Height >= 250) && (Height <= 299)) {
                 xchisel = 11;
                 ychisel = 8;
-            } else {
+            }
+            else {
                 xchisel = 13;
                 ychisel = 9;
             }
-
             Graph.SetColour(this._ButtonStyle.bright);
             Graph.Rectangle(x1 + xchisel + 1, y1 + ychisel + 1, x2 - xchisel, y2 - ychisel);
-
             Graph.SetColour(this._ButtonStyle.dark);
             Graph.Rectangle(x1 + xchisel, y1 + ychisel, x2 - (xchisel + 1), y2 - (ychisel + 1));
             Graph.PutPixel(x1 + xchisel, y2 - ychisel, this._ButtonStyle.dark);
             Graph.PutPixel(x2 - xchisel, y1 + ychisel, this._ButtonStyle.dark);
         }
         Graph.SetColour(OldColour);
-
         if ((this._ButtonStyle.flags & 16) === 16) {
             Graph.SetColour(0);
             Graph.Rectangle(x1 - this._ButtonStyle.bevelsize - 1, y1 - this._ButtonStyle.bevelsize - 1, x2 + this._ButtonStyle.bevelsize + 1, y2 + this._ButtonStyle.bevelsize + 1);
-
             Graph.SetColour(this._ButtonStyle.dark);
             Graph.Line(x1 - this._ButtonStyle.bevelsize - 2, y1 - this._ButtonStyle.bevelsize - 2, x2 + this._ButtonStyle.bevelsize + 2, y1 - this._ButtonStyle.bevelsize - 2);
             Graph.Line(x1 - this._ButtonStyle.bevelsize - 2, y1 - this._ButtonStyle.bevelsize - 2, x1 - this._ButtonStyle.bevelsize - 2, y2 + this._ButtonStyle.bevelsize + 2);
-
             Graph.SetColour(this._ButtonStyle.bright);
             Graph.Line(x2 + this._ButtonStyle.bevelsize + 2, y1 - this._ButtonStyle.bevelsize - 2, x2 + this._ButtonStyle.bevelsize + 2, y2 + this._ButtonStyle.bevelsize + 2);
             Graph.Line(x1 - this._ButtonStyle.bevelsize - 2, y2 + this._ButtonStyle.bevelsize + 2, x2 + this._ButtonStyle.bevelsize + 2, y2 + this._ButtonStyle.bevelsize + 2);
-
             Graph.SetColour(OldColour);
-
             Size.left -= 2;
             Size.top -= 2;
             Size.width += 2;
             Size.height += 2;
         }
-
         if ((this._ButtonStyle.flags & 32768) === 32768) {
             Graph.SetColour(this._ButtonStyle.dark);
             Graph.Line(x1, y1, x2, y1);
             Graph.Line(x1, y1, x1, y2);
-
             Graph.SetColour(this._ButtonStyle.bright);
             Graph.Line(x1, y2, x2, y2);
             Graph.Line(x2, y1, x2, y2);
-
             Graph.SetColour(OldColour);
         }
-
         if (label !== '') {
             var labelx;
             var labely;
@@ -5719,32 +5678,25 @@ var RIP = (function () {
             Graph.OutTextXY(labelx, labely, label);
             Graph.SetColour(OldColour);
         }
-
         if ((this._ButtonStyle.flags & 1024) === 1024) {
             this._MouseFields.push(new MouseButton(InvertCoords, hostcommand, this._ButtonStyle.flags, String.fromCharCode(hotkey)));
         }
     };
-
     RIP.CopyRegion = function (x1, y1, x2, y2, desty) {
         console.log('CopyRegion() is not handled');
     };
-
     RIP.Define = function (flags, text) {
         console.log('Define() is not handled');
     };
-
     RIP.EndText = function () {
         console.log('EndText() is not handled');
     };
-
     RIP.EnterBlockMode = function (mode, protocol, filetype, filename) {
         console.log('EnterBlockMode() is not handled');
     };
-
     RIP.FileQuery = function (mode, filename) {
         console.log('FileQuery() is not handled');
     };
-
     RIP.HandleCtrlKeys = function (AHostCommand) {
         var Result = AHostCommand;
         for (var i = 1; i <= 26; i++) {
@@ -5755,23 +5707,21 @@ var RIP = (function () {
         Result = Result.replace('^[', String.fromCharCode(27));
         return Result;
     };
-
     RIP.HandleMouseButton = function (button) {
         if (button.DoResetScreen()) {
             this.ResetWindows();
         }
-
         if (button.HostCommand !== '') {
             if ((button.HostCommand.length > 2) && (button.HostCommand.substr(0, 2) === '((') && (button.HostCommand.substr(button.HostCommand.length - 2, 2) === '))')) {
                 alert("show popup " + button.HostCommand);
-            } else {
+            }
+            else {
                 for (var i = 0; i < button.HostCommand.length; i++) {
                     Crt.PushKeyPress(button.HostCommand.charCodeAt(i), 0, false, false, false);
                 }
             }
         }
     };
-
     RIP.IsCommandCharacter = function (Ch, Level) {
         var CommandChars = '';
         switch (Level) {
@@ -5787,36 +5737,36 @@ var RIP = (function () {
         }
         return (CommandChars.indexOf(Ch) !== -1);
     };
-
     RIP.KeyPressed = function () {
+        // TODO
+        //while (Crt.KeyPressed()) {
+        //	var KPE: KeyPressEvent = Crt.ReadKey();
+        //	var Handled: boolean = false;
         return (this._KeyBuf.length > 0);
     };
-
     RIP.KillMouseFields = function () {
         this._MouseFields = [];
     };
-
     RIP.LoadIcon = function (x, y, mode, clipboard, filename) {
         return;
         if (mode !== 0) {
             console.log('LoadIcon() only supports COPY mode');
             mode = 0;
         }
-
         filename = filename.toUpperCase();
         if (filename.indexOf('.') === -1) {
             filename += '.ICN';
         }
     };
-
     RIP.OnIconLoadComplete = function (e) {
+        // TODO
+        //try {
+        //	var loader: RMURLLoader = RMURLLoader(e.target);
     };
-
     RIP.OnIconLoadIOError = function (ioe) {
         console.log('Error loading icon: ' + ioe);
         this._IconsLoading--;
     };
-
     RIP.Parse = function (AData) {
         var ADatalength = AData.length;
         for (var i = 0; i < ADatalength; i++) {
@@ -5824,36 +5774,34 @@ var RIP = (function () {
         }
         this.OnEnterFrame(null);
     };
-
     RIP.OnEnterFrame = function (e) {
         while (this._InputBuffer.length > 0) {
             if (this._IconsLoading > 0) {
                 return;
             }
-
             if (!BitmapFont.Loaded) {
                 return;
             }
             if (!StrokeFont.Loaded) {
                 return;
             }
-
             var Code = this._InputBuffer.shift();
             var Ch = String.fromCharCode(Code);
-
             switch (this._RIPParserState) {
-                case 0 /* None */:
+                case RIPParserState.None:
                     if ((Ch === '!') && (this._LineStarting)) {
                         this._Buffer = '';
                         this._DoTextCommand = false;
                         this._LineStartedWithRIP = true;
                         this._LineStarting = false;
-                        this._RIPParserState = 1 /* GotExclamation */;
-                    } else if ((Ch === '|') && (this._LineStartedWithRIP)) {
+                        this._RIPParserState = RIPParserState.GotExclamation;
+                    }
+                    else if ((Ch === '|') && (this._LineStartedWithRIP)) {
                         this._Buffer = '';
                         this._DoTextCommand = false;
-                        this._RIPParserState = 2 /* GotPipe */;
-                    } else {
+                        this._RIPParserState = RIPParserState.GotPipe;
+                    }
+                    else {
                         this._LineStarting = (Code === 10);
                         if (this._LineStarting) {
                             this._LineStartedWithRIP = false;
@@ -5861,93 +5809,105 @@ var RIP = (function () {
                         Ansi.Write(Ch);
                     }
                     break;
-                case 1 /* GotExclamation */:
+                case RIPParserState.GotExclamation:
                     if (Ch === '|') {
-                        this._RIPParserState = 2 /* GotPipe */;
-                    } else {
+                        this._RIPParserState = RIPParserState.GotPipe;
+                    }
+                    else {
                         Ansi.Write('!' + Ch);
-                        this._RIPParserState = 0 /* None */;
+                        this._RIPParserState = RIPParserState.None;
                     }
                     break;
-                case 2 /* GotPipe */:
+                case RIPParserState.GotPipe:
                     this._Buffer = '';
                     this._DoTextCommand = false;
-
                     if ((Ch >= '0') && (Ch <= '9')) {
                         this._Level = parseInt(Ch, 10);
-                        this._RIPParserState = 3 /* GotLevel */;
-                    } else if (this.IsCommandCharacter(Ch, 0)) {
+                        this._RIPParserState = RIPParserState.GotLevel;
+                    }
+                    else if (this.IsCommandCharacter(Ch, 0)) {
                         this._Command = Ch;
                         this._Level = 0;
                         this._SubLevel = 0;
-                        this._RIPParserState = 5 /* GotCommand */;
-                    } else {
+                        this._RIPParserState = RIPParserState.GotCommand;
+                    }
+                    else {
                         Ansi.Write('|' + Ch);
-                        this._RIPParserState = 0 /* None */;
+                        this._RIPParserState = RIPParserState.None;
                     }
                     break;
-                case 3 /* GotLevel */:
+                case RIPParserState.GotLevel:
                     if ((Ch >= '0') && (Ch <= '9')) {
                         this._SubLevel = parseInt(Ch, 10);
-                        this._RIPParserState = 4 /* GotSubLevel */;
-                    } else if (this.IsCommandCharacter(Ch, this._Level)) {
+                        this._RIPParserState = RIPParserState.GotSubLevel;
+                    }
+                    else if (this.IsCommandCharacter(Ch, this._Level)) {
                         this._Command = Ch;
                         this._SubLevel = 0;
-                        this._RIPParserState = 5 /* GotCommand */;
-                    } else {
+                        this._RIPParserState = RIPParserState.GotCommand;
+                    }
+                    else {
                         Ansi.Write('|' + this._Level.toString() + Ch);
-                        this._RIPParserState = 0 /* None */;
+                        this._RIPParserState = RIPParserState.None;
                     }
                     break;
-                case 4 /* GotSubLevel */:
+                case RIPParserState.GotSubLevel:
                     if (this.IsCommandCharacter(Ch, this._Level)) {
                         this._Command = Ch;
-                        this._RIPParserState = 5 /* GotCommand */;
-                    } else {
+                        this._RIPParserState = RIPParserState.GotCommand;
+                    }
+                    else {
                         Ansi.Write('|' + this._Level.toString() + this._SubLevel.toString() + Ch);
-                        this._RIPParserState = 0 /* None */;
+                        this._RIPParserState = RIPParserState.None;
                     }
                     break;
-                case 5 /* GotCommand */:
+                case RIPParserState.GotCommand:
                     if (Ch === '\\') {
                         if (this._LastWasEscape) {
                             this._LastWasEscape = false;
                             this._Buffer += '\\';
-                        } else {
+                        }
+                        else {
                             this._LastWasEscape = true;
                         }
-                    } else if (Ch === '!') {
+                    }
+                    else if (Ch === '!') {
                         if (this._LastWasEscape) {
                             this._LastWasEscape = false;
                             this._Buffer += '!';
-                        } else {
                         }
-                    } else if (Ch === '|') {
+                        else {
+                        }
+                    }
+                    else if (Ch === '|') {
                         if (this._LastWasEscape) {
                             this._LastWasEscape = false;
                             this._Buffer += '|';
-                        } else {
-                            this._RIPParserState = 2 /* GotPipe */;
+                        }
+                        else {
+                            this._RIPParserState = RIPParserState.GotPipe;
                             this._DoTextCommand = true;
                         }
-                    } else if (Code === 10) {
+                    }
+                    else if (Code === 10) {
                         if (this._LastWasEscape) {
-                        } else {
+                        }
+                        else {
                             this._DoTextCommand = true;
                             this._LineStarting = true;
                             this._LineStartedWithRIP = false;
                         }
-                    } else if (Code === 13) {
-                    } else {
+                    }
+                    else if (Code === 13) {
+                    }
+                    else {
                         this._Buffer += Ch;
                         this._LastWasEscape = false;
                     }
                     break;
             }
-
-            if ((this._RIPParserState === 5 /* GotCommand */) || (this._DoTextCommand)) {
+            if ((this._RIPParserState === RIPParserState.GotCommand) || (this._DoTextCommand)) {
                 var Points;
-
                 switch (this._Level) {
                     case 0:
                         switch (this._Command) {
@@ -5955,99 +5915,99 @@ var RIP = (function () {
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_TEXT_XY();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case '#':
                                 this.RIP_NO_MORE();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case '*':
                                 this.RIP_RESET_WINDOWS();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case '=':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_LINE_STYLE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case '>':
                                 this.RIP_ERASE_EOL();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'A':
                                 if (this._Buffer.length === 10) {
                                     this.RIP_ARC();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'a':
                                 if (this._Buffer.length === 4) {
                                     this.RIP_ONE_PALETTE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'B':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_BAR();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'C':
                                 if (this._Buffer.length === 6) {
                                     this.RIP_CIRCLE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'c':
                                 if (this._Buffer.length === 2) {
                                     this.RIP_COLOUR();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'E':
                                 this.RIP_ERASE_VIEW();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'e':
                                 this.RIP_ERASE_WINDOW();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'F':
                                 if (this._Buffer.length === 6) {
                                     this.RIP_FILL();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'g':
                                 if (this._Buffer.length === 4) {
                                     this.RIP_GOTOXY();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'H':
                                 this.RIP_HOME();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'I':
                                 if (this._Buffer.length === 10) {
                                     this.RIP_PIE_SLICE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'i':
                                 if (this._Buffer.length === 12) {
                                     this.RIP_OVAL_PIE_SLICE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'L':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_LINE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'l':
@@ -6055,26 +6015,26 @@ var RIP = (function () {
                                     Points = parseInt(this._Buffer.substr(0, 2), 36);
                                     if (this._Buffer.length === (2 + (4 * Points))) {
                                         this.RIP_POLYLINE();
-                                        this._RIPParserState = 0 /* None */;
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'm':
                                 if (this._Buffer.length === 4) {
                                     this.RIP_MOVE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'O':
                                 if (this._Buffer.length === 12) {
                                     this.RIP_OVAL();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'o':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_FILLED_OVAL();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'P':
@@ -6082,7 +6042,7 @@ var RIP = (function () {
                                     Points = parseInt(this._Buffer.substr(0, 2), 36);
                                     if (this._Buffer.length === (2 + (4 * Points))) {
                                         this.RIP_POLYGON();
-                                        this._RIPParserState = 0 /* None */;
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
@@ -6091,71 +6051,71 @@ var RIP = (function () {
                                     Points = parseInt(this._Buffer.substr(0, 2), 36);
                                     if (this._Buffer.length === (2 + (4 * Points))) {
                                         this.RIP_FILLED_POLYGON();
-                                        this._RIPParserState = 0 /* None */;
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'Q':
                                 if (this._Buffer.length === 32) {
                                     this.RIP_SET_PALETTE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'R':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_RECTANGLE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'S':
                                 if (this._Buffer.length === 4) {
                                     this.RIP_FILL_STYLE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 's':
                                 if (this._Buffer.length === 18) {
                                     this.RIP_FILL_PATTERN();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'T':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_TEXT();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'V':
                                 if (this._Buffer.length === 12) {
                                     this.RIP_OVAL_ARC();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'v':
                                 if (this._Buffer.length === 8) {
                                     this.RIP_VIEWPORT();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'W':
                                 if (this._Buffer.length === 2) {
                                     this.RIP_WRITE_MODE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'w':
                                 if (this._Buffer.length === 10) {
                                     this.RIP_TEXT_WINDOW();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'X':
                                 if (this._Buffer.length === 4) {
                                     this.RIP_PIXEL();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'Y':
@@ -6164,19 +6124,21 @@ var RIP = (function () {
                                     if (font > 0) {
                                         if (StrokeFont.Loaded) {
                                             this.RIP_FONT_STYLE();
-                                            this._RIPParserState = 0 /* None */;
-                                        } else {
+                                            this._RIPParserState = RIPParserState.None;
                                         }
-                                    } else {
+                                        else {
+                                        }
+                                    }
+                                    else {
                                         this.RIP_FONT_STYLE();
-                                        this._RIPParserState = 0 /* None */;
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'Z':
                                 if (this._Buffer.length === 18) {
                                     this.RIP_BEZIER();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                         }
@@ -6187,100 +6149,100 @@ var RIP = (function () {
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_QUERY();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'B':
                                 if (this._Buffer.length === 36) {
                                     this.RIP_BUTTON_STYLE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'C':
                                 if (this._Buffer.length === 9) {
                                     this.RIP_GET_IMAGE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'D':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_DEFINE();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'E':
                                 this.RIP_END_TEXT();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'F':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_FILE_QUERY();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'G':
                                 if (this._Buffer.length === 12) {
                                     this.RIP_COPY_REGION();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'I':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_LOAD_ICON();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'K':
                                 this.RIP_KILL_MOUSE_FIELDS();
-                                this._RIPParserState = 0 /* None */;
+                                this._RIPParserState = RIPParserState.None;
                                 break;
                             case 'M':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_MOUSE();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'P':
                                 if (this._Buffer.length === 7) {
                                     this.RIP_PUT_IMAGE();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 'R':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_READ_SCENE();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
                             case 'T':
                                 if (this._Buffer.length === 10) {
                                     this.RIP_BEGIN_TEXT();
-                                    this._RIPParserState = 0 /* None */;
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                                 break;
                             case 't':
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_REGION_TEXT();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
@@ -6288,8 +6250,8 @@ var RIP = (function () {
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_BUTTON();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
@@ -6297,8 +6259,8 @@ var RIP = (function () {
                                 if (this._DoTextCommand) {
                                     this._DoTextCommand = false;
                                     this.RIP_WRITE_ICON();
-                                    if (this._RIPParserState === 5 /* GotCommand */) {
-                                        this._RIPParserState = 0 /* None */;
+                                    if (this._RIPParserState === RIPParserState.GotCommand) {
+                                        this._RIPParserState = RIPParserState.None;
                                     }
                                 }
                                 break;
@@ -6309,8 +6271,8 @@ var RIP = (function () {
                             if (this._DoTextCommand) {
                                 this._DoTextCommand = false;
                                 this.RIP_ENTER_BLOCK_MODE();
-                                if (this._RIPParserState === 5 /* GotCommand */) {
-                                    this._RIPParserState = 0 /* None */;
+                                if (this._RIPParserState === RIPParserState.GotCommand) {
+                                    this._RIPParserState = RIPParserState.None;
                                 }
                             }
                         }
@@ -6319,11 +6281,9 @@ var RIP = (function () {
             }
         }
     };
-
     RIP.OnGraphCanvasMouseDown = function (me) {
         for (var i = RIP._MouseFields.length - 1; i >= 0; i--) {
             var MB = RIP._MouseFields[i];
-
             if (me.offsetX < MB.Coords.left)
                 continue;
             if (me.offsetX > MB.Coords.right)
@@ -6332,11 +6292,9 @@ var RIP = (function () {
                 continue;
             if (me.offsetY > MB.Coords.bottom)
                 continue;
-
             Graph.Canvas.removeEventListener('mousedown', RIP.OnGraphCanvasMouseDown);
             Graph.Canvas.addEventListener('mousemove', RIP.OnGraphCanvasMouseMove);
             Graph.Canvas.addEventListener('mouseup', RIP.OnGraphCanvasMouseUp);
-
             if (MB.IsInvertable()) {
                 Graph.Invert(MB.Coords.left, MB.Coords.top, MB.Coords.right, MB.Coords.bottom);
             }
@@ -6345,10 +6303,8 @@ var RIP = (function () {
             break;
         }
     };
-
     RIP.OnGraphCanvasMouseMove = function (me) {
         var MB = RIP._MouseFields[RIP._ButtonPressed];
-
         var Over = true;
         if (me.offsetX < MB.Coords.left)
             Over = false;
@@ -6358,20 +6314,16 @@ var RIP = (function () {
             Over = false;
         if (me.offsetY > MB.Coords.bottom)
             Over = false;
-
         if ((MB.IsInvertable()) && (Over !== RIP._ButtonInverted)) {
             Graph.Invert(MB.Coords.left, MB.Coords.top, MB.Coords.right, MB.Coords.bottom);
             RIP._ButtonInverted = Over;
         }
     };
-
     RIP.OnGraphCanvasMouseUp = function (me) {
         Graph.Canvas.removeEventListener('mouseup', RIP.OnGraphCanvasMouseUp);
         Graph.Canvas.removeEventListener('mousemove', RIP.OnGraphCanvasMouseMove);
         Graph.Canvas.addEventListener('mousedown', RIP.OnGraphCanvasMouseDown);
-
         var MB = RIP._MouseFields[RIP._ButtonPressed];
-
         var Over = true;
         if (me.offsetX < MB.Coords.left)
             Over = false;
@@ -6381,98 +6333,81 @@ var RIP = (function () {
             Over = false;
         if (me.offsetY > MB.Coords.bottom)
             Over = false;
-
         if (Over) {
             if (MB.IsInvertable() && RIP._ButtonInverted) {
                 Graph.Invert(MB.Coords.left, MB.Coords.top, MB.Coords.right, MB.Coords.bottom);
             }
             RIP._ButtonInverted = false;
             RIP._ButtonPressed = -1;
-
             RIP.HandleMouseButton(MB);
         }
     };
-
     RIP.OnPopUpClick = function (AResponse) {
         for (var i = 0; i < AResponse.length; i++) {
         }
     };
-
     RIP.PolyLine = function (points) {
         var pointslength = points.length;
         for (var i = 1; i < pointslength; i++) {
             Graph.Line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
         }
     };
-
     RIP.Query = function (mode, text) {
         if (mode !== 0) {
             console.log('Query() only supports immediate execution');
             mode = 0;
         }
-
         if (text === '$ETW$') {
             Graph.ClearTextWindow();
-        } else if (text === '$SBAROFF$') {
-        } else {
+        }
+        else if (text === '$SBAROFF$') {
+        }
+        else {
             console.log('Query(' + text + ') is not handled');
         }
     };
-
     RIP.ReadScene = function (filename) {
         console.log('ReadScene() is not handled');
     };
-
     RIP.RegionText = function (justify, text) {
         console.log('RegionText() is not handled');
     };
-
     RIP.ResetWindows = function () {
         this.KillMouseFields();
-
         Graph.SetTextWindow(0, 0, 79, 42, 1, 0);
         Crt.ClrScr();
-
         Graph.GraphDefaults();
-
         this._Clipboard = null;
     };
-
     RIP.RIP_ARC = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
         var startangle = parseInt(this._Buffer.substr(4, 2), 36);
         var endangle = parseInt(this._Buffer.substr(6, 2), 36);
         var radius = parseInt(this._Buffer.substr(8, 2), 36);
-
         this._Benchmark.Start();
         Graph.Arc(xcenter, ycenter, startangle, endangle, radius);
         console.log(this._Benchmark.Elapsed + ' Arc(' + xcenter + ', ' + ycenter + ', ' + startangle + ', ' + endangle + ', ' + radius + ');');
     };
-
     RIP.RIP_BAR = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.Bar(x1, y1, x2, y2);
         console.log(this._Benchmark.Elapsed + ' Bar(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_BEGIN_TEXT = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
         var reserved = parseInt(this._Buffer.substr(8, 2), 36);
-
         this._Benchmark.Start();
         this.BeginText(x1, y1, x2, y2);
         console.log(this._Benchmark.Elapsed + ' BeginText(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_BEZIER = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6483,12 +6418,10 @@ var RIP = (function () {
         var x4 = parseInt(this._Buffer.substr(12, 2), 36);
         var y4 = parseInt(this._Buffer.substr(14, 2), 36);
         var count = parseInt(this._Buffer.substr(16, 2), 36);
-
         this._Benchmark.Start();
         Graph.Bezier(x1, y1, x2, y2, x3, y3, x4, y4, count);
         console.log(this._Benchmark.Elapsed + ' Bezier(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + x3 + ', ' + y3 + ', ' + x4 + ', ' + y4 + ', ' + count + ');');
     };
-
     RIP.RIP_BUTTON = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6498,12 +6431,10 @@ var RIP = (function () {
         var flags = parseInt(this._Buffer.substr(10, 1), 36);
         var reserved = parseInt(this._Buffer.substr(11, 1), 36);
         var text = this._Buffer.substr(12, this._Buffer.length - 12);
-
         this._Benchmark.Start();
         this.Button(x1, y1, x2, y2, hotkey, flags, text);
         console.log(this._Benchmark.Elapsed + ' Button(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + hotkey + ', ' + flags + ', ' + text + ');');
     };
-
     RIP.RIP_BUTTON_STYLE = function () {
         var width = parseInt(this._Buffer.substr(0, 2), 36);
         var height = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6520,30 +6451,24 @@ var RIP = (function () {
         var underlinecolour = parseInt(this._Buffer.substr(26, 2), 36);
         var cornercolour = parseInt(this._Buffer.substr(28, 2), 36);
         var reserved = parseInt(this._Buffer.substr(30, 6), 36);
-
         this._Benchmark.Start();
         this.SetButtonStyle(width, height, orientation, flags, bevelsize, dfore, dback, bright, dark, surface, groupid, flags2, underlinecolour, cornercolour);
         console.log(this._Benchmark.Elapsed + ' SetButtonStyle(' + width + ', ' + height + ', ' + orientation + ', ' + flags + ', ' + bevelsize + ', ' + dfore + ', ' + dback + ', ' + bright + ', ' + dark + ', ' + surface + ', ' + groupid + ', ' + flags2 + ', ' + underlinecolour + ', ' + cornercolour + ');');
     };
-
     RIP.RIP_CIRCLE = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
         var radius = parseInt(this._Buffer.substr(4, 2), 36);
-
         this._Benchmark.Start();
         Graph.Circle(xcenter, ycenter, radius);
         console.log(this._Benchmark.Elapsed + ' Circle(' + xcenter + ', ' + ycenter + ', ' + radius + ');');
     };
-
     RIP.RIP_COLOUR = function () {
         var colour = parseInt(this._Buffer.substr(0, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetColour(colour);
         console.log(this._Benchmark.Elapsed + ' SetColour(' + colour + ');');
     };
-
     RIP.RIP_COPY_REGION = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6551,78 +6476,64 @@ var RIP = (function () {
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
         var reserved = parseInt(this._Buffer.substr(8, 2), 36);
         var desty = parseInt(this._Buffer.substr(10, 2), 36);
-
         this._Benchmark.Start();
         this.CopyRegion(x1, y1, x2, y2, desty);
         console.log(this._Benchmark.Elapsed + ' CopyRegion(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + desty + ');');
     };
-
     RIP.RIP_DEFINE = function () {
         var flags = parseInt(this._Buffer.substr(0, 3), 36);
         var reserved = parseInt(this._Buffer.substr(3, 2), 36);
         var text = this._Buffer.substr(5, this._Buffer.length - 5);
-
         this._Benchmark.Start();
         this.Define(flags, text);
         console.log(this._Benchmark.Elapsed + ' Define(' + flags + ', ' + text + ');');
     };
-
     RIP.RIP_END_TEXT = function () {
         this._Benchmark.Start();
         this.EndText();
         console.log(this._Benchmark.Elapsed + ' EndText();');
     };
-
     RIP.RIP_ENTER_BLOCK_MODE = function () {
         var mode = parseInt(this._Buffer.substr(0, 1), 36);
         var protocol = parseInt(this._Buffer.substr(1, 1), 36);
         var filetype = parseInt(this._Buffer.substr(2, 2), 36);
         var reserved = parseInt(this._Buffer.substr(4, 4), 36);
         var filename = this._Buffer.substr(8, this._Buffer.length - 8);
-
         this._Benchmark.Start();
         this.EnterBlockMode(mode, protocol, filetype, filename);
         console.log(this._Benchmark.Elapsed + ' EnterBlockMode(' + mode + ', ' + protocol + ', ' + filetype + ', ' + filename + ');');
     };
-
     RIP.RIP_ERASE_EOL = function () {
         this._Benchmark.Start();
         Graph.EraseEOL();
         console.log(this._Benchmark.Elapsed + ' EraseEOL();');
     };
-
     RIP.RIP_ERASE_VIEW = function () {
         this._Benchmark.Start();
         Graph.ClearViewPort();
         console.log(this._Benchmark.Elapsed + ' EraseView();');
     };
-
     RIP.RIP_ERASE_WINDOW = function () {
         this._Benchmark.Start();
         Graph.ClearTextWindow();
         console.log(this._Benchmark.Elapsed + ' EraseWindow();');
     };
-
     RIP.RIP_FILE_QUERY = function () {
         var mode = parseInt(this._Buffer.substr(0, 2), 36);
         var reserved = parseInt(this._Buffer.substr(2, 4), 36);
         var filename = this._Buffer.substr(6, this._Buffer.length - 6);
-
         this._Benchmark.Start();
         this.FileQuery(mode, filename);
         console.log(this._Benchmark.Elapsed + ' FileQuery(' + mode + ', ' + filename + ');');
     };
-
     RIP.RIP_FILL = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
         var border = parseInt(this._Buffer.substr(4, 2), 36);
-
         this._Benchmark.Start();
         Graph.FloodFill(x, y, border);
         console.log(this._Benchmark.Elapsed + ' Fill(' + x + ', ' + y + ', ' + border + ');');
     };
-
     RIP.RIP_FILL_PATTERN = function () {
         var c1 = parseInt(this._Buffer.substr(0, 2), 36);
         var c2 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6633,121 +6544,100 @@ var RIP = (function () {
         var c7 = parseInt(this._Buffer.substr(12, 2), 36);
         var c8 = parseInt(this._Buffer.substr(14, 2), 36);
         var colour = parseInt(this._Buffer.substr(16, 2), 36);
-
         this._Benchmark.Start();
-        Graph.SetFillStyle(12 /* User */, colour);
+        Graph.SetFillStyle(FillStyle.User, colour);
         Graph.SetFillPattern([c1, c2, c3, c4, c5, c6, c7, c8], colour);
         console.log(this._Benchmark.Elapsed + ' SetFillPattern(' + c1 + ', ' + c2 + ', ' + c3 + ', ' + c4 + ', ' + c5 + ', ' + c6 + ', ' + c7 + ', ' + c8 + ', ' + colour + ');');
     };
-
     RIP.RIP_FILL_STYLE = function () {
         var pattern = parseInt(this._Buffer.substr(0, 2), 36);
         var colour = parseInt(this._Buffer.substr(2, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetFillStyle(pattern, colour);
         console.log(this._Benchmark.Elapsed + ' SetFillStyle(' + pattern + ', ' + colour + ');');
     };
-
     RIP.RIP_FILLED_OVAL = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
         var xradius = parseInt(this._Buffer.substr(4, 2), 36);
         var yradius = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.FillEllipse(xcenter, ycenter, xradius, yradius);
         console.log(this._Benchmark.Elapsed + ' Graph.FillEllipse(' + xcenter + ', ' + ycenter + ', ' + xradius + ', ' + yradius + ');');
     };
-
     RIP.RIP_FILLED_POLYGON = function () {
         this._Benchmark.Start();
         var count = parseInt(this._Buffer.substr(0, 2), 36);
         var points = [];
-
         if (count >= 2) {
             for (var i = 0; i < count; i++) {
                 points[i] = new Point(parseInt(this._Buffer.substr(2 + (i * 4), 2), 36), parseInt(this._Buffer.substr(4 + (i * 4), 2), 36));
             }
             points.push(new Point(points[0].x, points[0].y));
-
             Graph.FillPoly(points);
             console.log(this._Benchmark.Elapsed + ' FillPoly(' + points.toString() + ');');
-        } else {
+        }
+        else {
             console.log('RIP_FILLED_POLYGON with ' + count + ' points is not allowed');
         }
     };
-
     RIP.RIP_FONT_STYLE = function () {
         var font = parseInt(this._Buffer.substr(0, 2), 36);
         var direction = parseInt(this._Buffer.substr(2, 2), 36);
         var size = parseInt(this._Buffer.substr(4, 2), 36);
         var reserved = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetTextStyle(font, direction, size);
         console.log(this._Benchmark.Elapsed + ' SetFontStyle(' + font + ', ' + direction + ', ' + size + ');');
     };
-
     RIP.RIP_GET_IMAGE = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
         var reserved = parseInt(this._Buffer.substr(7, 1), 36);
-
         if ((x1 > x2) || (y1 > y2)) {
             console.log('TODO Invalid coordinates: ' + x1 + ',' + y1 + ' to ' + x2 + ',' + y2);
             return;
         }
-
         this._Benchmark.Start();
         this._Clipboard = Graph.GetImage(x1, y1, x2, y2);
         console.log(this._Benchmark.Elapsed + ' GetImage(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_GOTOXY = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
-
         this._Benchmark.Start();
         Crt.GotoXY(x, y);
         console.log(this._Benchmark.Elapsed + ' Crt.GotoXY(' + x + ', ' + y + ');');
     };
-
     RIP.RIP_HOME = function () {
         this._Benchmark.Start();
         Crt.GotoXY(1, 1);
         console.log(this._Benchmark.Elapsed + ' Crt.GotoXY(1, 1);');
     };
-
     RIP.RIP_KILL_MOUSE_FIELDS = function () {
         this._Benchmark.Start();
         this.KillMouseFields();
         console.log(this._Benchmark.Elapsed + ' KillMouseFields();');
     };
-
     RIP.RIP_LINE = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.Line(x1, y1, x2, y2);
         console.log(this._Benchmark.Elapsed + ' Line(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_LINE_STYLE = function () {
         var style = parseInt(this._Buffer.substr(0, 2), 36);
         var userpattern = parseInt(this._Buffer.substr(2, 4), 36);
         var thickness = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetLineStyle(style, userpattern, thickness);
         console.log(this._Benchmark.Elapsed + ' SetLineStyle(' + style + ', ' + userpattern + ', ' + thickness + ');');
     };
-
     RIP.RIP_LOAD_ICON = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6755,12 +6645,10 @@ var RIP = (function () {
         var clipboard = parseInt(this._Buffer.substr(6, 1), 36);
         var reserved = parseInt(this._Buffer.substr(7, 2), 36);
         var filename = this._Buffer.substr(9, this._Buffer.length - 9);
-
         this._Benchmark.Start();
         this.LoadIcon(x, y, mode, clipboard, filename);
         console.log(this._Benchmark.Elapsed + ' LoadIcon(' + x + ', ' + y + ', ' + mode + ', ' + clipboard + ', ' + filename + ');');
     };
-
     RIP.RIP_MOUSE = function () {
         var num = parseInt(this._Buffer.substr(0, 2), 36);
         var x1 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6771,9 +6659,7 @@ var RIP = (function () {
         var clear = parseInt(this._Buffer.substr(11, 1), 36);
         var reserved = parseInt(this._Buffer.substr(12, 5), 36);
         var hostcommand = this._Buffer.substr(17, this._Buffer.length - 17);
-
         this._Benchmark.Start();
-
         var flags = 0;
         if (invert === 1) {
             flags |= 2;
@@ -6784,28 +6670,22 @@ var RIP = (function () {
         this._MouseFields.push(new MouseButton(new Rectangle(x1, y1, x2 - x1 + 1, y2 - y1 + 1), hostcommand, flags, ''));
         console.log(this._Benchmark.Elapsed + ' this._MouseFields.push(new MouseButton(new Rectangle(' + x1 + ', ' + y1 + ', ' + (x2 - x1 + 1) + ', ' + (y2 - y1 + 1) + '), ' + hostcommand + ', ' + flags + ', \'\')');
     };
-
     RIP.RIP_MOVE = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
-
         this._Benchmark.Start();
         Graph.MoveTo(x, y);
         console.log(this._Benchmark.Elapsed + ' Graph.MoveTo(' + x + ', ' + y + ');');
     };
-
     RIP.RIP_NO_MORE = function () {
     };
-
     RIP.RIP_ONE_PALETTE = function () {
         var colour = parseInt(this._Buffer.substr(0, 2), 36);
         var value = parseInt(this._Buffer.substr(2, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetPalette(colour, value);
         console.log(this._Benchmark.Elapsed + ' OnePalette(' + colour + ', ' + value + ');');
     };
-
     RIP.RIP_OVAL = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6813,12 +6693,10 @@ var RIP = (function () {
         var endangle = parseInt(this._Buffer.substr(6, 2), 36);
         var xradius = parseInt(this._Buffer.substr(8, 2), 36);
         var yradius = parseInt(this._Buffer.substr(10, 2), 36);
-
         this._Benchmark.Start();
         Graph.Ellipse(xcenter, ycenter, startangle, endangle, xradius, yradius);
         console.log(this._Benchmark.Elapsed + ' Oval(' + xcenter + ', ' + ycenter + ', ' + startangle + ', ' + endangle + ', ' + xradius + ', ' + yradius + ');');
     };
-
     RIP.RIP_OVAL_ARC = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6826,12 +6704,10 @@ var RIP = (function () {
         var endangle = parseInt(this._Buffer.substr(6, 2), 36);
         var xradius = parseInt(this._Buffer.substr(8, 2), 36);
         var yradius = parseInt(this._Buffer.substr(10, 2), 36);
-
         this._Benchmark.Start();
         Graph.Ellipse(xcenter, ycenter, startangle, endangle, xradius, yradius);
         console.log(this._Benchmark.Elapsed + ' OvalArc(' + xcenter + ', ' + ycenter + ', ' + startangle + ', ' + endangle + ', ' + xradius + ', ' + yradius + ');');
     };
-
     RIP.RIP_OVAL_PIE_SLICE = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6839,116 +6715,93 @@ var RIP = (function () {
         var endangle = parseInt(this._Buffer.substr(6, 2), 36);
         var xradius = parseInt(this._Buffer.substr(8, 2), 36);
         var yradius = parseInt(this._Buffer.substr(10, 2), 36);
-
         this._Benchmark.Start();
         Graph.Sector(xcenter, ycenter, startangle, endangle, xradius, yradius);
         console.log(this._Benchmark.Elapsed + ' Graph.Sector(' + xcenter + ', ' + ycenter + ', ' + startangle + ', ' + endangle + ', ' + xradius + ', ' + yradius + ');');
     };
-
     RIP.RIP_PIE_SLICE = function () {
         var xcenter = parseInt(this._Buffer.substr(0, 2), 36);
         var ycenter = parseInt(this._Buffer.substr(2, 2), 36);
         var startangle = parseInt(this._Buffer.substr(4, 2), 36);
         var endangle = parseInt(this._Buffer.substr(6, 2), 36);
         var radius = parseInt(this._Buffer.substr(8, 2), 36);
-
         this._Benchmark.Start();
         Graph.PieSlice(xcenter, ycenter, startangle, endangle, radius);
         console.log(this._Benchmark.Elapsed + ' Graph.PieSlice(' + xcenter + ', ' + ycenter + ', ' + startangle + ', ' + endangle + ', ' + radius + ');');
     };
-
     RIP.RIP_PIXEL = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
-
         this._Benchmark.Start();
         Graph.PutPixel(x, y, Graph.GetColour());
         console.log(this._Benchmark.Elapsed + ' Pixel(' + x + ', ' + y + ');');
     };
-
     RIP.RIP_POLYGON = function () {
         this._Benchmark.Start();
         var count = parseInt(this._Buffer.substr(0, 2), 36);
         var points = [];
-
         for (var i = 0; i < count; i++) {
             points[i] = new Point(parseInt(this._Buffer.substr(2 + (i * 4), 2), 36), parseInt(this._Buffer.substr(4 + (i * 4), 2), 36));
         }
         points.push(new Point(points[0].x, points[0].y));
-
         Graph.DrawPoly(points);
         console.log(this._Benchmark.Elapsed + ' DrawPoly(' + points.toString() + ');');
     };
-
     RIP.RIP_POLYLINE = function () {
         this._Benchmark.Start();
         var count = parseInt(this._Buffer.substr(0, 2), 36);
         var points = [];
-
         for (var i = 0; i < count; i++) {
             points[i] = new Point(parseInt(this._Buffer.substr(2 + (i * 4), 2), 36), parseInt(this._Buffer.substr(4 + (i * 4), 2), 36));
         }
-
         Graph.DrawPoly(points);
         console.log(this._Benchmark.Elapsed + ' DrawPoly(' + points.toString() + ');');
     };
-
     RIP.RIP_PUT_IMAGE = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
         var mode = parseInt(this._Buffer.substr(4, 2), 36);
         var reserved = parseInt(this._Buffer.substr(6, 1), 36);
-
         this._Benchmark.Start();
         Graph.PutImage(x, y, this._Clipboard, mode);
         console.log(this._Benchmark.Elapsed + ' PutImage(' + x + ', ' + y + ', ' + mode + ');');
     };
-
     RIP.RIP_QUERY = function () {
         var mode = parseInt(this._Buffer.substr(0, 1), 36);
         var reserved = parseInt(this._Buffer.substr(1, 3), 36);
         var text = this._Buffer.substr(4, this._Buffer.length - 4);
-
         this._Benchmark.Start();
         this.Query(mode, text);
         console.log(this._Benchmark.Elapsed + ' Query(' + mode + ', ' + text + ');');
     };
-
     RIP.RIP_READ_SCENE = function () {
         var reserved = parseInt(this._Buffer.substr(0, 8), 36);
         var filename = this._Buffer.substr(8, this._Buffer.length - 8);
-
         this._Benchmark.Start();
         this.ReadScene(filename);
         console.log(this._Benchmark.Elapsed + ' ReadScene(' + filename + ');');
     };
-
     RIP.RIP_RECTANGLE = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.Rectangle(x1, y1, x2, y2);
         console.log(this._Benchmark.Elapsed + ' Rectangle(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_REGION_TEXT = function () {
         var justify = parseInt(this._Buffer.substr(0, 1), 36);
         var text = this._Buffer.substr(1, this._Buffer.length - 1);
-
         this._Benchmark.Start();
         this.RegionText(justify, text);
         console.log(this._Benchmark.Elapsed + ' RegionText(' + justify + ', ' + text + ');');
     };
-
     RIP.RIP_RESET_WINDOWS = function () {
         this._Benchmark.Start();
         this.ResetWindows();
         console.log(this._Benchmark.Elapsed + ' ResetWindows();');
     };
-
     RIP.RIP_SET_PALETTE = function () {
         var c1 = parseInt(this._Buffer.substr(0, 2), 36);
         var c2 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6966,21 +6819,17 @@ var RIP = (function () {
         var c14 = parseInt(this._Buffer.substr(26, 2), 36);
         var c15 = parseInt(this._Buffer.substr(28, 2), 36);
         var c16 = parseInt(this._Buffer.substr(30, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetAllPalette([c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16]);
         console.log(this._Benchmark.Elapsed + ' SetPalette(' + c1 + ', ' + c2 + ', ' + c3 + ', ' + c4 + ', ' + c5 + ', ' + c6 + ', ' + c7 + ', ' + c8 + ', ' + c9 + ', ' + c10 + ', ' + c11 + ', ' + c12 + ', ' + c13 + ', ' + c14 + ', ' + c15 + ', ' + c16 + ');');
     };
-
     RIP.RIP_TEXT = function () {
         var text = this._Buffer;
-
         this._Benchmark.Start();
-        Graph.SetTextJustify(0 /* Left */, 2 /* Top */);
+        Graph.SetTextJustify(TextJustification.Left, TextJustification.Top);
         Graph.OutText(text);
         console.log(this._Benchmark.Elapsed + ' OutText(' + text + ');');
     };
-
     RIP.RIP_TEXT_WINDOW = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
@@ -6988,51 +6837,41 @@ var RIP = (function () {
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
         var wrap = parseInt(this._Buffer.substr(8, 1), 36);
         var size = parseInt(this._Buffer.substr(9, 1), 36);
-
         this._Benchmark.Start();
         Graph.SetTextWindow(x1, y1, x2, y2, wrap, size);
         console.log(this._Benchmark.Elapsed + ' SetTextWindow(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ', ' + wrap + ', ' + size + ');');
     };
-
     RIP.RIP_TEXT_XY = function () {
         var x = parseInt(this._Buffer.substr(0, 2), 36);
         var y = parseInt(this._Buffer.substr(2, 2), 36);
         var text = this._Buffer.substr(4, this._Buffer.length - 4);
-
         this._Benchmark.Start();
-        Graph.SetTextJustify(0 /* Left */, 2 /* Top */);
+        Graph.SetTextJustify(TextJustification.Left, TextJustification.Top);
         Graph.OutTextXY(x, y, text);
         console.log(this._Benchmark.Elapsed + ' TextXY(' + x + ', ' + y + ', ' + text + ');');
     };
-
     RIP.RIP_VIEWPORT = function () {
         var x1 = parseInt(this._Buffer.substr(0, 2), 36);
         var y1 = parseInt(this._Buffer.substr(2, 2), 36);
         var x2 = parseInt(this._Buffer.substr(4, 2), 36);
         var y2 = parseInt(this._Buffer.substr(6, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetViewPort(x1, y1, x2, y2, true);
         console.log(this._Benchmark.Elapsed + ' SetViewPort(' + x1 + ', ' + y1 + ', ' + x2 + ', ' + y2 + ');');
     };
-
     RIP.RIP_WRITE_ICON = function () {
         var reserved = parseInt(this._Buffer.substr(0, 1), 36);
         var filename = this._Buffer.substr(1, this._Buffer.length - 1);
-
         this._Benchmark.Start();
         this.WriteIcon(filename);
         console.log(this._Benchmark.Elapsed + ' WriteIcon(' + filename + ');');
     };
-
     RIP.RIP_WRITE_MODE = function () {
         var mode = parseInt(this._Buffer.substr(0, 2), 36);
-
         this._Benchmark.Start();
         Graph.SetWriteMode(mode);
         console.log(this._Benchmark.Elapsed + ' SetWriteMode(' + mode + ');');
     };
-
     RIP.SetButtonStyle = function (width, height, orientation, flags, bevelsize, dfore, dback, bright, dark, surface, groupid, flags2, underlinecolour, cornercolour) {
         this._ButtonStyle.width = width;
         this._ButtonStyle.height = height;
@@ -7049,7 +6888,6 @@ var RIP = (function () {
         this._ButtonStyle.underlinecolour = underlinecolour;
         this._ButtonStyle.cornercolour = cornercolour;
     };
-
     RIP.WriteIcon = function (filename) {
         console.log('WriteIcon() is not handled');
     };
@@ -7069,26 +6907,52 @@ var RIP = (function () {
     RIP._LineStartedWithRIP = false;
     RIP._LineStarting = true;
     RIP._MouseFields = [];
-    RIP._RIPParserState = 0 /* None */;
+    RIP._RIPParserState = RIPParserState.None;
     RIP._SubLevel = 0;
     return RIP;
 })();
+/// <reference path="3rdparty/DetectMobileBrowser.ts" />
+/// <reference path="randm/ansi/Ansi.ts" />
+/// <reference path="randm/tcp/rlogin/RLoginConnection.ts" />
+/// <reference path="randm/graph/rip/RIP.ts" />
 var fTelnet = (function () {
     function fTelnet() {
     }
     fTelnet.Init = function () {
         var _this = this;
         if (document.getElementById('fTelnetContainer') === null) {
-            alert('fTelnet Error: Element with id="fTelnetContainer" was not found');
+            alert('fTelnet Error: Container element with id="fTelnetContainer" was not found');
             return false;
         }
         this._fTelnetContainer = document.getElementById('fTelnetContainer');
-
+        if (document.getElementById('fTelnetScript') === null) {
+            alert('fTelnet Error: Script element with id="fTelnetScript" was not found');
+            return false;
+        }
+        if (document.getElementById('fTelnetCss') === null) {
+            var ScriptUrl = document.getElementById('fTelnetScript').src;
+            var CssUrl = ScriptUrl.replace('/ftelnet.min.js', '');
+            CssUrl = CssUrl.replace('/ftelnet.debug.js', '');
+            CssUrl = CssUrl + '/ftelnet.css';
+            var link = document.createElement('link');
+            link.id = 'fTelnetCss';
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = CssUrl;
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        if (document.getElementById('fTelnetKeyboardCss') === null) {
+            var link = document.createElement('link');
+            link.id = 'fTelnetKeyboardCss';
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = '';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
         this._InitMessageBar = document.createElement('div');
         this._InitMessageBar.id = 'fTelnetInitMessage';
         this._InitMessageBar.innerHTML = 'Initializing fTelnet...';
         this._fTelnetContainer.appendChild(this._InitMessageBar);
-
         if (navigator.appName === 'Microsoft Internet Explorer') {
             var Version = -1;
             var RE = new RegExp('MSIE ([0-9]{1,}[\\.0-9]{0,})');
@@ -7096,51 +6960,32 @@ var fTelnet = (function () {
                 Version = parseFloat(RegExp.$1);
             }
             if (Version < 9.0) {
-                this._InitMessageBar.innerHTML = 'fTelnet Error: Internet Explorer < 9 is not supported.<br /><br />Please upgrade to IE 9 or newer, or better still would be to use Firefox or Chrome instead of IE.';
+                var IELessThan9Message = 'fTelnet Error: Internet Explorer < 9 is not supported.\n\nPlease upgrade to IE 9 or newer, or better still would be to use Firefox or Chrome instead of IE.';
+                this._InitMessageBar.innerHTML = IELessThan9Message;
+                alert(IELessThan9Message);
                 return false;
             }
         }
-
-        this._ButtonBar = document.createElement('div');
-        this._ButtonBar.id = 'fTelnetButtons';
-        this._ButtonBar.innerHTML = '<a href="#" onclick="fTelnet.Connect();">Connect</a> | ' + '<a href="#" onclick="fTelnet.Download();">Download</a> | ' + '<a href="#" onclick="fTelnet.Upload();">Upload</a> | ' + '<a href="#" onclick="fTelnet.VirtualKeyboardVisible = !fTelnet.VirtualKeyboardVisible;">Keyboard</a> | ' + '<a href="#" onclick="fTelnet.EnterScrollback();">Scrollback</a> | ' + '<a href="#" onclick="fTelnet.FullScreenToggle();">Full&nbsp;Screen<a/>';
-        this._ButtonBar.style.display = (this._ButtonBarVisible ? 'block' : 'none');
-        this._fTelnetContainer.appendChild(this._ButtonBar);
-
-        this._ScrollbackBar = document.createElement('div');
-        this._ScrollbackBar.id = 'fTelnetScrollback';
-        this._ScrollbackBar.innerHTML = '<a href="#" onclick="Crt.PushKeyDown(Keyboard.UP, Keyboard.UP, false, false, false);">Line Up</a> | ' + '<a href="#" onclick="Crt.PushKeyDown(Keyboard.DOWN, Keyboard.DOWN, false, false, false);">Line Down</a> | ' + '<a href="#" onclick="Crt.PushKeyDown(Keyboard.PAGE_UP, Keyboard.PAGE_UP, false, false, false);">Page Up</a> | ' + '<a href="#" onclick="Crt.PushKeyDown(Keyboard.PAGE_DOWN, Keyboard.PAGE_DOWN, false, false, false);">Page Down</a> | ' + '<a href="#" onclick="fTelnet.ExitScrollback();">Exit</a>';
-        this._ScrollbackBar.style.display = 'none';
-        this._fTelnetContainer.appendChild(this._ScrollbackBar);
-
-        this._FocusWarningBar = document.createElement('div');
-        this._FocusWarningBar.id = 'fTelnetFocusWarning';
-        this._FocusWarningBar.innerHTML = '*** CLICK HERE TO GIVE fTelnet FOCUS ***';
-        this._FocusWarningBar.style.display = 'none';
-        this._fTelnetContainer.appendChild(this._FocusWarningBar);
-
         this._ClientContainer = document.createElement('div');
         this._ClientContainer.id = 'fTelnetClientContainer';
         this._fTelnetContainer.appendChild(this._ClientContainer);
-
+        if (!DetectMobileBrowser.IsMobile) {
+            this._ClientContainer.style.overflowX = 'hidden';
+            this._ClientContainer.style.overflowY = 'scroll';
+            this._ClientContainer.style.height = this._ScreenRows * 16 + 'px';
+            this._ClientContainer.style.width = (this._ScreenColumns * 9) + GetScrollbarWidth.Width + 'px';
+            this._ClientContainer.scrollTop = this._ClientContainer.scrollHeight;
+        }
         if (Crt.Init(this._ClientContainer) && ((this._Emulation !== 'RIP') || Graph.Init(this._ClientContainer))) {
             this._InitMessageBar.style.display = 'none';
-
-            Crt.onfontchange.on(function () {
-                _this.OnCrtScreenSizeChanged();
-            });
-            Crt.onkeypressed.on(function () {
-                _this.OnCrtKeyPressed();
-            });
-            Crt.onscreensizechange.on(function () {
-                _this.OnCrtScreenSizeChanged();
-            });
+            Crt.onfontchange.on(function () { _this.OnCrtScreenSizeChanged(); });
+            Crt.onkeypressed.on(function () { _this.OnCrtKeyPressed(); });
+            Crt.onscreensizechange.on(function () { _this.OnCrtScreenSizeChanged(); });
             Crt.BareLFtoCRLF = this._BareLFtoCRLF;
             Crt.Blink = this._Blink;
             Crt.LocalEcho = this._LocalEcho;
             Crt.SetFont(this._Font);
             Crt.SetScreenSize(this._ScreenColumns, this._ScreenRows);
-
             if (!('WebSocket' in window) || navigator.userAgent.match('AppleWebKit/534.30')) {
                 Crt.WriteLn();
                 Crt.WriteLn('Sorry, but your browser doesn\'t support the WebSocket protocol!');
@@ -7158,68 +7003,86 @@ var fTelnet = (function () {
                 console.log('fTelnet Error: WebSocket not supported');
                 return false;
             }
-
+            this._FocusWarningBar = document.createElement('div');
+            this._FocusWarningBar.id = 'fTelnetFocusWarning';
+            this._FocusWarningBar.innerHTML = '*** CLICK HERE TO ENABLE KEYBOARD INPUT ***';
+            this._FocusWarningBar.style.display = 'none';
+            this._fTelnetContainer.appendChild(this._FocusWarningBar);
+            this._ScrollbackBar = document.createElement('div');
+            this._ScrollbackBar.id = 'fTelnetScrollback';
+            if (DetectMobileBrowser.IsMobile) {
+                this._ScrollbackBar.innerHTML = 'SCROLLBACK: <a href="#" onclick="Crt.PushKeyDown(Keyboard.UP, Keyboard.UP, false, false, false); return false;">Line Up</a> | ' +
+                    '<a href="#" onclick="Crt.PushKeyDown(Keyboard.DOWN, Keyboard.DOWN, false, false, false); return false;">Line Down</a> | ' +
+                    '<a href="#" onclick="Crt.PushKeyDown(Keyboard.PAGE_UP, Keyboard.PAGE_UP, false, false, false); return false;">Page Up</a> | ' +
+                    '<a href="#" onclick="Crt.PushKeyDown(Keyboard.PAGE_DOWN, Keyboard.PAGE_DOWN, false, false, false); return false;">Page Down</a> | ' +
+                    '<a href="#" onclick="fTelnet.ExitScrollback(); return false;">Exit</a>';
+            }
+            else {
+                this._ScrollbackBar.innerHTML = 'SCROLLBACK: Scroll back down to the bottom to exit scrollback mode';
+            }
+            this._ScrollbackBar.style.display = 'none';
+            this._fTelnetContainer.appendChild(this._ScrollbackBar);
             this._StatusBar = document.createElement('div');
             this._StatusBar.id = 'fTelnetStatusBar';
-            this._StatusBar.innerHTML = 'Not connected';
             this._StatusBar.style.display = (this._StatusBarVisible ? 'block' : 'none');
             this._fTelnetContainer.appendChild(this._StatusBar);
-
+            this._MenuButton = document.createElement('a');
+            this._MenuButton.id = 'fTelnetMenuButton';
+            this._MenuButton.href = '#';
+            this._MenuButton.innerHTML = 'Menu';
+            this._MenuButton.addEventListener('click', function (e) { return _this.OnMenuButtonClick(e); }, false);
+            this._StatusBar.appendChild(this._MenuButton);
+            this._StatusBarLabel = document.createElement('span');
+            this._StatusBarLabel.id = 'fTelnetStatusBarLabel';
+            this._StatusBarLabel.innerHTML = '<a href="#" onclick="fTelnet.Connect(); return false;">Connect</a> Not connected';
+            this._StatusBar.appendChild(this._StatusBarLabel);
+            this._MenuButtons = document.createElement('div');
+            this._MenuButtons.id = 'fTelnetMenuButtons';
+            this._MenuButtons.innerHTML = '<table cellpadding="5" cellspacing="1"><tr><td><a href="#" onclick="fTelnet.Connect(); return false;">Connect</a></td>'
+                + '<td><a href="#" onclick="fTelnet.Disconnect(true); return false;">Disconnect</a></td></tr>'
+                + (DetectMobileBrowser.IsMobile ? '' : '<tr><td><a href="#" onclick="fTelnet.ClipboardCopy(); return false;">Copy</a></td>')
+                + (DetectMobileBrowser.IsMobile ? '' : '<td><a href="#" onclick="fTelnet.ClipboardPaste(); return false;">Paste</a></td></tr>')
+                + '<tr><td><a href="#" onclick="fTelnet.Upload(); return false;">Upload</a></td>'
+                + '<td><a href="#" onclick="fTelnet.Download(); return false;">Download</a></td></tr>'
+                + '<tr><td><a href="#" onclick="fTelnet.VirtualKeyboardVisible = !fTelnet.VirtualKeyboardVisible; return false;">Keyboard</a></td>'
+                + '<td><a href="#" onclick="fTelnet.FullScreenToggle(); return false;">Full&nbsp;Screen</a></td></tr>'
+                + (DetectMobileBrowser.IsMobile ? '<tr><td colspan="2"><a href="#" onclick="fTelnet.EnterScrollback(); return false;">View Scrollback Buffer</a></td></tr>' : '');
+            this._MenuButtons.style.display = 'none';
+            this._MenuButtons.style.zIndex = '150';
+            this._fTelnetContainer.appendChild(this._MenuButtons);
             VirtualKeyboard.Init(this._fTelnetContainer);
-
+            VirtualKeyboard.Visible = this._VirtualKeyboardVisible;
             this.OnCrtScreenSizeChanged();
-
-            Ansi.onesc5n.on(function () {
-                _this.OnAnsiESC5n();
-            });
-            Ansi.onesc6n.on(function () {
-                _this.OnAnsiESC6n();
-            });
-            Ansi.onesc255n.on(function () {
-                _this.OnAnsiESC255n();
-            });
-            Ansi.onescQ.on(function (font) {
-                _this.OnAnsiESCQ(font);
-            });
-            Ansi.onripdetect.on(function () {
-                _this.OnAnsiRIPDetect();
-            });
-            Ansi.onripdisable.on(function () {
-                _this.OnAnsiRIPDisable();
-            });
-            Ansi.onripenable.on(function () {
-                _this.OnAnsiRIPEnable();
-            });
-
+            Ansi.onesc5n.on(function () { _this.OnAnsiESC5n(); });
+            Ansi.onesc6n.on(function () { _this.OnAnsiESC6n(); });
+            Ansi.onesc255n.on(function () { _this.OnAnsiESC255n(); });
+            Ansi.onescQ.on(function (font) { _this.OnAnsiESCQ(font); });
+            Ansi.onripdetect.on(function () { _this.OnAnsiRIPDetect(); });
+            Ansi.onripdisable.on(function () { _this.OnAnsiRIPDisable(); });
+            Ansi.onripenable.on(function () { _this.OnAnsiRIPEnable(); });
             if (this._Emulation === 'RIP') {
                 RIP.Parse(atob(this._SplashScreen));
-            } else {
+            }
+            else {
                 Ansi.Write(atob(this._SplashScreen));
             }
-        } else {
+        }
+        else {
             this._InitMessageBar.innerHTML = 'fTelnet Error: Unable to init Crt class';
-            this._ButtonBar.style.display = 'none';
-            this._ScrollbackBar.style.display = 'none';
+            if (this._ScrollbackBar !== null)
+                this._ScrollbackBar.style.display = 'none';
             this._FocusWarningBar.style.display = 'none';
             return false;
         }
-
-        this._Timer = setInterval(function () {
-            _this.OnTimer();
-        }, 50);
-
+        this._Timer = setInterval(function () { _this.OnTimer(); }, 250);
         var fTelnetUpload = document.createElement('input');
         fTelnetUpload.type = 'file';
         fTelnetUpload.id = 'fTelnetUpload';
-        fTelnetUpload.onchange = function () {
-            _this.OnUploadFileSelected();
-        };
+        fTelnetUpload.onchange = function () { _this.OnUploadFileSelected(); };
         fTelnetUpload.style.display = 'none';
         this._fTelnetContainer.appendChild(fTelnetUpload);
-
         return true;
     };
-
     Object.defineProperty(fTelnet, "BareLFtoCRLF", {
         get: function () {
             return this._BareLFtoCRLF;
@@ -7231,8 +7094,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "BitsPerSecond", {
         get: function () {
             return this._BitsPerSecond;
@@ -7243,8 +7104,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "Blink", {
         get: function () {
             return this._Blink;
@@ -7255,23 +7114,40 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ButtonBarVisible", {
         get: function () {
-            return this._ButtonBarVisible;
+            return true;
         },
         set: function (value) {
-            this._ButtonBarVisible = value;
-            if (this._ButtonBar != null) {
-                this._ButtonBar.style.display = (value ? 'block' : 'none');
-            }
         },
         enumerable: true,
         configurable: true
     });
-
-
+    fTelnet.ClipboardCopy = function () {
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
+        alert('Click and drag your mouse over the text you want to copy');
+    };
+    fTelnet.ClipboardPaste = function () {
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
+        if (this._Connection === null) {
+            return;
+        }
+        if (!this._Connection.connected) {
+            return;
+        }
+        var Text = Clipboard.GetData();
+        for (var i = 0; i < Text.length; i++) {
+            var B = Text.charCodeAt(i);
+            if ((B == 13) || (B == 32)) {
+                Crt.PushKeyDown(0, B, false, false, false);
+            }
+            else if ((B >= 33) && (B <= 126)) {
+                Crt.PushKeyPress(B, 0, false, false, false);
+            }
+        }
+    };
     Object.defineProperty(fTelnet, "ConnectionType", {
         get: function () {
             return this._ConnectionType;
@@ -7282,14 +7158,13 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     fTelnet.Connect = function () {
         var _this = this;
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
         if ((this._Connection !== null) && (this._Connection.connected)) {
             return;
         }
-
         switch (this._ConnectionType) {
             case 'rlogin':
                 this._Connection = new RLoginConnection();
@@ -7300,44 +7175,34 @@ var fTelnet = (function () {
             default:
                 this._Connection = new TelnetConnection();
                 this._Connection.LocalEcho = this._LocalEcho;
-                this._Connection.onlocalecho.on(function (value) {
-                    _this.OnConnectionLocalEcho(value);
-                });
+                this._Connection.onlocalecho.on(function (value) { _this.OnConnectionLocalEcho(value); });
                 break;
         }
-
-        this._Connection.onclose.on(function () {
-            _this.OnConnectionClose();
-        });
-        this._Connection.onconnect.on(function () {
-            _this.OnConnectionConnect();
-        });
-        this._Connection.ondata.on(function () {
-            _this.OnConnectionData();
-        });
-        this._Connection.onioerror.on(function () {
-            _this.OnConnectionIOError();
-        });
-        this._Connection.onsecurityerror.on(function () {
-            _this.OnConnectionSecurityError();
-        });
-
+        this._Connection.onclose.on(function () { _this.OnConnectionClose(); });
+        this._Connection.onconnect.on(function () { _this.OnConnectionConnect(); });
+        this._Connection.ondata.on(function () { _this.OnConnectionData(); });
+        this._Connection.onioerror.on(function () { _this.OnConnectionIOError(); });
+        this._Connection.onsecurityerror.on(function () { _this.OnConnectionSecurityError(); });
         if (this._Emulation === 'RIP') {
             RIP.ResetWindows();
-        } else {
+        }
+        else {
             Crt.NormVideo();
             Crt.ClrScr();
         }
-
         if (this._ProxyHostname === '') {
-            this._StatusBar.innerHTML = 'Connecting to ' + this._Hostname + ':' + this._Port;
+            this._StatusBarLabel.innerHTML = 'Connecting to ' + this._Hostname + ':' + this._Port;
+            this._StatusBar.style.backgroundColor = 'blue';
+            this._ClientContainer.style.opacity = '1.0';
             this._Connection.connect(this._Hostname, this._Port);
-        } else {
-            this._StatusBar.innerHTML = 'Connecting to ' + this._Hostname + ':' + this._Port + ' via proxy';
+        }
+        else {
+            this._StatusBarLabel.innerHTML = 'Connecting to ' + this._Hostname + ':' + this._Port + ' via ' + this._ProxyHostname + ':' + this._ProxyPort.toString(10);
+            this._StatusBar.style.backgroundColor = 'blue';
+            this._ClientContainer.style.opacity = '1.0';
             this._Connection.connect(this._Hostname, this._Port, this._ProxyHostname, this._ProxyPort, this._ProxyPortSecure);
         }
     };
-
     Object.defineProperty(fTelnet, "Connected", {
         get: function () {
             if (this._Connection === null) {
@@ -7348,15 +7213,15 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
     fTelnet.Disconnect = function (prompt) {
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
         if (this._Connection === null) {
             return true;
         }
         if (!this._Connection.connected) {
             return true;
         }
-
         if (!prompt || confirm('Are you sure you want to disconnect?')) {
             this._Connection.onclose.off();
             this._Connection.onconnect.off();
@@ -7366,34 +7231,27 @@ var fTelnet = (function () {
             this._Connection.onsecurityerror.off();
             this._Connection.close();
             this._Connection = null;
-
             this.OnConnectionClose();
             return true;
         }
-
         return false;
     };
-
     fTelnet.Download = function () {
         var _this = this;
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
         if (this._Connection === null) {
             return;
         }
         if (!this._Connection.connected) {
             return;
         }
-
         this._YModemReceive = new YModemReceive(this._Connection);
-
         clearInterval(this._Timer);
         this._Timer = null;
-        this._YModemReceive.ontransfercomplete.on(function () {
-            _this.OnDownloadComplete();
-        });
-
+        this._YModemReceive.ontransfercomplete.on(function () { _this.OnDownloadComplete(); });
         this._YModemReceive.Download();
     };
-
     Object.defineProperty(fTelnet, "Emulation", {
         get: function () {
             return this._Emulation;
@@ -7413,8 +7271,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "Enter", {
         get: function () {
             return this._Enter;
@@ -7425,22 +7281,24 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     fTelnet.EnterScrollback = function () {
-        if (this._ScrollbackBar.style.display = 'none') {
-            Crt.EnterScrollBack();
-            this._ScrollbackBar.style.display = 'block';
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
+        if (this._ScrollbackBar !== null) {
+            if (this._ScrollbackBar.style.display = 'none') {
+                Crt.EnterScrollback();
+                this._ScrollbackBar.style.display = 'block';
+            }
         }
     };
-
     fTelnet.ExitScrollback = function () {
-        if (this._ScrollbackBar.style.display = 'block') {
-            Crt.PushKeyDown(27 /* ESCAPE */, 27 /* ESCAPE */, false, false, false);
-            this._ScrollbackBar.style.display = 'none';
+        if (this._ScrollbackBar !== null) {
+            if (this._ScrollbackBar.style.display = 'block') {
+                Crt.ExitScrollback();
+                this._ScrollbackBar.style.display = 'none';
+            }
         }
     };
-
     Object.defineProperty(fTelnet, "Font", {
         get: function () {
             return this._Font;
@@ -7451,32 +7309,38 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     fTelnet.FullScreenToggle = function () {
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
             if (this._fTelnetContainer.requestFullscreen) {
                 this._fTelnetContainer.requestFullscreen();
-            } else if (this._fTelnetContainer.msRequestFullscreen) {
-                this._fTelnetContainer.msRequestFullscreen();
-            } else if (this._fTelnetContainer.mozRequestFullScreen) {
-                this._fTelnetContainer.mozRequestFullScreen();
-            } else if (this._fTelnetContainer.webkitRequestFullscreen) {
-                this._fTelnetContainer.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
             }
-        } else {
+            else if (this._fTelnetContainer.msRequestFullscreen) {
+                this._fTelnetContainer.msRequestFullscreen();
+            }
+            else if (this._fTelnetContainer.mozRequestFullScreen) {
+                this._fTelnetContainer.mozRequestFullScreen();
+            }
+            else if (this._fTelnetContainer.webkitRequestFullscreen) {
+                this._fTelnetContainer.webkitRequestFullscreen();
+            }
+        }
+        else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.msExitFullscreen) {
+            }
+            else if (document.msExitFullscreen) {
                 document.msExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
+            }
+            else if (document.mozCancelFullScreen) {
                 document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
+            }
+            else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
             }
         }
     };
-
     Object.defineProperty(fTelnet, "Hostname", {
         get: function () {
             return this._Hostname;
@@ -7487,15 +7351,12 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "LocalEcho", {
         get: function () {
             return this._LocalEcho;
         },
         set: function (value) {
             this._LocalEcho = value;
-
             Crt.LocalEcho = value;
             if ((this._Connection !== null) && (this._Connection.connected)) {
                 this._Connection.LocalEcho = value;
@@ -7504,49 +7365,44 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     fTelnet.OnAnsiESC5n = function () {
         this._Connection.writeString('\x1B[0n');
     };
-
     fTelnet.OnAnsiESC6n = function () {
         this._Connection.writeString(Ansi.CursorPosition());
     };
-
     fTelnet.OnAnsiESC255n = function () {
         this._Connection.writeString(Ansi.CursorPosition(Crt.WindCols, Crt.WindRows));
     };
-
     fTelnet.OnAnsiESCQ = function (font) {
         Crt.SetFont(font);
     };
-
     fTelnet.OnAnsiRIPDetect = function () {
         if (this._Emulation === 'RIP') {
             this._Connection.writeString('RIPSCRIP015400');
         }
     };
-
     fTelnet.OnAnsiRIPDisable = function () {
     };
-
     fTelnet.OnAnsiRIPEnable = function () {
     };
-
     fTelnet.OnConnectionClose = function () {
-        this._StatusBar.innerHTML = 'Disconnected from ' + this._Hostname + ':' + this._Port;
+        this._StatusBarLabel.innerHTML = '<a href="#" onclick="fTelnet.Connect(); return false;">Reconnect</a> Disconnected from ' + this._Hostname + ':' + this._Port;
+        this._StatusBar.style.backgroundColor = 'red';
+        this._ClientContainer.style.opacity = '0.5';
     };
-
     fTelnet.OnConnectionConnect = function () {
         Crt.ClrScr();
-
         if (this._ProxyHostname === '') {
-            this._StatusBar.innerHTML = 'Connected to ' + this._Hostname + ':' + this._Port;
-        } else {
-            this._StatusBar.innerHTML = 'Connected to ' + this._Hostname + ':' + this._Port + ' via proxy';
+            this._StatusBarLabel.innerHTML = 'Connected to ' + this._Hostname + ':' + this._Port;
+            this._StatusBar.style.backgroundColor = 'blue';
+            this._ClientContainer.style.opacity = '1.0';
         }
-
+        else {
+            this._StatusBarLabel.innerHTML = 'Connected to ' + this._Hostname + ':' + this._Port + ' via ' + this._ProxyHostname + ':' + this._ProxyPort.toString(10);
+            this._StatusBar.style.backgroundColor = 'blue';
+            this._ClientContainer.style.opacity = '1.0';
+        }
         if (this._ConnectionType === 'rlogin') {
             var TerminalType = this._RLoginTerminalType;
             if (TerminalType === '') {
@@ -7556,7 +7412,6 @@ var fTelnet = (function () {
             this._Connection.flush();
         }
     };
-
     fTelnet.OnConnectionData = function () {
         var _this = this;
         if (this._Timer !== null) {
@@ -7565,61 +7420,58 @@ var fTelnet = (function () {
                 if (MSecElapsed < 1) {
                     MSecElapsed = 1;
                 }
-
                 var BytesToRead = Math.floor(this._BitsPerSecond / 8 / (1000 / MSecElapsed));
                 if (BytesToRead < 1) {
                     BytesToRead = 1;
                 }
-
                 var Data = this._Connection.readString(BytesToRead);
                 if (Data.length > 0) {
                     this.ondata.trigger(Data);
                     if (this._Emulation === 'RIP') {
                         RIP.Parse(Data);
-                    } else {
+                    }
+                    else {
                         Ansi.Write(Data);
                     }
                 }
-
                 if (this._Connection.bytesAvailable > 0) {
                     clearTimeout(this._DataTimer);
-                    this._DataTimer = setTimeout(function () {
-                        _this.OnConnectionData();
-                    }, 50);
+                    this._DataTimer = setTimeout(function () { _this.OnConnectionData(); }, 50);
                 }
             }
         }
         this._LastTimer = new Date().getTime();
     };
-
     fTelnet.OnConnectionLocalEcho = function (value) {
         this._LocalEcho = value;
         Crt.LocalEcho = value;
     };
-
     fTelnet.OnConnectionIOError = function () {
         console.log('fTelnet.OnConnectionIOError');
     };
-
     fTelnet.OnConnectionSecurityError = function () {
         if (this._ProxyHostname === '') {
-            this._StatusBar.innerHTML = 'Unable to connect to ' + this._Hostname + ':' + this._Port;
-        } else {
-            this._StatusBar.innerHTML = 'Unable to connect to ' + this._Hostname + ':' + this._Port + ' via proxy';
+            this._StatusBarLabel.innerHTML = '<a href="#" onclick="fTelnet.Connect(); return false;">Retry Connection</a> Unable to connect to ' + this._Hostname + ':' + this._Port;
+            this._StatusBar.style.backgroundColor = 'red';
+            this._ClientContainer.style.opacity = '0.5';
+        }
+        else {
+            this._StatusBarLabel.innerHTML = '<a href="#" onclick="fTelnet.Connect(); return false;">Retry Connection</a> Unable to connect to ' + this._Hostname + ':' + this._Port + ' via ' + this._ProxyHostname + ':' + this._ProxyPort.toString(10);
+            this._StatusBar.style.backgroundColor = 'red';
+            this._ClientContainer.style.opacity = '0.5';
         }
     };
-
     fTelnet.OnCrtKeyPressed = function () {
         if (this._Timer !== null) {
             while (Crt.KeyPressed()) {
                 var KPE = Crt.ReadKey();
-
                 if (KPE !== null) {
                     if (KPE.keyString.length > 0) {
                         if ((this._Connection !== null) && (this._Connection.connected)) {
                             if (KPE.keyString === '\r\n') {
                                 this._Connection.writeString(this._Enter);
-                            } else {
+                            }
+                            else {
                                 this._Connection.writeString(KPE.keyString);
                             }
                         }
@@ -7628,15 +7480,19 @@ var fTelnet = (function () {
             }
         }
     };
-
     fTelnet.OnCrtScreenSizeChanged = function () {
-        var NewWidth = Crt.ScreenCols * Crt.Font.Width;
-
+        if (DetectMobileBrowser.IsMobile) {
+            var NewWidth = Crt.ScreenCols * Crt.Font.Width;
+        }
+        else {
+            var NewWidth = Crt.ScreenCols * Crt.Font.Width + GetScrollbarWidth.Width;
+            var NewHeight = Crt.ScreenRows * Crt.Font.Height;
+            this._ClientContainer.style.width = NewWidth + 'px';
+            this._ClientContainer.style.height = NewHeight + 'px';
+            this._ClientContainer.scrollTop = this._ClientContainer.scrollHeight;
+        }
         if (this._FocusWarningBar != null) {
             this._FocusWarningBar.style.width = NewWidth - 10 + 'px';
-        }
-        if (this._ButtonBar != null) {
-            this._ButtonBar.style.width = NewWidth - 10 + 'px';
         }
         if (this._ScrollbackBar != null) {
             this._ScrollbackBar.style.width = NewWidth - 10 + 'px';
@@ -7644,7 +7500,6 @@ var fTelnet = (function () {
         if (this._StatusBar != null) {
             this._StatusBar.style.width = NewWidth - 10 + 'px';
         }
-
         if ((document.getElementById('fTelnetScript') !== null) && (document.getElementById('fTelnetKeyboardCss') != null)) {
             var ScriptUrl = document.getElementById('fTelnetScript').src;
             var CssUrl = ScriptUrl.replace('/ftelnet.min.js', '/keyboard/keyboard-{size}.min.css');
@@ -7658,33 +7513,50 @@ var fTelnet = (function () {
             }
         }
     };
-
     fTelnet.OnDownloadComplete = function () {
         var _this = this;
-        this._Timer = setInterval(function () {
-            _this.OnTimer();
-        }, 50);
+        this._Timer = setInterval(function () { _this.OnTimer(); }, 250);
     };
-
+    fTelnet.OnMenuButtonClick = function (e) {
+        this._MenuButtons.style.display = (this._MenuButtons.style.display == 'none') ? 'block' : 'none';
+        this._MenuButtons.style.left = Offset.getOffset(this._MenuButton).x + 'px';
+        this._MenuButtons.style.top = Offset.getOffset(this._MenuButton).y - this._MenuButtons.clientHeight + 'px';
+        e.preventDefault();
+        return false;
+    };
     fTelnet.OnTimer = function () {
         if ((this._Connection !== null) && (this._Connection.connected)) {
             if (document.hasFocus() && !this._HasFocus) {
                 this._HasFocus = true;
                 this._FocusWarningBar.style.display = 'none';
-            } else if (!document.hasFocus() && this._HasFocus) {
+            }
+            else if (!document.hasFocus() && this._HasFocus) {
                 this._HasFocus = false;
                 this._FocusWarningBar.style.display = 'block';
             }
+            if (!DetectMobileBrowser.IsMobile) {
+                var ScrolledUp = (this._ClientContainer.scrollHeight - this._ClientContainer.scrollTop - this._ClientContainer.clientHeight > 1);
+                if (ScrolledUp && (this._ScrollbackBar.style.display == 'none')) {
+                    this._ScrollbackBar.style.display = 'block';
+                }
+                else if (!ScrolledUp && (this._ScrollbackBar.style.display == 'block')) {
+                    this._ScrollbackBar.style.display = 'none';
+                }
+            }
+        }
+        else {
+            if (this._FocusWarningBar.style.display == 'block') {
+                this._FocusWarningBar.style.display = 'none';
+            }
+            if (this._ScrollbackBar.style.display == 'block') {
+                this._ScrollbackBar.style.display = 'none';
+            }
         }
     };
-
     fTelnet.OnUploadComplete = function () {
         var _this = this;
-        this._Timer = setInterval(function () {
-            _this.OnTimer();
-        }, 50);
+        this._Timer = setInterval(function () { _this.OnTimer(); }, 250);
     };
-
     fTelnet.OnUploadFileSelected = function () {
         var _this = this;
         if (this._Connection === null) {
@@ -7693,22 +7565,15 @@ var fTelnet = (function () {
         if (!this._Connection.connected) {
             return;
         }
-
         var fTelentUpload = document.getElementById('fTelnetUpload');
-
         this._YModemSend = new YModemSend(this._Connection);
-
         clearInterval(this._Timer);
         this._Timer = null;
-        this._YModemSend.ontransfercomplete.on(function () {
-            _this.OnUploadComplete();
-        });
-
+        this._YModemSend.ontransfercomplete.on(function () { _this.OnUploadComplete(); });
         for (var i = 0; i < fTelentUpload.files.length; i++) {
             this.UploadFile(fTelentUpload.files[i], fTelentUpload.files.length);
         }
     };
-
     Object.defineProperty(fTelnet, "Port", {
         get: function () {
             return this._Port;
@@ -7719,8 +7584,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ProxyHostname", {
         get: function () {
             return this._ProxyHostname;
@@ -7731,8 +7594,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ProxyPort", {
         get: function () {
             return this._ProxyPort;
@@ -7743,8 +7604,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ProxyPortSecure", {
         get: function () {
             return this._ProxyPortSecure;
@@ -7755,8 +7614,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "RLoginClientUsername", {
         get: function () {
             return this._RLoginClientUsername;
@@ -7767,8 +7624,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "RLoginServerUsername", {
         get: function () {
             return this._RLoginServerUsername;
@@ -7779,8 +7634,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "RLoginTerminalType", {
         get: function () {
             return this._RLoginTerminalType;
@@ -7791,8 +7644,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ScreenColumns", {
         get: function () {
             return this._ScreenColumns;
@@ -7803,8 +7654,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "ScreenRows", {
         get: function () {
             return this._ScreenRows;
@@ -7815,8 +7664,6 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "SplashScreen", {
         get: function () {
             return this._SplashScreen;
@@ -7827,15 +7674,12 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(fTelnet, "StatusBarVisible", {
         get: function () {
             return this._StatusBarVisible;
         },
         set: function (value) {
             this._StatusBarVisible = value;
-
             if (this._StatusBar != null) {
                 this._StatusBar.style.display = (value ? 'block' : 'none');
             }
@@ -7843,29 +7687,25 @@ var fTelnet = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     fTelnet.StuffInputBuffer = function (text) {
         for (var i = 0; i < text.length; i++) {
             Crt.PushKeyPress(text.charCodeAt(i), 0, false, false, false);
         }
     };
-
     fTelnet.Upload = function () {
+        if (this._MenuButtons !== null)
+            this._MenuButtons.style.display = 'none';
         if (this._Connection === null) {
             return;
         }
         if (!this._Connection.connected) {
             return;
         }
-
         document.getElementById('fTelnetUpload').click();
     };
-
     fTelnet.UploadFile = function (file, fileCount) {
         var _this = this;
         var reader = new FileReader();
-
         reader.onload = function () {
             var FR = new FileRecord(file.name, file.size);
             var Buffer = reader.result;
@@ -7876,25 +7716,22 @@ var fTelnet = (function () {
             FR.data.position = 0;
             _this._YModemSend.Upload(FR, fileCount);
         };
-
         reader.readAsArrayBuffer(file);
     };
-
     Object.defineProperty(fTelnet, "VirtualKeyboardVisible", {
         get: function () {
             return this._VirtualKeyboardVisible;
         },
         set: function (value) {
+            if (this._MenuButtons !== null)
+                this._MenuButtons.style.display = 'none';
             this._VirtualKeyboardVisible = value;
             VirtualKeyboard.Visible = value;
         },
         enumerable: true,
         configurable: true
     });
-
     fTelnet.ondata = new TypedEvent();
-
-    fTelnet._ButtonBar = null;
     fTelnet._ClientContainer = null;
     fTelnet._Connection = null;
     fTelnet._DataTimer = null;
@@ -7903,16 +7740,17 @@ var fTelnet = (function () {
     fTelnet._HasFocus = true;
     fTelnet._InitMessageBar = null;
     fTelnet._LastTimer = 0;
+    fTelnet._MenuButton = null;
+    fTelnet._MenuButtons = null;
     fTelnet._ScrollbackBar = null;
     fTelnet._StatusBar = null;
+    fTelnet._StatusBarLabel = null;
     fTelnet._Timer = null;
     fTelnet._YModemReceive = null;
     fTelnet._YModemSend = null;
-
     fTelnet._BareLFtoCRLF = false;
     fTelnet._BitsPerSecond = 57600;
     fTelnet._Blink = true;
-    fTelnet._ButtonBarVisible = true;
     fTelnet._ConnectionType = 'telnet';
     fTelnet._Emulation = 'ansi-bbs';
     fTelnet._Enter = '\r';
@@ -7930,21 +7768,17 @@ var fTelnet = (function () {
     fTelnet._ScreenRows = 25;
     fTelnet._SplashScreen = 'G1swbRtbMkobWzA7MEgbWzE7NDQ7MzRt2sTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEG1swOzQ0OzMwbb8bWzBtDQobWzE7NDQ7MzRtsyAgG1szN21XZWxjb21lISAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzA7NDQ7MzBtsxtbMG0NChtbMTs0NDszNG3AG1swOzQ0OzMwbcTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTE2RtbMG0NCg0KG1sxbSAbWzBtIBtbMTs0NDszNG3axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzA7NDQ7MzBtvxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMzBt29vb29vb29vb29vb29vb29vb29vb2xtbMzRt29vb29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29vb29vb29vb29vb29vb29vb29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vb29sbWzFt29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb29vbG1sxbdvb29sbWzBt29sbWzE7MzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29vb2xtbMG3b29vb29vb2xtbMW3b29vbG1swbdvbG1sxbdvbG1szMG3b2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbMG0NCiAgG1sxOzQ0OzM0bbMbWzA7MzRt29vb2xtbMTszMG3b29vbG1swbdvb29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29sbWzMwbdvbG1swOzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1swbQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvb29sbWzBt29vb2xtbMW3b29vbG1swbdvbG1sxbdvb29vb2xtbMzBt29sbWzA7MzBt29sbWzM0bdvb29sbWzQ0OzMwbbMbWzQwOzM3bQ0KICAbWzE7NDQ7MzRtsxtbMDszNG3b29vbG1sxOzMwbdvbG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb2xtbMDszMG3b2xtbMzRt29vb2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1swOzM0bdvb29sbWzE7MzBt29sbWzBt29vb29vb29vb29vb29vb29vb29sbWzMwbdvbG1szNG3b29vbG1s0NDszMG2zG1s0MDszN20NCiAgG1sxOzQ0OzM0bbMbWzA7MzBt29vb29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbNDA7MzdtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN23axMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMQbWzMwbb8bWzBtDQogIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29sbWzA7MzBt29vb29vb29vb2xtbMW3b2xtbMDszMG3b2xtbNDRtsxtbNDA7MzdtIBtbMzRtIBtbMTs0NzszN22zICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAbWzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1s0MDszMG3b2xtbMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szMG3b2xtbNDRtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAbWzM0bUh0bWxUZXJtIC0tIFRlbG5ldCBmb3IgdGhlIFdlYiAgICAgG1szMG2zG1swbQ0KG1sxbSAbWzBtIBtbMTs0NDszNG2zG1swOzMwbdvbG1sxbdvb29vb29vb29vb29vb29vb29vb29vb2xtbMDszMG3b29vb29sbWzQ0bbMbWzBtIBtbMzRtIBtbMTs0NzszN22zICAgICAbWzA7NDc7MzRtV2ViIGJhc2VkIEJCUyB0ZXJtaW5hbCBjbGllbnQgICAgG1sxOzMwbbMbWzBtDQogIBtbMTs0NDszNG2zG1swOzM0bdvbG1szMG3b29vb29vb29vb29vb29vb29vb29vb29vb29vbG1szNG3b2xtbNDQ7MzBtsxtbMG0gG1szNG0gG1sxOzQ3OzM3bbMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIBtbMzBtsxtbMG0NCiAgG1sxOzQ0OzM0bcAbWzA7NDQ7MzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbSAbWzM0bSAbWzE7NDc7MzdtwBtbMzBtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTZG1swbQ0KDQobWzExQxtbMTszMm1Db3B5cmlnaHQgKEMpIDIwMDAtMjAxNCBSJk0gU29mdHdhcmUuICBBbGwgUmlnaHRzIFJlc2VydmVkDQobWzA7MzRtxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExA==';
     fTelnet._StatusBarVisible = true;
-    fTelnet._VirtualKeyboardVisible = true;
+    fTelnet._VirtualKeyboardVisible = DetectMobileBrowser.IsMobile;
     return fTelnet;
 })();
+/// <reference path='source/fTelnet.ts' />
 var BorderStyle;
 (function (BorderStyle) {
     BorderStyle[BorderStyle["Single"] = 0] = "Single";
-
     BorderStyle[BorderStyle["Double"] = 1] = "Double";
-
     BorderStyle[BorderStyle["SingleH"] = 2] = "SingleH";
-
     BorderStyle[BorderStyle["SingleV"] = 3] = "SingleV";
-
     BorderStyle[BorderStyle["DoubleH"] = 4] = "DoubleH";
-
     BorderStyle[BorderStyle["DoubleV"] = 5] = "DoubleV";
 })(BorderStyle || (BorderStyle = {}));
 var ContentAlignment;
@@ -7980,9 +7814,7 @@ var CrtControl = (function () {
         this._Top = top;
         this._Width = width;
         this._Height = height;
-
         this.SaveBackground();
-
         if (this._Parent !== null) {
             parent.AddControl(this);
         }
@@ -7990,7 +7822,6 @@ var CrtControl = (function () {
     CrtControl.prototype.AddControl = function (child) {
         this._Controls.push(child);
     };
-
     Object.defineProperty(CrtControl.prototype, "BackColour", {
         get: function () {
             return this._BackColour;
@@ -8004,8 +7835,6 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtControl.prototype, "ForeColour", {
         get: function () {
             return this._ForeColour;
@@ -8019,8 +7848,6 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtControl.prototype, "Height", {
         get: function () {
             return this._Height;
@@ -8036,12 +7863,9 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     CrtControl.prototype.Hide = function () {
         this.RestoreBackground();
     };
-
     Object.defineProperty(CrtControl.prototype, "Left", {
         get: function () {
             return this._Left;
@@ -8052,7 +7876,6 @@ var CrtControl = (function () {
                 this._Left = value;
                 this.SaveBackground();
                 this.Paint(true);
-
                 for (var i = 0; i < this._Controls.length; i++) {
                     this._Controls[i].Paint(true);
                 }
@@ -8061,11 +7884,8 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     CrtControl.prototype.Paint = function (force) {
     };
-
     Object.defineProperty(CrtControl.prototype, "Parent", {
         get: function () {
             return this._Parent;
@@ -8079,8 +7899,6 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     CrtControl.prototype.RestoreBackground = function () {
         var Left = this._Left;
         var Top = this._Top;
@@ -8092,7 +7910,6 @@ var CrtControl = (function () {
         }
         Crt.RestoreScreen(this._Background, Left, Top, Left + this._Width - 1, Top + this._Height - 1);
     };
-
     CrtControl.prototype.SaveBackground = function () {
         var Left = this._Left;
         var Top = this._Top;
@@ -8104,7 +7921,6 @@ var CrtControl = (function () {
         }
         this._Background = Crt.SaveScreen(Left, Top, Left + this._Width - 1, Top + this._Height - 1);
     };
-
     Object.defineProperty(CrtControl.prototype, "ScreenLeft", {
         get: function () {
             return this._Left + ((this._Parent === null) ? 0 : this._Parent.Left);
@@ -8112,7 +7928,6 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(CrtControl.prototype, "ScreenTop", {
         get: function () {
             return this._Top + ((this._Parent === null) ? 0 : this._Parent.Top);
@@ -8120,15 +7935,12 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
     CrtControl.prototype.Show = function () {
         this.Paint(true);
-
         for (var i = 0; i < this._Controls.length; i++) {
             this._Controls[i].Paint(true);
         }
     };
-
     Object.defineProperty(CrtControl.prototype, "Top", {
         get: function () {
             return this._Top;
@@ -8139,7 +7951,6 @@ var CrtControl = (function () {
                 this._Top = value;
                 this.SaveBackground();
                 this.Paint(true);
-
                 for (var i = 0; i < this._Controls.length; i++) {
                     this._Controls[i].Paint(true);
                 }
@@ -8148,8 +7959,6 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtControl.prototype, "Width", {
         get: function () {
             return this._Width;
@@ -8165,20 +7974,16 @@ var CrtControl = (function () {
         enumerable: true,
         configurable: true
     });
-
     return CrtControl;
 })();
 var CrtLabel = (function (_super) {
     __extends(CrtLabel, _super);
     function CrtLabel(parent, left, top, width, text, textAlign, foreColour, backColour) {
         _super.call(this, parent, left, top, width, 1);
-
         this._Text = text;
         this._TextAlign = textAlign;
-
         this.ForeColour = foreColour;
         this.BackColour = backColour;
-
         this.Paint(true);
     }
     CrtLabel.prototype.Paint = function (force) {
@@ -8187,12 +7992,12 @@ var CrtLabel = (function (_super) {
             if (i === this.Height) {
                 break;
             }
-
             switch (this._TextAlign) {
-                case 10 /* Center */:
+                case ContentAlignment.Center:
                     if (Lines[i].length >= this.Width) {
                         Crt.FastWrite(Lines[i].substring(0, this.Width), this.ScreenLeft, this.ScreenTop + i, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
-                    } else {
+                    }
+                    else {
                         var i = 0;
                         var LeftSpaces = '';
                         for (i = 0; i < Math.floor((this.Width - Lines[i].length) / 2); i++) {
@@ -8205,16 +8010,15 @@ var CrtLabel = (function (_super) {
                         Crt.FastWrite(LeftSpaces + Lines[i] + RightSpaces, this.ScreenLeft, this.ScreenTop + i, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
                     }
                     break;
-                case 9 /* Left */:
+                case ContentAlignment.Left:
                     Crt.FastWrite(StringUtils.PadRight(Lines[i], ' ', this.Width), this.ScreenLeft, this.ScreenTop + i, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
                     break;
-                case 11 /* Right */:
+                case ContentAlignment.Right:
                     Crt.FastWrite(StringUtils.PadLeft(Lines[i], ' ', this.Width), this.ScreenLeft, this.ScreenTop + i, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
                     break;
             }
         }
     };
-
     Object.defineProperty(CrtLabel.prototype, "Text", {
         get: function () {
             return this._Text;
@@ -8226,8 +8030,6 @@ var CrtLabel = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtLabel.prototype, "TextAlign", {
         get: function () {
             return this._TextAlign;
@@ -8241,21 +8043,17 @@ var CrtLabel = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
     return CrtLabel;
 })(CrtControl);
 var CrtPanel = (function (_super) {
     __extends(CrtPanel, _super);
     function CrtPanel(parent, left, top, width, height, border, foreColour, backColour, text, textAlign) {
         _super.call(this, parent, left, top, width, height);
-
         this._Border = border;
         this._Text = text;
         this._TextAlign = textAlign;
-
         this.ForeColour = foreColour;
         this.BackColour = backColour;
-
         this.Paint(true);
     }
     Object.defineProperty(CrtPanel.prototype, "Border", {
@@ -8271,8 +8069,6 @@ var CrtPanel = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     CrtPanel.prototype.Paint = function (force) {
         var TopLeft;
         var TopRight;
@@ -8280,9 +8076,8 @@ var CrtPanel = (function (_super) {
         var BottomRight;
         var TopBottom;
         var LeftRight;
-
         switch (this._Border) {
-            case 0 /* Single */:
+            case BorderStyle.Single:
                 TopLeft = String.fromCharCode(218);
                 TopRight = String.fromCharCode(191);
                 BottomLeft = String.fromCharCode(192);
@@ -8290,7 +8085,7 @@ var CrtPanel = (function (_super) {
                 TopBottom = String.fromCharCode(196);
                 LeftRight = String.fromCharCode(179);
                 break;
-            case 1 /* Double */:
+            case BorderStyle.Double:
                 TopLeft = String.fromCharCode(201);
                 TopRight = String.fromCharCode(187);
                 BottomLeft = String.fromCharCode(200);
@@ -8298,8 +8093,8 @@ var CrtPanel = (function (_super) {
                 TopBottom = String.fromCharCode(205);
                 LeftRight = String.fromCharCode(186);
                 break;
-            case 4 /* DoubleH */:
-            case 3 /* SingleV */:
+            case BorderStyle.DoubleH:
+            case BorderStyle.SingleV:
                 TopLeft = String.fromCharCode(213);
                 TopRight = String.fromCharCode(184);
                 BottomLeft = String.fromCharCode(212);
@@ -8307,8 +8102,8 @@ var CrtPanel = (function (_super) {
                 TopBottom = String.fromCharCode(205);
                 LeftRight = String.fromCharCode(179);
                 break;
-            case 5 /* DoubleV */:
-            case 2 /* SingleH */:
+            case BorderStyle.DoubleV:
+            case BorderStyle.SingleH:
                 TopLeft = String.fromCharCode(214);
                 TopRight = String.fromCharCode(183);
                 BottomLeft = String.fromCharCode(211);
@@ -8317,58 +8112,50 @@ var CrtPanel = (function (_super) {
                 LeftRight = String.fromCharCode(186);
                 break;
         }
-
         Crt.FastWrite(TopLeft + StringUtils.NewString(TopBottom, this.Width - 2) + TopRight, this.ScreenLeft, this.ScreenTop, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
-
         for (var Line = this.ScreenTop + 1; Line < this.ScreenTop + this.Height - 1; Line++) {
             Crt.FastWrite(LeftRight + StringUtils.NewString(' ', this.Width - 2) + LeftRight, this.ScreenLeft, Line, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
         }
-
         Crt.FastWrite(BottomLeft + StringUtils.NewString(TopBottom, this.Width - 2) + BottomRight, this.ScreenLeft, this.ScreenTop + this.Height - 1, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
-
         if (StringUtils.Trim(this._Text).length > 0) {
             var TitleX = 0;
             var TitleY = 0;
             var WindowTitle = ' ' + StringUtils.Trim(this._Text) + ' ';
-
             switch (this._TextAlign) {
-                case 0 /* BottomLeft */:
-                case 3 /* MiddleLeft */:
-                case 6 /* TopLeft */:
+                case ContentAlignment.BottomLeft:
+                case ContentAlignment.MiddleLeft:
+                case ContentAlignment.TopLeft:
                     TitleX = this.ScreenLeft + 2;
                     break;
-                case 1 /* BottomCenter */:
-                case 4 /* MiddleCenter */:
-                case 7 /* TopCenter */:
+                case ContentAlignment.BottomCenter:
+                case ContentAlignment.MiddleCenter:
+                case ContentAlignment.TopCenter:
                     TitleX = this.ScreenLeft + Math.round((this.Width - WindowTitle.length) / 2);
                     break;
-                case 2 /* BottomRight */:
-                case 5 /* MiddleRight */:
-                case 8 /* TopRight */:
+                case ContentAlignment.BottomRight:
+                case ContentAlignment.MiddleRight:
+                case ContentAlignment.TopRight:
                     TitleX = this.ScreenLeft + this.Width - WindowTitle.length - 2;
                     break;
             }
-
             switch (this._TextAlign) {
-                case 1 /* BottomCenter */:
-                case 0 /* BottomLeft */:
-                case 2 /* BottomRight */:
+                case ContentAlignment.BottomCenter:
+                case ContentAlignment.BottomLeft:
+                case ContentAlignment.BottomRight:
                     TitleY = this.ScreenTop + this.Height - 1;
                     break;
-                case 4 /* MiddleCenter */:
-                case 3 /* MiddleLeft */:
-                case 5 /* MiddleRight */:
-                case 7 /* TopCenter */:
-                case 6 /* TopLeft */:
-                case 8 /* TopRight */:
+                case ContentAlignment.MiddleCenter:
+                case ContentAlignment.MiddleLeft:
+                case ContentAlignment.MiddleRight:
+                case ContentAlignment.TopCenter:
+                case ContentAlignment.TopLeft:
+                case ContentAlignment.TopRight:
                     TitleY = this.ScreenTop;
                     break;
             }
-
             Crt.FastWrite(WindowTitle, TitleX, TitleY, new CharInfo(' ', this.ForeColour + (this.BackColour << 4)));
         }
     };
-
     Object.defineProperty(CrtPanel.prototype, "Text", {
         get: function () {
             return this._Text;
@@ -8380,8 +8167,6 @@ var CrtPanel = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtPanel.prototype, "TextAlign", {
         get: function () {
             return this._TextAlign;
@@ -8395,7 +8180,6 @@ var CrtPanel = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
     return CrtPanel;
 })(CrtControl);
 var CrtProgressBar = (function (_super) {
@@ -8405,12 +8189,9 @@ var CrtProgressBar = (function (_super) {
         this._LastBarWidth = 9999;
         this._LastMarqueeUpdate = 0;
         this._LastPercentText = '';
-
         this._Style = style;
-
         this.BackColour = Crt.BLUE;
         this._BarForeColour = Crt.YELLOW;
-
         this._BlankForeColour = Crt.LIGHTGRAY;
         this._LastMarqueeUpdate = new Date().getTime();
         this._MarqueeAnimationSpeed = 25;
@@ -8418,7 +8199,6 @@ var CrtProgressBar = (function (_super) {
         this._PercentPrecision = 2;
         this._PercentVisible = true;
         this._Value = 0;
-
         this.Paint(true);
     }
     Object.defineProperty(CrtProgressBar.prototype, "BarForeColour", {
@@ -8434,8 +8214,6 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtProgressBar.prototype, "BlankForeColour", {
         get: function () {
             return this._BlankForeColour;
@@ -8449,8 +8227,6 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtProgressBar.prototype, "MarqueeAnimationSpeed", {
         get: function () {
             return this._MarqueeAnimationSpeed;
@@ -8461,8 +8237,6 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtProgressBar.prototype, "Maximum", {
         get: function () {
             return this._Maximum;
@@ -8479,30 +8253,29 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     CrtProgressBar.prototype.Paint = function (force) {
-        if (this._Style === 0 /* Marquee */) {
+        if (this._Style === ProgressBarStyle.Marquee) {
             if (force) {
                 Crt.FastWrite(StringUtils.NewString(String.fromCharCode(176), this.Width), this.ScreenLeft, this.ScreenTop, new CharInfo(' ', this._BlankForeColour + (this.BackColour << 4)));
             }
-
             if (this._Value > 0) {
                 if (this._Value > this.Width) {
                     Crt.FastWrite(String.fromCharCode(176), this.ScreenLeft + this.Width - (15 - Math.floor(this._Value - this.Width)), this.ScreenTop, new CharInfo(' ', this._BlankForeColour + (this.BackColour << 4)));
-                } else if (this._Value >= 15) {
+                }
+                else if (this._Value >= 15) {
                     Crt.FastWrite(StringUtils.NewString(String.fromCharCode(219), Math.min(this._Value, 15)), this.ScreenLeft + this._Value - 15, this.ScreenTop, new CharInfo(' ', this._BarForeColour + (this.BackColour << 4)));
                     Crt.FastWrite(String.fromCharCode(176), this.ScreenLeft + this._Value - 15, this.ScreenTop, new CharInfo(' ', this._BlankForeColour + (this.BackColour << 4)));
-                } else {
+                }
+                else {
                     Crt.FastWrite(StringUtils.NewString(String.fromCharCode(219), Math.min(this._Value, 15)), this.ScreenLeft, this.ScreenTop, new CharInfo(' ', this._BarForeColour + (this.BackColour << 4)));
                 }
             }
-        } else {
+        }
+        else {
             if (force) {
                 this._LastBarWidth = 9999;
                 this._LastPercentText = '';
             }
-
             var PaintPercentText = false;
             var Percent = this._Value / this._Maximum;
             var NewBarWidth = Math.floor(Percent * this.Width);
@@ -8510,24 +8283,22 @@ var CrtProgressBar = (function (_super) {
                 if (NewBarWidth < this._LastBarWidth) {
                     Crt.FastWrite(StringUtils.NewString(String.fromCharCode(176), this.Width), this.ScreenLeft, this.ScreenTop, new CharInfo(' ', this._BlankForeColour + (this.BackColour << 4)));
                 }
-
                 Crt.FastWrite(StringUtils.NewString(String.fromCharCode(this._Style), NewBarWidth), this.ScreenLeft, this.ScreenTop, new CharInfo(' ', this._BarForeColour + (this.BackColour << 4)));
-
                 this._LastBarWidth = NewBarWidth;
                 PaintPercentText = true;
             }
-
             if (this._PercentVisible) {
                 var NewPercentText = StringUtils.FormatPercent(Percent, this._PercentPrecision);
                 if ((NewPercentText !== this._LastPercentText) || (PaintPercentText)) {
                     this._LastPercentText = NewPercentText;
-
                     var ProgressStart = Math.round((this.Width - NewPercentText.length) / 2);
                     if (ProgressStart >= NewBarWidth) {
                         Crt.FastWrite(NewPercentText, this.ScreenLeft + ProgressStart, this.ScreenTop, new CharInfo(' ', this._BlankForeColour + (this.BackColour << 4)));
-                    } else if (ProgressStart + NewPercentText.length <= NewBarWidth) {
+                    }
+                    else if (ProgressStart + NewPercentText.length <= NewBarWidth) {
                         Crt.FastWrite(NewPercentText, this.ScreenLeft + ProgressStart, this.ScreenTop, new CharInfo(' ', this.BackColour + (this._BarForeColour << 4)));
-                    } else {
+                    }
+                    else {
                         for (var i = 0; i < NewPercentText.length; i++) {
                             var LetterPosition = ProgressStart + i;
                             var FG = (LetterPosition >= NewBarWidth) ? this._BlankForeColour : this.BackColour;
@@ -8539,7 +8310,6 @@ var CrtProgressBar = (function (_super) {
             }
         }
     };
-
     Object.defineProperty(CrtProgressBar.prototype, "PercentPrecision", {
         get: function () {
             return this._PercentPrecision;
@@ -8553,8 +8323,6 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtProgressBar.prototype, "PercentVisible", {
         get: function () {
             return this._PercentVisible;
@@ -8568,16 +8336,12 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     CrtProgressBar.prototype.Step = function () {
         this.StepBy(1);
     };
-
     CrtProgressBar.prototype.StepBy = function (count) {
         this.Value += count;
     };
-
     Object.defineProperty(CrtProgressBar.prototype, "Style", {
         get: function () {
             return this._Style;
@@ -8591,15 +8355,13 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
-
     Object.defineProperty(CrtProgressBar.prototype, "Value", {
         get: function () {
             return this._Value;
         },
         set: function (value) {
             if (value !== this._Value) {
-                if (this._Style === 0 /* Marquee */) {
+                if (this._Style === ProgressBarStyle.Marquee) {
                     if ((new Date()).getTime() - this._LastMarqueeUpdate >= this._MarqueeAnimationSpeed) {
                         if (value < 0) {
                             value = 0;
@@ -8611,7 +8373,8 @@ var CrtProgressBar = (function (_super) {
                         this.Paint(false);
                         this._LastMarqueeUpdate = (new Date()).getTime();
                     }
-                } else {
+                }
+                else {
                     this._Value = Math.max(0, Math.min(value, this._Maximum));
                     this.Paint(false);
                 }
@@ -8620,33 +8383,30 @@ var CrtProgressBar = (function (_super) {
         enumerable: true,
         configurable: true
     });
-
     return CrtProgressBar;
 })(CrtControl);
 var VirtualKeyboard = (function () {
     function VirtualKeyboard() {
     }
     VirtualKeyboard.Init = function (container) {
-        var _this = this;
         container.appendChild(this.CreateDivElement());
-
         var Keys = document.getElementsByClassName('fTelnetKeyboardKey');
         for (var i = 0; i < Keys.length; i++) {
             if (Keys[i].addEventListener) {
                 var KeyCode = Keys[i].getAttribute('data-keycode');
                 if (this._Keys[KeyCode][2] > 0) {
-                    Keys[i].addEventListener('click', function (e) {
-                        _this.OnCharCode(e);
-                    }, false);
-                } else {
-                    Keys[i].addEventListener('click', function (e) {
-                        _this.OnKeyCode(e);
-                    }, false);
+                    Keys[i].addEventListener('click', VirtualKeyboard.OnCharCode, false);
+                    Keys[i].addEventListener('touchend', VirtualKeyboard.OnCharCode, false);
+                    Keys[i].addEventListener('touchstart', VirtualKeyboard.OnTouchStart, false);
+                }
+                else {
+                    Keys[i].addEventListener('click', VirtualKeyboard.OnKeyCode, false);
+                    Keys[i].addEventListener('touchend', VirtualKeyboard.OnKeyCode, false);
+                    Keys[i].addEventListener('touchstart', VirtualKeyboard.OnTouchStart, false);
                 }
             }
         }
     };
-
     VirtualKeyboard.CreateDivElement = function () {
         var Rows = [
             [
@@ -8663,8 +8423,8 @@ var VirtualKeyboard = (function () {
                 [121, 'F10', 0, 0],
                 [122, 'F11', 0, 0],
                 [123, 'F12', 0, 0],
-                [145, 'Scr<br />Lk', 0, 0],
-                [1006, 'Prt<br />Scr', 0, 0],
+                [36, 'Home', 0, 0],
+                [35, 'End', 0, 0],
                 [45, 'Ins', 0, 0],
                 [46, 'Del', 0, 0]
             ],
@@ -8682,8 +8442,7 @@ var VirtualKeyboard = (function () {
                 [48, ')<br />0', 41, 48],
                 [173, '_<br />-', 95, 45],
                 [61, '+<br />=', 43, 61],
-                [8, 'Backspace', 0, 0],
-                [36, 'Home', 0, 0]
+                [8, 'Backspace', 0, 0]
             ],
             [
                 [9, 'Tab', 0, 0],
@@ -8699,8 +8458,7 @@ var VirtualKeyboard = (function () {
                 [80, 'P', 80, 112],
                 [219, '{<br />[', 123, 91],
                 [221, '}<br />]', 125, 93],
-                [220, '|<br />\\', 124, 92],
-                [33, 'Page<br />Up', 0, 0]
+                [220, '|<br />\\', 124, 92]
             ],
             [
                 [20, 'Caps Lock', 0, 0],
@@ -8715,8 +8473,7 @@ var VirtualKeyboard = (function () {
                 [76, 'L', 76, 108],
                 [59, ':<br />;', 58, 59],
                 [222, '"<br />\'', 34, 39],
-                [13, 'Enter', 0, 0],
-                [34, 'Page<br />Down', 0, 0]
+                [13, 'Enter', 0, 0]
             ],
             [
                 [1004, 'Shift', 0, 0],
@@ -8730,24 +8487,21 @@ var VirtualKeyboard = (function () {
                 [188, '&lt;<br />,', 60, 44],
                 [190, '&gt;<br />.', 62, 46],
                 [191, '?<br />/', 63, 47],
-                [1005, 'Shift', 0, 0],
+                [33, 'Page<br />Up', 0, 0],
                 [38, '', 0, 0],
-                [35, 'End', 0, 0]
+                [34, 'Page<br />Down', 0, 0]
             ],
             [
                 [17, 'Ctrl', 0, 0],
-                [91, '', 0, 0],
                 [18, 'Alt', 0, 0],
                 [32, '&nbsp;', 0, 0],
                 [18, 'Alt', 0, 0],
-                [93, '', 0, 0],
                 [17, 'Ctrl', 0, 0],
                 [37, '', 0, 0],
                 [40, '', 0, 0],
                 [39, '', 0, 0]
             ]
         ];
-
         var Html = '';
         for (var Row = 0; Row < Rows.length; Row++) {
             Html += '<div class="fTelnetKeyboardRow';
@@ -8755,7 +8509,6 @@ var VirtualKeyboard = (function () {
                 Html += ' fTelnetKeyboardRowFunction';
             }
             Html += '">';
-
             for (var i = 0; i < Rows[Row].length; i++) {
                 Html += '<div class="fTelnetKeyboardKey';
                 if (typeof this._ClassKeys[Rows[Row][i][0]] !== 'undefined') {
@@ -8764,121 +8517,120 @@ var VirtualKeyboard = (function () {
                 Html += '" data-keycode="' + Rows[Row][i][0] + '">';
                 Html += Rows[Row][i][1];
                 Html += '</div>';
-
                 this._Keys[Rows[Row][i][0]] = Rows[Row][i];
             }
-
             Html += '</div>';
         }
-
         this._Div = document.createElement('div');
         this._Div.id = 'fTelnetKeyboard';
         this._Div.innerHTML = Html;
         this._Div.style.display = (this._Visible ? 'block' : 'none');
-
         return this._Div;
     };
-
     VirtualKeyboard.HighlightKey = function (className, lit) {
         var Keys = document.getElementsByClassName(className);
         for (var i = 0; i < Keys.length; i++) {
             if (lit) {
                 Keys[i].style.color = '#00ff00';
-            } else {
+            }
+            else {
                 Keys[i].removeAttribute('style');
             }
         }
     };
-
     VirtualKeyboard.OnCharCode = function (e) {
         var KeyCode = parseInt(e.target.getAttribute('data-keycode'), 10);
         var CharCode = 0;
-
         if ((KeyCode >= 65) && (KeyCode <= 90)) {
-            CharCode = parseInt((this._ShiftPressed !== this._CapsLockEnabled) ? this._Keys[KeyCode][2] : this._Keys[KeyCode][3], 10);
-        } else {
-            CharCode = parseInt(this._ShiftPressed ? this._Keys[KeyCode][2] : this._Keys[KeyCode][3], 10);
+            CharCode = parseInt((VirtualKeyboard._ShiftPressed !== VirtualKeyboard._CapsLockEnabled) ? VirtualKeyboard._Keys[KeyCode][2] : VirtualKeyboard._Keys[KeyCode][3], 10);
         }
-
+        else {
+            CharCode = parseInt(VirtualKeyboard._ShiftPressed ? VirtualKeyboard._Keys[KeyCode][2] : VirtualKeyboard._Keys[KeyCode][3], 10);
+        }
         var NeedReDraw = false;
         var RegularKey = true;
-        if (this._AltPressed) {
+        if (VirtualKeyboard._AltPressed) {
             NeedReDraw = true;
             RegularKey = false;
         }
-        if (this._CtrlPressed) {
+        if (VirtualKeyboard._CtrlPressed) {
             NeedReDraw = true;
             RegularKey = false;
         }
-        if (this._ShiftPressed) {
+        if (VirtualKeyboard._ShiftPressed) {
             NeedReDraw = true;
         }
-
-        Crt.PushKeyDown(0, KeyCode, this._CtrlPressed, this._AltPressed, this._ShiftPressed);
+        Crt.PushKeyDown(0, KeyCode, VirtualKeyboard._CtrlPressed, VirtualKeyboard._AltPressed, VirtualKeyboard._ShiftPressed);
         if (RegularKey) {
-            Crt.PushKeyPress(CharCode, 0, this._CtrlPressed, this._AltPressed, this._ShiftPressed);
+            Crt.PushKeyPress(CharCode, 0, VirtualKeyboard._CtrlPressed, VirtualKeyboard._AltPressed, VirtualKeyboard._ShiftPressed);
         }
-
         if (NeedReDraw) {
-            this._AltPressed = false;
-            this._CtrlPressed = false;
-            this._ShiftPressed = false;
-            this.ReDrawSpecialKeys();
+            VirtualKeyboard._AltPressed = false;
+            VirtualKeyboard._CtrlPressed = false;
+            VirtualKeyboard._ShiftPressed = false;
+            VirtualKeyboard.ReDrawSpecialKeys();
         }
     };
-
     VirtualKeyboard.OnKeyCode = function (e) {
         var KeyCode = parseInt(e.target.getAttribute('data-keycode'), 10);
-
         var NeedReset = false;
         switch (KeyCode) {
-            case 18 /* ALTERNATE */:
-                this._AltPressed = !this._AltPressed;
-                this.ReDrawSpecialKeys();
+            case Keyboard.ALTERNATE:
+                VirtualKeyboard._AltPressed = !VirtualKeyboard._AltPressed;
+                VirtualKeyboard.ReDrawSpecialKeys();
                 break;
-            case 20 /* CAPS_LOCK */:
-                this._CapsLockEnabled = !this._CapsLockEnabled;
-                this.ReDrawSpecialKeys();
+            case Keyboard.CAPS_LOCK:
+                VirtualKeyboard._CapsLockEnabled = !VirtualKeyboard._CapsLockEnabled;
+                VirtualKeyboard.ReDrawSpecialKeys();
                 break;
-            case 17 /* CONTROL */:
-                this._CtrlPressed = !this._CtrlPressed;
-                this.ReDrawSpecialKeys();
+            case Keyboard.CONTROL:
+                VirtualKeyboard._CtrlPressed = !VirtualKeyboard._CtrlPressed;
+                VirtualKeyboard.ReDrawSpecialKeys();
                 break;
-            case 1004 /* SHIFTLEFT */:
-            case 1005 /* SHIFTRIGHT */:
-                this._ShiftPressed = !this._ShiftPressed;
-                this.ReDrawSpecialKeys();
+            case Keyboard.SHIFTLEFT:
+                VirtualKeyboard._ShiftPressed = !VirtualKeyboard._ShiftPressed;
+                VirtualKeyboard.ReDrawSpecialKeys();
                 break;
             default:
                 NeedReset = true;
                 break;
         }
-
-        Crt.PushKeyDown(0, KeyCode, this._CtrlPressed, this._AltPressed, this._ShiftPressed);
-
+        Crt.PushKeyDown(0, KeyCode, VirtualKeyboard._CtrlPressed, VirtualKeyboard._AltPressed, VirtualKeyboard._ShiftPressed);
         if (NeedReset) {
-            this._AltPressed = false;
-            this._CtrlPressed = false;
-            this._ShiftPressed = false;
-            this.ReDrawSpecialKeys();
+            VirtualKeyboard._AltPressed = false;
+            VirtualKeyboard._CtrlPressed = false;
+            VirtualKeyboard._ShiftPressed = false;
+            VirtualKeyboard.ReDrawSpecialKeys();
         }
     };
-
+    VirtualKeyboard.OnTouchStart = function (e) {
+        var Keys = document.getElementsByClassName('fTelnetKeyboardKey');
+        for (var i = 0; i < Keys.length; i++) {
+            if (Keys[i].removeEventListener) {
+                var KeyCode = Keys[i].getAttribute('data-keycode');
+                if (VirtualKeyboard._Keys[KeyCode][2] > 0) {
+                    Keys[i].removeEventListener('click', VirtualKeyboard.OnCharCode);
+                    Keys[i].removeEventListener('touchstart', VirtualKeyboard.OnTouchStart, false);
+                }
+                else {
+                    Keys[i].removeEventListener('click', VirtualKeyboard.OnKeyCode, false);
+                    Keys[i].removeEventListener('touchstart', VirtualKeyboard.OnTouchStart, false);
+                }
+            }
+        }
+    };
     VirtualKeyboard.ReDrawSpecialKeys = function () {
         this.HighlightKey('fTelnetKeyboardKeyCapsLock', this._CapsLockEnabled);
         this.HighlightKey('fTelnetKeyboardKeyShiftLeft', this._ShiftPressed);
-        this.HighlightKey('fTelnetKeyboardKeyShiftRight', this._ShiftPressed);
         this.HighlightKey('fTelnetKeyboardKeyCtrl', this._CtrlPressed);
         this.HighlightKey('fTelnetKeyboardKeyAlt', this._AltPressed);
     };
-
     Object.defineProperty(VirtualKeyboard, "Visible", {
         get: function () {
             return this._Visible;
         },
         set: function (value) {
             this._Visible = value;
-
             if (this._Div != null) {
                 this._Div.style.display = (value ? 'block' : 'none');
             }
@@ -8886,99 +8638,69 @@ var VirtualKeyboard = (function () {
         enumerable: true,
         configurable: true
     });
-
     VirtualKeyboard._AltPressed = false;
     VirtualKeyboard._CapsLockEnabled = false;
     VirtualKeyboard._CtrlPressed = false;
     VirtualKeyboard._Div = null;
     VirtualKeyboard._ShiftPressed = false;
     VirtualKeyboard._Visible = true;
-
     VirtualKeyboard._ClassKeys = {
         '27': 'Escape',
-        '145': 'SPID',
-        '1006': 'SPID',
-        '45': 'SPID',
-        '46': 'SPID',
+        '36': 'HomeEndInsertDelete',
+        '35': 'HomeEndInsertDelete',
+        '45': 'HomeEndInsertDelete',
+        '46': 'HomeEndInsertDelete',
         '8': 'Backspace',
         '9': 'Tab',
         '220': 'Backslash',
         '20': 'CapsLock',
         '13': 'Enter',
         '1004': 'ShiftLeft',
-        '1005': 'ShiftRight',
         '38': 'ArrowUp',
         '17': 'Ctrl',
-        '91': 'Win',
         '18': 'Alt',
         '32': 'Spacebar',
-        '93': 'AppMenu',
         '37': 'ArrowLeft',
         '40': 'ArrowDown',
         '39': 'ArrowRight'
     };
-
     VirtualKeyboard._Keys = [];
     return VirtualKeyboard;
 })();
 var TelnetCommand;
 (function (TelnetCommand) {
     TelnetCommand[TelnetCommand["EndSubnegotiation"] = 240] = "EndSubnegotiation";
-
     TelnetCommand[TelnetCommand["NoOperation"] = 241] = "NoOperation";
-
     TelnetCommand[TelnetCommand["DataMark"] = 242] = "DataMark";
-
     TelnetCommand[TelnetCommand["Break"] = 243] = "Break";
-
     TelnetCommand[TelnetCommand["InterruptProcess"] = 244] = "InterruptProcess";
-
     TelnetCommand[TelnetCommand["AbortOutput"] = 245] = "AbortOutput";
-
     TelnetCommand[TelnetCommand["AreYouThere"] = 246] = "AreYouThere";
-
     TelnetCommand[TelnetCommand["EraseCharacter"] = 247] = "EraseCharacter";
-
     TelnetCommand[TelnetCommand["EraseLine"] = 248] = "EraseLine";
-
     TelnetCommand[TelnetCommand["GoAhead"] = 249] = "GoAhead";
-
     TelnetCommand[TelnetCommand["Subnegotiation"] = 250] = "Subnegotiation";
-
     TelnetCommand[TelnetCommand["Will"] = 251] = "Will";
-
     TelnetCommand[TelnetCommand["Wont"] = 252] = "Wont";
-
     TelnetCommand[TelnetCommand["Do"] = 253] = "Do";
-
     TelnetCommand[TelnetCommand["Dont"] = 254] = "Dont";
-
     TelnetCommand[TelnetCommand["IAC"] = 255] = "IAC";
 })(TelnetCommand || (TelnetCommand = {}));
 var TelnetNegotiationState;
 (function (TelnetNegotiationState) {
     TelnetNegotiationState[TelnetNegotiationState["Data"] = 0] = "Data";
-
     TelnetNegotiationState[TelnetNegotiationState["IAC"] = 1] = "IAC";
-
     TelnetNegotiationState[TelnetNegotiationState["Do"] = 2] = "Do";
-
     TelnetNegotiationState[TelnetNegotiationState["Dont"] = 3] = "Dont";
-
     TelnetNegotiationState[TelnetNegotiationState["Will"] = 4] = "Will";
-
     TelnetNegotiationState[TelnetNegotiationState["Wont"] = 5] = "Wont";
 })(TelnetNegotiationState || (TelnetNegotiationState = {}));
 var TelnetOption;
 (function (TelnetOption) {
     TelnetOption[TelnetOption["TransmitBinary"] = 0] = "TransmitBinary";
-
     TelnetOption[TelnetOption["Echo"] = 1] = "Echo";
-
     TelnetOption[TelnetOption["Reconnection"] = 2] = "Reconnection";
-
     TelnetOption[TelnetOption["SuppressGoAhead"] = 3] = "SuppressGoAhead";
-
     TelnetOption[TelnetOption["ApproxMessageSizeNegotiation"] = 4] = "ApproxMessageSizeNegotiation";
     TelnetOption[TelnetOption["Status"] = 5] = "Status";
     TelnetOption[TelnetOption["TimingMark"] = 6] = "TimingMark";
@@ -8999,25 +8721,17 @@ var TelnetOption;
     TelnetOption[TelnetOption["SUPDUP"] = 21] = "SUPDUP";
     TelnetOption[TelnetOption["SUPDUPOutput"] = 22] = "SUPDUPOutput";
     TelnetOption[TelnetOption["SendLocation"] = 23] = "SendLocation";
-
     TelnetOption[TelnetOption["TerminalType"] = 24] = "TerminalType";
-
     TelnetOption[TelnetOption["EndOfRecord"] = 25] = "EndOfRecord";
     TelnetOption[TelnetOption["TACACSUserIdentification"] = 26] = "TACACSUserIdentification";
     TelnetOption[TelnetOption["OutputMarking"] = 27] = "OutputMarking";
-
     TelnetOption[TelnetOption["TerminalLocationNumber"] = 28] = "TerminalLocationNumber";
-
     TelnetOption[TelnetOption["Telnet3270Regime"] = 29] = "Telnet3270Regime";
     TelnetOption[TelnetOption["Xdot3PAD"] = 30] = "Xdot3PAD";
-
     TelnetOption[TelnetOption["WindowSize"] = 31] = "WindowSize";
-
     TelnetOption[TelnetOption["TerminalSpeed"] = 32] = "TerminalSpeed";
     TelnetOption[TelnetOption["RemoteFlowControl"] = 33] = "RemoteFlowControl";
-
     TelnetOption[TelnetOption["LineMode"] = 34] = "LineMode";
-
     TelnetOption[TelnetOption["XDisplayLocation"] = 35] = "XDisplayLocation";
     TelnetOption[TelnetOption["EnvironmentOption"] = 36] = "EnvironmentOption";
     TelnetOption[TelnetOption["AuthenticationOption"] = 37] = "AuthenticationOption";
@@ -9034,96 +8748,84 @@ var TelnetOption;
     TelnetOption[TelnetOption["SENDURL"] = 48] = "SENDURL";
     TelnetOption[TelnetOption["FORWARD_X"] = 49] = "FORWARD_X";
 })(TelnetOption || (TelnetOption = {}));
+/// <reference path="../WebSocketConnection.ts" />
 var TelnetConnection = (function (_super) {
     __extends(TelnetConnection, _super);
     function TelnetConnection() {
         _super.call(this);
-
         this._NegotiatedOptions = [];
         for (var i = 0; i < 256; i++) {
             this._NegotiatedOptions[i] = 0;
         }
-        this._NegotiationState = 0 /* Data */;
+        this._NegotiationState = TelnetNegotiationState.Data;
         this._TerminalTypeIndex = 0;
         this._TerminalTypes = ['ansi-bbs', 'ansi', 'cp437', 'cp437'];
     }
     TelnetConnection.prototype.flush = function () {
         var ToSendBytes = [];
-
         this._OutputBuffer.position = 0;
         while (this._OutputBuffer.bytesAvailable > 0) {
             var B = this._OutputBuffer.readUnsignedByte();
             ToSendBytes.push(B);
-
-            if (B === 255 /* IAC */) {
-                ToSendBytes.push(255 /* IAC */);
+            if (B === TelnetCommand.IAC) {
+                ToSendBytes.push(TelnetCommand.IAC);
             }
         }
-
         this.Send(ToSendBytes);
         this._OutputBuffer.clear();
     };
-
     TelnetConnection.prototype.HandleAreYouThere = function () {
         var ToSendBytes = [];
         ToSendBytes.push('.'.charCodeAt(0));
         this.Send(ToSendBytes);
     };
-
     TelnetConnection.prototype.HandleEcho = function (command) {
         switch (command) {
-            case 253 /* Do */:
-                this.SendWill(1 /* Echo */);
+            case TelnetCommand.Do:
+                this.SendWill(TelnetOption.Echo);
                 this._LocalEcho = true;
                 this.onlocalecho.trigger(this._LocalEcho);
                 break;
-            case 254 /* Dont */:
-                this.SendWont(1 /* Echo */);
+            case TelnetCommand.Dont:
+                this.SendWont(TelnetOption.Echo);
                 this._LocalEcho = false;
                 this.onlocalecho.trigger(this._LocalEcho);
                 break;
-            case 251 /* Will */:
-                this.SendDo(1 /* Echo */);
+            case TelnetCommand.Will:
+                this.SendDo(TelnetOption.Echo);
                 this._LocalEcho = false;
                 this.onlocalecho.trigger(this._LocalEcho);
                 break;
-            case 252 /* Wont */:
-                this.SendDont(1 /* Echo */);
+            case TelnetCommand.Wont:
+                this.SendDont(TelnetOption.Echo);
                 this._LocalEcho = true;
                 this.onlocalecho.trigger(this._LocalEcho);
                 break;
         }
     };
-
     TelnetConnection.prototype.HandleTerminalType = function () {
-        this.SendWill(24 /* TerminalType */);
-        this.SendSubnegotiate(24 /* TerminalType */);
-
+        this.SendWill(TelnetOption.TerminalType);
+        this.SendSubnegotiate(TelnetOption.TerminalType);
         var TerminalType = this._TerminalTypes[this._TerminalTypeIndex];
         var ToSendBytes = [];
         ToSendBytes.push(0);
-
         for (var i = 0; i < TerminalType.length; i++) {
             ToSendBytes.push(TerminalType.charCodeAt(i));
         }
         this.Send(ToSendBytes);
-
         this.SendSubnegotiateEnd();
-
         if (this._TerminalTypeIndex < (this._TerminalTypes.length - 1)) {
             this._TerminalTypeIndex += 1;
-        } else {
+        }
+        else {
             this._TerminalTypeIndex = 0;
         }
     };
-
     TelnetConnection.prototype.HandleTerminalLocationNumber = function () {
-        this.SendWill(28 /* TerminalLocationNumber */);
-        this.SendSubnegotiate(28 /* TerminalLocationNumber */);
-
+        this.SendWill(TelnetOption.TerminalLocationNumber);
+        this.SendSubnegotiate(TelnetOption.TerminalLocationNumber);
         var InternetHostNumber = 0;
         var TerminalNumber = -1;
-
         var SixtyFourBits = [];
         SixtyFourBits.push(0);
         SixtyFourBits.push((InternetHostNumber & 0xFF000000) >> 24);
@@ -9134,286 +8836,273 @@ var TelnetConnection = (function (_super) {
         SixtyFourBits.push((TerminalNumber & 0x00FF0000) >> 16);
         SixtyFourBits.push((TerminalNumber & 0x0000FF00) >> 8);
         SixtyFourBits.push((TerminalNumber & 0x000000FF) >> 0);
-
         var ToSendBytes = [];
-
         for (var i = 0; i < SixtyFourBits.length; i++) {
             ToSendBytes.push(SixtyFourBits[i]);
-            if (SixtyFourBits[i] === 255 /* IAC */) {
-                ToSendBytes.push(255 /* IAC */);
+            if (SixtyFourBits[i] === TelnetCommand.IAC) {
+                ToSendBytes.push(TelnetCommand.IAC);
             }
         }
         this.Send(ToSendBytes);
-
         this.SendSubnegotiateEnd();
     };
-
     TelnetConnection.prototype.HandleWindowSize = function () {
-        this.SendWill(31 /* WindowSize */);
-        this.SendSubnegotiate(31 /* WindowSize */);
-
+        this.SendWill(TelnetOption.WindowSize);
+        this.SendSubnegotiate(TelnetOption.WindowSize);
         var Size = [];
         Size[0] = (Crt.WindCols >> 8) & 0xff;
         Size[1] = Crt.WindCols & 0xff;
         Size[2] = (Crt.WindRows >> 8) & 0xff;
         Size[3] = Crt.WindRows & 0xff;
-
         var ToSendBytes = [];
         for (var i = 0; i < Size.length; i++) {
             ToSendBytes.push(Size[i]);
-            if (Size[i] === 255 /* IAC */) {
-                ToSendBytes.push(255 /* IAC */);
+            if (Size[i] === TelnetCommand.IAC) {
+                ToSendBytes.push(TelnetCommand.IAC);
             }
         }
         this.Send(ToSendBytes);
-
         this.SendSubnegotiateEnd();
     };
-
     Object.defineProperty(TelnetConnection.prototype, "LocalEcho", {
         set: function (value) {
             this._LocalEcho = value;
-
             if (this.connected) {
                 if (this._LocalEcho) {
-                    this.SendWill(1 /* Echo */);
-                } else {
-                    this.SendWont(1 /* Echo */);
+                    this.SendWill(TelnetOption.Echo);
+                }
+                else {
+                    this.SendWont(TelnetOption.Echo);
                 }
             }
         },
         enumerable: true,
         configurable: true
     });
-
     TelnetConnection.prototype.NegotiateInbound = function (data) {
         while (data.bytesAvailable) {
             var B = data.readUnsignedByte();
-
-            if (this._NegotiationState === 0 /* Data */) {
-                if (B === 255 /* IAC */) {
-                    this._NegotiationState = 1 /* IAC */;
-                } else {
+            if (this._NegotiationState === TelnetNegotiationState.Data) {
+                if (B === TelnetCommand.IAC) {
+                    this._NegotiationState = TelnetNegotiationState.IAC;
+                }
+                else {
                     this._InputBuffer.writeByte(B);
                 }
-            } else if (this._NegotiationState === 1 /* IAC */) {
-                if (B === 255 /* IAC */) {
-                    this._NegotiationState = 0 /* Data */;
+            }
+            else if (this._NegotiationState === TelnetNegotiationState.IAC) {
+                if (B === TelnetCommand.IAC) {
+                    this._NegotiationState = TelnetNegotiationState.Data;
                     this._InputBuffer.writeByte(B);
-                } else {
+                }
+                else {
                     switch (B) {
-                        case 241 /* NoOperation */:
-                        case 242 /* DataMark */:
-                        case 243 /* Break */:
-                        case 244 /* InterruptProcess */:
-                        case 245 /* AbortOutput */:
-                        case 247 /* EraseCharacter */:
-                        case 248 /* EraseLine */:
-                        case 249 /* GoAhead */:
-                            this._NegotiationState = 0 /* Data */;
+                        case TelnetCommand.NoOperation:
+                        case TelnetCommand.DataMark:
+                        case TelnetCommand.Break:
+                        case TelnetCommand.InterruptProcess:
+                        case TelnetCommand.AbortOutput:
+                        case TelnetCommand.EraseCharacter:
+                        case TelnetCommand.EraseLine:
+                        case TelnetCommand.GoAhead:
+                            this._NegotiationState = TelnetNegotiationState.Data;
                             break;
-                        case 246 /* AreYouThere */:
+                        case TelnetCommand.AreYouThere:
                             this.HandleAreYouThere();
-                            this._NegotiationState = 0 /* Data */;
+                            this._NegotiationState = TelnetNegotiationState.Data;
                             break;
-                        case 253 /* Do */:
-                            this._NegotiationState = 2 /* Do */;
+                        case TelnetCommand.Do:
+                            this._NegotiationState = TelnetNegotiationState.Do;
                             break;
-                        case 254 /* Dont */:
-                            this._NegotiationState = 3 /* Dont */;
+                        case TelnetCommand.Dont:
+                            this._NegotiationState = TelnetNegotiationState.Dont;
                             break;
-                        case 251 /* Will */:
-                            this._NegotiationState = 4 /* Will */;
+                        case TelnetCommand.Will:
+                            this._NegotiationState = TelnetNegotiationState.Will;
                             break;
-                        case 252 /* Wont */:
-                            this._NegotiationState = 5 /* Wont */;
+                        case TelnetCommand.Wont:
+                            this._NegotiationState = TelnetNegotiationState.Wont;
                             break;
                         default:
-                            this._NegotiationState = 0 /* Data */;
+                            this._NegotiationState = TelnetNegotiationState.Data;
                             break;
                     }
                 }
-            } else if (this._NegotiationState === 2 /* Do */) {
+            }
+            else if (this._NegotiationState === TelnetNegotiationState.Do) {
                 switch (B) {
-                    case 246 /* AreYouThere */:
-                        this.SendWill(246 /* AreYouThere */);
-                        this._NegotiatedOptions[246 /* AreYouThere */] = 0;
+                    case TelnetCommand.AreYouThere:
+                        this.SendWill(TelnetCommand.AreYouThere);
+                        this._NegotiatedOptions[TelnetCommand.AreYouThere] = 0;
                         break;
-                    case 0 /* TransmitBinary */:
+                    case TelnetOption.TransmitBinary:
                         this.SendWill(B);
                         break;
-                    case 1 /* Echo */:
-                        this.HandleEcho(253 /* Do */);
+                    case TelnetOption.Echo:
+                        this.HandleEcho(TelnetCommand.Do);
                         break;
-                    case 3 /* SuppressGoAhead */:
+                    case TelnetOption.SuppressGoAhead:
                         this.SendWill(B);
                         break;
-                    case 24 /* TerminalType */:
+                    case TelnetOption.TerminalType:
                         this.HandleTerminalType();
                         break;
-                    case 28 /* TerminalLocationNumber */:
+                    case TelnetOption.TerminalLocationNumber:
                         this.HandleTerminalLocationNumber();
                         break;
-                    case 31 /* WindowSize */:
+                    case TelnetOption.WindowSize:
                         this.HandleWindowSize();
                         break;
-                    case 34 /* LineMode */:
+                    case TelnetOption.LineMode:
                         this.SendWont(B);
                         break;
                     default:
                         this.SendWont(B);
                         break;
                 }
-                this._NegotiationState = 0 /* Data */;
-            } else if (this._NegotiationState === 3 /* Dont */) {
+                this._NegotiationState = TelnetNegotiationState.Data;
+            }
+            else if (this._NegotiationState === TelnetNegotiationState.Dont) {
                 switch (B) {
-                    case 0 /* TransmitBinary */:
+                    case TelnetOption.TransmitBinary:
                         this.SendWill(B);
                         break;
-                    case 1 /* Echo */:
-                        this.HandleEcho(254 /* Dont */);
+                    case TelnetOption.Echo:
+                        this.HandleEcho(TelnetCommand.Dont);
                         break;
-                    case 3 /* SuppressGoAhead */:
+                    case TelnetOption.SuppressGoAhead:
                         this.SendWill(B);
                         break;
-                    case 28 /* TerminalLocationNumber */:
+                    case TelnetOption.TerminalLocationNumber:
                         this.SendWont(B);
                         break;
-                    case 31 /* WindowSize */:
+                    case TelnetOption.WindowSize:
                         this.SendWont(B);
                         break;
-                    case 34 /* LineMode */:
+                    case TelnetOption.LineMode:
                         this.SendWont(B);
                         break;
                     default:
                         this.SendWont(B);
                         break;
                 }
-                this._NegotiationState = 0 /* Data */;
-            } else if (this._NegotiationState === 4 /* Will */) {
+                this._NegotiationState = TelnetNegotiationState.Data;
+            }
+            else if (this._NegotiationState === TelnetNegotiationState.Will) {
                 switch (B) {
-                    case 0 /* TransmitBinary */:
+                    case TelnetOption.TransmitBinary:
                         this.SendDo(B);
                         break;
-                    case 1 /* Echo */:
-                        this.HandleEcho(251 /* Will */);
+                    case TelnetOption.Echo:
+                        this.HandleEcho(TelnetCommand.Will);
                         break;
-                    case 3 /* SuppressGoAhead */:
+                    case TelnetOption.SuppressGoAhead:
                         this.SendDo(B);
                         break;
-                    case 28 /* TerminalLocationNumber */:
+                    case TelnetOption.TerminalLocationNumber:
                         this.SendDont(B);
                         break;
-                    case 31 /* WindowSize */:
+                    case TelnetOption.WindowSize:
                         this.SendDont(B);
                         break;
-                    case 34 /* LineMode */:
+                    case TelnetOption.LineMode:
                         this.SendDont(B);
                         break;
                     default:
                         this.SendDont(B);
                         break;
                 }
-                this._NegotiationState = 0 /* Data */;
-            } else if (this._NegotiationState === 5 /* Wont */) {
+                this._NegotiationState = TelnetNegotiationState.Data;
+            }
+            else if (this._NegotiationState === TelnetNegotiationState.Wont) {
                 switch (B) {
-                    case 0 /* TransmitBinary */:
+                    case TelnetOption.TransmitBinary:
                         this.SendDo(B);
                         break;
-                    case 1 /* Echo */:
-                        this.HandleEcho(252 /* Wont */);
+                    case TelnetOption.Echo:
+                        this.HandleEcho(TelnetCommand.Wont);
                         break;
-                    case 3 /* SuppressGoAhead */:
+                    case TelnetOption.SuppressGoAhead:
                         this.SendDo(B);
                         break;
-                    case 28 /* TerminalLocationNumber */:
+                    case TelnetOption.TerminalLocationNumber:
                         this.SendDont(B);
                         break;
-                    case 31 /* WindowSize */:
+                    case TelnetOption.WindowSize:
                         this.SendDont(B);
                         break;
-                    case 34 /* LineMode */:
+                    case TelnetOption.LineMode:
                         this.SendDont(B);
                         break;
                     default:
                         this.SendDont(B);
                         break;
                 }
-                this._NegotiationState = 0 /* Data */;
-            } else {
-                this._NegotiationState = 0 /* Data */;
+                this._NegotiationState = TelnetNegotiationState.Data;
+            }
+            else {
+                this._NegotiationState = TelnetNegotiationState.Data;
             }
         }
     };
-
     TelnetConnection.prototype.OnSocketOpen = function () {
         _super.prototype.OnSocketOpen.call(this);
-
         if (this._LocalEcho) {
-            this.SendWill(1 /* Echo */);
-        } else {
-            this.SendWont(1 /* Echo */);
+            this.SendWill(TelnetOption.Echo);
+        }
+        else {
+            this.SendWont(TelnetOption.Echo);
         }
     };
-
     TelnetConnection.prototype.SendDo = function (option) {
-        if (this._NegotiatedOptions[option] !== 253 /* Do */) {
-            this._NegotiatedOptions[option] = 253 /* Do */;
-
+        if (this._NegotiatedOptions[option] !== TelnetCommand.Do) {
+            this._NegotiatedOptions[option] = TelnetCommand.Do;
             var ToSendBytes = [];
-            ToSendBytes.push(255 /* IAC */);
-            ToSendBytes.push(253 /* Do */);
+            ToSendBytes.push(TelnetCommand.IAC);
+            ToSendBytes.push(TelnetCommand.Do);
             ToSendBytes.push(option);
             this.Send(ToSendBytes);
         }
     };
-
     TelnetConnection.prototype.SendDont = function (option) {
-        if (this._NegotiatedOptions[option] !== 254 /* Dont */) {
-            this._NegotiatedOptions[option] = 254 /* Dont */;
-
+        if (this._NegotiatedOptions[option] !== TelnetCommand.Dont) {
+            this._NegotiatedOptions[option] = TelnetCommand.Dont;
             var ToSendBytes = [];
-            ToSendBytes.push(255 /* IAC */);
-            ToSendBytes.push(254 /* Dont */);
+            ToSendBytes.push(TelnetCommand.IAC);
+            ToSendBytes.push(TelnetCommand.Dont);
             ToSendBytes.push(option);
             this.Send(ToSendBytes);
         }
     };
-
     TelnetConnection.prototype.SendSubnegotiate = function (option) {
         var ToSendBytes = [];
-        ToSendBytes.push(255 /* IAC */);
-        ToSendBytes.push(250 /* Subnegotiation */);
+        ToSendBytes.push(TelnetCommand.IAC);
+        ToSendBytes.push(TelnetCommand.Subnegotiation);
         ToSendBytes.push(option);
         this.Send(ToSendBytes);
     };
-
     TelnetConnection.prototype.SendSubnegotiateEnd = function () {
         var ToSendBytes = [];
-        ToSendBytes.push(255 /* IAC */);
-        ToSendBytes.push(240 /* EndSubnegotiation */);
+        ToSendBytes.push(TelnetCommand.IAC);
+        ToSendBytes.push(TelnetCommand.EndSubnegotiation);
         this.Send(ToSendBytes);
     };
-
     TelnetConnection.prototype.SendWill = function (option) {
-        if (this._NegotiatedOptions[option] !== 251 /* Will */) {
-            this._NegotiatedOptions[option] = 251 /* Will */;
-
+        if (this._NegotiatedOptions[option] !== TelnetCommand.Will) {
+            this._NegotiatedOptions[option] = TelnetCommand.Will;
             var ToSendBytes = [];
-            ToSendBytes.push(255 /* IAC */);
-            ToSendBytes.push(251 /* Will */);
+            ToSendBytes.push(TelnetCommand.IAC);
+            ToSendBytes.push(TelnetCommand.Will);
             ToSendBytes.push(option);
             this.Send(ToSendBytes);
         }
     };
-
     TelnetConnection.prototype.SendWont = function (option) {
-        if (this._NegotiatedOptions[option] !== 252 /* Wont */) {
-            this._NegotiatedOptions[option] = 252 /* Wont */;
-
+        if (this._NegotiatedOptions[option] !== TelnetCommand.Wont) {
+            this._NegotiatedOptions[option] = TelnetCommand.Wont;
             var ToSendBytes = [];
-            ToSendBytes.push(255 /* IAC */);
-            ToSendBytes.push(252 /* Wont */);
+            ToSendBytes.push(TelnetCommand.IAC);
+            ToSendBytes.push(TelnetCommand.Wont);
             ToSendBytes.push(option);
             this.Send(ToSendBytes);
         }
@@ -9425,21 +9114,16 @@ var CRC = (function () {
     }
     CRC.Calculate16 = function (bytes) {
         var CRC = 0;
-
         var OldPosition = bytes.position;
         bytes.position = 0;
-
         while (bytes.bytesAvailable > 0) {
             CRC = this.UpdateCrc(bytes.readUnsignedByte(), CRC);
         }
         CRC = this.UpdateCrc(0, CRC);
         CRC = this.UpdateCrc(0, CRC);
-
         bytes.position = OldPosition;
-
         return CRC;
     };
-
     CRC.UpdateCrc = function (curByte, curCrc) {
         return (this.CRC_TABLE[(curCrc >> 8) & 0x00FF] ^ (curCrc << 8) ^ curByte) & 0xFFFF;
     };
@@ -9493,7 +9177,6 @@ var FileRecord = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(FileRecord.prototype, "name", {
         get: function () {
             return this._Name;
@@ -9501,7 +9184,6 @@ var FileRecord = (function () {
         enumerable: true,
         configurable: true
     });
-
     Object.defineProperty(FileRecord.prototype, "size", {
         get: function () {
             return this._Size;
@@ -9530,70 +9212,57 @@ var YModemReceive = (function () {
         this._Connection = connection;
     }
     YModemReceive.prototype.Cancel = function (reason) {
-        try  {
+        try {
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeString('\b\b\b\b\b     \b\b\b\b\b');
-        } catch (ioe1) {
+        }
+        catch (ioe1) {
             this.HandleIOError(ioe1);
             return;
         }
-
-        try  {
+        try {
             this._Connection.readString();
-        } catch (ioe2) {
+        }
+        catch (ioe2) {
             this.HandleIOError(ioe2);
             return;
         }
-
         this.CleanUp('Cancelling (' + reason + ')');
     };
-
     YModemReceive.prototype.CleanUp = function (message) {
         var _this = this;
         clearInterval(this._Timer);
-
         this.lblStatus.Text = 'Status: ' + message;
-
-        setTimeout(function () {
-            _this.Dispatch();
-        }, 3000);
+        setTimeout(function () { _this.Dispatch(); }, 3000);
     };
-
     YModemReceive.prototype.Dispatch = function () {
         this.pnlMain.Hide();
         Crt.Blink = this._Blink;
         Crt.ShowCursor();
-
         this.ontransfercomplete.trigger();
     };
-
     YModemReceive.prototype.Download = function () {
         var _this = this;
-        this._Timer = setInterval(function () {
-            _this.OnTimer();
-        }, 50);
-
+        this._Timer = setInterval(function () { _this.OnTimer(); }, 50);
         this._Blink = Crt.Blink;
         Crt.Blink = false;
         Crt.HideCursor();
-        this.pnlMain = new CrtPanel(null, 10, 5, 60, 14, 0 /* Single */, Crt.WHITE, Crt.BLUE, 'YModem-G Receive Status (Hit CTRL+X to abort)', 6 /* TopLeft */);
-        this.lblFileCount = new CrtLabel(this.pnlMain, 2, 2, 56, 'Receiving file 1', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-        this.lblFileName = new CrtLabel(this.pnlMain, 2, 4, 56, 'File Name: ', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-        this.lblFileSize = new CrtLabel(this.pnlMain, 2, 5, 56, 'File Size: ', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-        this.lblFileReceived = new CrtLabel(this.pnlMain, 2, 6, 56, 'File Recv: ', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-        this.pbFileReceived = new CrtProgressBar(this.pnlMain, 2, 7, 56, 219 /* Continuous */);
-        this.lblTotalReceived = new CrtLabel(this.pnlMain, 2, 9, 56, 'Total Recv: ', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-        this.lblStatus = new CrtLabel(this.pnlMain, 2, 11, 56, 'Status: Transferring file(s)', 9 /* Left */, Crt.WHITE, Crt.BLUE);
+        this.pnlMain = new CrtPanel(null, 10, 5, 60, 14, BorderStyle.Single, Crt.WHITE, Crt.BLUE, 'YModem-G Receive Status (Hit CTRL+X to abort)', ContentAlignment.TopLeft);
+        this.lblFileCount = new CrtLabel(this.pnlMain, 2, 2, 56, 'Receiving file 1', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+        this.lblFileName = new CrtLabel(this.pnlMain, 2, 4, 56, 'File Name: ', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+        this.lblFileSize = new CrtLabel(this.pnlMain, 2, 5, 56, 'File Size: ', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+        this.lblFileReceived = new CrtLabel(this.pnlMain, 2, 6, 56, 'File Recv: ', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+        this.pbFileReceived = new CrtProgressBar(this.pnlMain, 2, 7, 56, ProgressBarStyle.Continuous);
+        this.lblTotalReceived = new CrtLabel(this.pnlMain, 2, 9, 56, 'Total Recv: ', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+        this.lblStatus = new CrtLabel(this.pnlMain, 2, 11, 56, 'Status: Transferring file(s)', ContentAlignment.Left, Crt.WHITE, Crt.BLUE);
     };
-
     YModemReceive.prototype.FileAt = function (index) {
         return this._Files[index];
     };
-
     Object.defineProperty(YModemReceive.prototype, "FileCount", {
         get: function () {
             return this._Files.length;
@@ -9601,17 +9270,15 @@ var YModemReceive = (function () {
         enumerable: true,
         configurable: true
     });
-
     YModemReceive.prototype.HandleIOError = function (ioe) {
         console.log('I/O Error: ' + ioe);
-
         if (this._Connection.connected) {
             this.CleanUp('Unhandled I/O error');
-        } else {
+        }
+        else {
             this.CleanUp('Connection to server lost');
         }
     };
-
     YModemReceive.prototype.OnTimer = function () {
         while (Crt.KeyPressed()) {
             var KPE = Crt.ReadKey();
@@ -9619,83 +9286,70 @@ var YModemReceive = (function () {
                 this.Cancel('User requested abort');
             }
         }
-
         while (true) {
             if (this._NextByte === 0) {
                 if (this._Connection.bytesAvailable === 0) {
                     if (this._ShouldSendG && ((new Date()).getTime() - this._LastGTime > 3000)) {
-                        try  {
+                        try {
                             this._Connection.writeByte(this.CAPG);
                             this._Connection.flush();
-                        } catch (ioe1) {
+                        }
+                        catch (ioe1) {
                             this.HandleIOError(ioe1);
                             return;
                         }
-
                         this._LastGTime = new Date().getTime();
                     }
-
                     return;
-                } else {
-                    try  {
+                }
+                else {
+                    try {
                         this._NextByte = this._Connection.readUnsignedByte();
-                    } catch (ioe2) {
+                    }
+                    catch (ioe2) {
                         this.HandleIOError(ioe2);
                         return;
                     }
                 }
             }
-
             switch (this._NextByte) {
                 case this.CAN:
                     this.CleanUp('Sender requested abort');
-
                     break;
                 case this.SOH:
                 case this.STX:
                     this._ShouldSendG = false;
-
                     var BlockSize = (this._NextByte === this.STX) ? 1024 : 128;
-
                     if (this._Connection.bytesAvailable < (1 + 1 + BlockSize + 1 + 1)) {
                         return;
                     }
-
                     this._NextByte = 0;
-
                     var InBlock = this._Connection.readUnsignedByte();
                     var InBlockInverse = this._Connection.readUnsignedByte();
-
                     if (InBlockInverse !== (255 - InBlock)) {
                         this.Cancel('Bad block #: ' + InBlockInverse.toString() + ' !== 255-' + InBlock.toString());
                         return;
                     }
-
                     var Packet = new ByteArray();
                     this._Connection.readBytes(Packet, 0, BlockSize);
-
                     var InCRC = this._Connection.readUnsignedShort();
                     var OurCRC = CRC.Calculate16(Packet);
                     if (InCRC !== OurCRC) {
                         this.Cancel('Bad CRC: ' + InCRC.toString() + ' !== ' + OurCRC.toString());
                         return;
                     }
-
                     if (this._ExpectingHeader) {
                         if (InBlock !== 0) {
                             this.Cancel('Expecting header got block ' + InBlock.toString());
                             return;
                         }
-
                         this._ExpectingHeader = false;
-
                         var FileName = '';
                         var B = Packet.readUnsignedByte();
                         while ((B !== 0) && (Packet.bytesAvailable > 0)) {
                             FileName += String.fromCharCode(B);
                             B = Packet.readUnsignedByte();
                         }
-
                         var Temp = '';
                         var FileSize = 0;
                         B = Packet.readUnsignedByte();
@@ -9704,17 +9358,14 @@ var YModemReceive = (function () {
                             B = Packet.readUnsignedByte();
                         }
                         FileSize = parseInt(Temp, 10);
-
                         if (FileName.length === 0) {
                             this.CleanUp('File(s) successfully received!');
                             return;
                         }
-
                         if (isNaN(FileSize) || (FileSize === 0)) {
                             this.Cancel('File Size missing from header block');
                             return;
                         }
-
                         this._File = new FileRecord(FileName, FileSize);
                         this.lblFileCount.Text = 'Receiving file ' + (this._Files.length + 1).toString();
                         this.lblFileName.Text = 'File Name: ' + FileName;
@@ -9722,44 +9373,39 @@ var YModemReceive = (function () {
                         this.lblFileReceived.Text = 'File Recv: 0 bytes';
                         this.pbFileReceived.Value = 0;
                         this.pbFileReceived.Maximum = FileSize;
-
-                        try  {
+                        try {
                             this._Connection.writeByte(this.CAPG);
                             this._Connection.flush();
-                        } catch (ioe3) {
+                        }
+                        catch (ioe3) {
                             this.HandleIOError(ioe3);
                             return;
                         }
-                    } else {
+                    }
+                    else {
                         var BytesToWrite = Math.min(BlockSize, this._File.size - this._File.data.length);
                         this._File.data.writeBytes(Packet, 0, BytesToWrite);
                         this._TotalBytesReceived += BytesToWrite;
-
                         this.lblFileReceived.Text = 'File Recv: ' + StringUtils.AddCommas(this._File.data.length) + ' bytes';
                         this.pbFileReceived.Value = this._File.data.length;
                         this.lblTotalReceived.Text = 'Total Recv: ' + StringUtils.AddCommas(this._TotalBytesReceived) + ' bytes';
                     }
-
                     break;
                 case this.EOT:
                     this._ShouldSendG = true;
-
-                    try  {
+                    try {
                         this._Connection.writeByte(this.ACK);
                         this._Connection.writeByte(this.CAPG);
                         this._Connection.flush();
-                    } catch (ioe4) {
+                    }
+                    catch (ioe4) {
                         this.HandleIOError(ioe4);
                         return;
                     }
-
                     this._NextByte = 0;
-
                     this._ExpectingHeader = true;
                     this._Files.push(this._File);
-
                     this.SaveFile(this._Files.length - 1);
-
                     break;
                 default:
                     this.Cancel('Unexpected byte: ' + this._NextByte.toString());
@@ -9767,16 +9413,13 @@ var YModemReceive = (function () {
             }
         }
     };
-
     YModemReceive.prototype.SaveFile = function (index) {
         var ByteString = this._Files[index].data.toString();
-
         var Buffer = new ArrayBuffer(ByteString.length);
         var View = new DataView(Buffer);
         for (var i = 0; i < ByteString.length; i++) {
             View.setUint8(i, ByteString.charCodeAt(i));
         }
-
         var FileBlob = new Blob([Buffer], { type: 'application/octet-binary' });
         saveAs(FileBlob, this._Files[index].name);
     };
@@ -9799,63 +9442,54 @@ var YModemSend = (function () {
         this._FileBytesSent = 0;
         this._FileCount = 0;
         this._Files = [];
-        this._State = 0 /* WaitingForHeaderRequest */;
+        this._State = YModemSendState.WaitingForHeaderRequest;
         this._TotalBytes = 0;
         this._TotalBytesSent = 0;
         this._Connection = connection;
     }
     YModemSend.prototype.Cancel = function (reason) {
-        try  {
+        try {
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeByte(this.CAN);
             this._Connection.writeString('\b\b\b\b\b     \b\b\b\b\b');
-        } catch (ioe1) {
+        }
+        catch (ioe1) {
             this.HandleIOError(ioe1);
             return;
         }
-
-        try  {
+        try {
             this._Connection.readString();
-        } catch (ioe2) {
+        }
+        catch (ioe2) {
             this.HandleIOError(ioe2);
             return;
         }
-
         this.CleanUp('Cancelling (' + reason + ')');
     };
-
     YModemSend.prototype.CleanUp = function (message) {
         var _this = this;
         clearInterval(this._Timer);
-
         this.lblStatus.Text = 'Status: ' + message;
-
-        setTimeout(function () {
-            _this.Dispatch();
-        }, 3000);
+        setTimeout(function () { _this.Dispatch(); }, 3000);
     };
-
     YModemSend.prototype.Dispatch = function () {
         this.pnlMain.Hide();
         Crt.Blink = this._Blink;
         Crt.ShowCursor();
-
         this.ontransfercomplete.trigger();
     };
-
     YModemSend.prototype.HandleIOError = function (ioe) {
         console.log('I/O Error: ' + ioe);
-
         if (this._Connection.connected) {
             this.CleanUp('Unhandled I/O error');
-        } else {
+        }
+        else {
             this.CleanUp('Connection to server lost');
         }
     };
-
     YModemSend.prototype.OnTimer = function () {
         while (Crt.KeyPressed()) {
             var KPE = Crt.ReadKey();
@@ -9863,39 +9497,35 @@ var YModemSend = (function () {
                 this.Cancel('User requested abort');
             }
         }
-
-        if ((this._State !== 3 /* SendingData */) && (this._Connection.bytesAvailable === 0)) {
+        if ((this._State !== YModemSendState.SendingData) && (this._Connection.bytesAvailable === 0)) {
             return;
         }
-
         var B = 0;
         switch (this._State) {
-            case 0 /* WaitingForHeaderRequest */:
-                try  {
+            case YModemSendState.WaitingForHeaderRequest:
+                try {
                     B = this._Connection.readUnsignedByte();
-                } catch (ioe1) {
+                }
+                catch (ioe1) {
                     this.HandleIOError(ioe1);
                     return;
                 }
-
                 if (B !== this.CAPG) {
                     this.Cancel('Expecting G got ' + B.toString() + ' (State=' + this._State + ')');
                     return;
                 }
-
-                try  {
+                try {
                     this._Connection.readString();
-                } catch (ioe2) {
+                }
+                catch (ioe2) {
                     this.HandleIOError(ioe2);
                     return;
                 }
-
                 if (this._Files.length === 0) {
                     this.SendEmptyHeaderBlock();
                     this.CleanUp('File(s) successfully sent!');
                     return;
                 }
-
                 this._File = this._Files.shift();
                 this.lblFileCount.Text = 'Sending file ' + (this._FileCount - this._Files.length).toString() + ' of ' + this._FileCount.toString();
                 this.lblFileName.Text = 'File Name: ' + this._File.name;
@@ -9903,91 +9533,81 @@ var YModemSend = (function () {
                 this.lblFileSent.Text = 'File Sent: 0 bytes';
                 this.pbFileSent.Value = 0;
                 this.pbFileSent.Maximum = this._File.size;
-
                 this.SendHeaderBlock();
-
                 this._Block = 1;
                 this._EOTCount = 0;
                 this._FileBytesSent = 0;
-
-                this._State = 1 /* WaitingForHeaderAck */;
+                this._State = YModemSendState.WaitingForHeaderAck;
                 return;
-
-            case 1 /* WaitingForHeaderAck */:
-                try  {
+            case YModemSendState.WaitingForHeaderAck:
+                try {
                     B = this._Connection.readUnsignedByte();
-                } catch (ioe3) {
+                }
+                catch (ioe3) {
                     this.HandleIOError(ioe3);
                     return;
                 }
-
                 if ((B !== this.ACK) && (B !== this.CAPG)) {
                     this.Cancel('Expecting ACK/G got ' + B.toString() + ' (State=' + this._State + ')');
                     return;
                 }
-
                 if (B === this.ACK) {
-                    this._State = 2 /* WaitingForFileRequest */;
-                } else if (B === this.CAPG) {
-                    this._State = 3 /* SendingData */;
+                    this._State = YModemSendState.WaitingForFileRequest;
+                }
+                else if (B === this.CAPG) {
+                    this._State = YModemSendState.SendingData;
                 }
                 return;
-
-            case 2 /* WaitingForFileRequest */:
-                try  {
+            case YModemSendState.WaitingForFileRequest:
+                try {
                     B = this._Connection.readUnsignedByte();
-                } catch (ioe4) {
+                }
+                catch (ioe4) {
                     this.HandleIOError(ioe4);
                     return;
                 }
-
                 if (B !== this.CAPG) {
                     this.Cancel('Expecting G got ' + B.toString() + ' (State=' + this._State + ')');
                     return;
                 }
-
-                this._State = 3 /* SendingData */;
+                this._State = YModemSendState.SendingData;
                 return;
-
-            case 3 /* SendingData */:
+            case YModemSendState.SendingData:
                 if (this.SendDataBlocks(16)) {
-                    this._State = 4 /* WaitingForFileAck */;
+                    this._State = YModemSendState.WaitingForFileAck;
                 }
                 return;
-
-            case 4 /* WaitingForFileAck */:
-                try  {
+            case YModemSendState.WaitingForFileAck:
+                try {
                     B = this._Connection.readUnsignedByte();
-                } catch (ioe5) {
+                }
+                catch (ioe5) {
                     this.HandleIOError(ioe5);
                     return;
                 }
-
                 if ((B !== this.ACK) && (B !== this.NAK)) {
                     this.Cancel('Expecting (N)ACK got ' + B.toString() + ' (State=' + this._State + ')');
                     return;
                 }
-
                 if (B === this.ACK) {
-                    this._State = 0 /* WaitingForHeaderRequest */;
-                } else if (B === this.NAK) {
+                    this._State = YModemSendState.WaitingForHeaderRequest;
+                }
+                else if (B === this.NAK) {
                     this.SendEOT();
                 }
                 return;
         }
     };
-
     YModemSend.prototype.SendDataBlocks = function (blocks) {
         for (var loop = 0; loop < blocks; loop++) {
             var BytesToRead = Math.min(1024, this._File.data.bytesAvailable);
-
             if (BytesToRead === 0) {
                 this.SendEOT();
                 return true;
-            } else {
+            }
+            else {
                 var Packet = new ByteArray();
                 this._File.data.readBytes(Packet, 0, BytesToRead);
-
                 if (Packet.length < 1024) {
                     Packet.position = Packet.length;
                     while (Packet.length < 1024) {
@@ -9995,138 +9615,125 @@ var YModemSend = (function () {
                     }
                     Packet.position = 0;
                 }
-
-                try  {
+                try {
                     this._Connection.writeByte(this.STX);
                     this._Connection.writeByte(this._Block % 256);
                     this._Connection.writeByte(255 - (this._Block % 256));
                     this._Connection.writeBytes(Packet);
                     this._Connection.writeShort(CRC.Calculate16(Packet));
                     this._Connection.flush();
-                } catch (ioe) {
+                }
+                catch (ioe) {
                     this.HandleIOError(ioe);
                     return false;
                 }
-
                 this._Block++;
                 this._FileBytesSent += BytesToRead;
                 this._TotalBytesSent += BytesToRead;
-
                 this.lblFileSent.Text = 'File Sent: ' + StringUtils.AddCommas(this._FileBytesSent) + ' bytes';
                 this.pbFileSent.StepBy(BytesToRead);
                 this.lblTotalSent.Text = 'Total Sent: ' + StringUtils.AddCommas(this._TotalBytesSent) + ' bytes';
                 this.pbTotalSent.StepBy(BytesToRead);
             }
         }
-
         return false;
     };
-
     YModemSend.prototype.SendEmptyHeaderBlock = function () {
         var Packet = new ByteArray();
-
         for (var i = 0; i < 128; i++) {
             Packet.writeByte(0);
         }
-
-        try  {
+        try {
             this._Connection.writeByte(this.SOH);
             this._Connection.writeByte(0);
             this._Connection.writeByte(255);
             this._Connection.writeBytes(Packet);
             this._Connection.writeShort(CRC.Calculate16(Packet));
             this._Connection.flush();
-        } catch (ioe) {
+        }
+        catch (ioe) {
             this.HandleIOError(ioe);
             return;
         }
     };
-
     YModemSend.prototype.SendEOT = function () {
-        try  {
+        try {
             this._Connection.writeByte(this.EOT);
             this._Connection.flush();
-        } catch (ioe) {
+        }
+        catch (ioe) {
             this.HandleIOError(ioe);
             return;
         }
         this._EOTCount++;
     };
-
     YModemSend.prototype.SendHeaderBlock = function () {
         var i = 0;
         var Packet = new ByteArray();
-
         for (i = 0; i < this._File.name.length; i++) {
             Packet.writeByte(this._File.name.charCodeAt(i));
         }
-
         Packet.writeByte(0);
-
         var Size = this._File.size.toString();
         for (i = 0; i < Size.length; i++) {
             Packet.writeByte(Size.charCodeAt(i));
         }
-
         if (Packet.length < 128) {
             while (Packet.length < 128) {
                 Packet.writeByte(0);
             }
-        } else if (Packet.length === 128) {
+        }
+        else if (Packet.length === 128) {
             i = 0;
-        } else if (Packet.length < 1024) {
+        }
+        else if (Packet.length < 1024) {
             while (Packet.length < 1024) {
                 Packet.writeByte(0);
             }
-        } else if (Packet.length === 1024) {
+        }
+        else if (Packet.length === 1024) {
             i = 0;
-        } else {
+        }
+        else {
             this.Cancel('Header packet exceeded 1024 bytes!');
             return;
         }
-
-        try  {
+        try {
             this._Connection.writeByte(Packet.length === 128 ? this.SOH : this.STX);
             this._Connection.writeByte(0);
             this._Connection.writeByte(255);
             this._Connection.writeBytes(Packet);
             this._Connection.writeShort(CRC.Calculate16(Packet));
             this._Connection.flush();
-        } catch (ioe) {
+        }
+        catch (ioe) {
             this.HandleIOError(ioe);
             return;
         }
     };
-
     YModemSend.prototype.Upload = function (file, fileCount) {
         var _this = this;
         this._FileCount = fileCount;
-
         this._Files.push(file);
-
         if (this._Files.length === fileCount) {
-            this._Timer = setInterval(function () {
-                _this.OnTimer();
-            }, 50);
-
+            this._Timer = setInterval(function () { _this.OnTimer(); }, 50);
             for (var i = 0; i < this._Files.length; i++) {
                 this._TotalBytes += this._Files[i].size;
             }
-
             this._Blink = Crt.Blink;
             Crt.Blink = false;
             Crt.HideCursor();
-            this.pnlMain = new CrtPanel(null, 10, 5, 60, 16, 0 /* Single */, Crt.WHITE, Crt.BLUE, 'YModem-G Send Status (Hit CTRL+X to abort)', 6 /* TopLeft */);
-            this.lblFileCount = new CrtLabel(this.pnlMain, 2, 2, 56, 'Sending file 1 of ' + this._FileCount.toString(), 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.lblFileName = new CrtLabel(this.pnlMain, 2, 4, 56, 'File Name: ' + this._Files[0].name, 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.lblFileSize = new CrtLabel(this.pnlMain, 2, 5, 56, 'File Size: ' + StringUtils.AddCommas(this._Files[0].size) + ' bytes', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.lblFileSent = new CrtLabel(this.pnlMain, 2, 6, 56, 'File Sent: 0 bytes', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.pbFileSent = new CrtProgressBar(this.pnlMain, 2, 7, 56, 219 /* Continuous */);
-            this.lblTotalSize = new CrtLabel(this.pnlMain, 2, 9, 56, 'Total Size: ' + StringUtils.AddCommas(this._TotalBytes) + ' bytes', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.lblTotalSent = new CrtLabel(this.pnlMain, 2, 10, 56, 'Total Sent: 0 bytes', 9 /* Left */, Crt.YELLOW, Crt.BLUE);
-            this.pbTotalSent = new CrtProgressBar(this.pnlMain, 2, 11, 56, 219 /* Continuous */);
+            this.pnlMain = new CrtPanel(null, 10, 5, 60, 16, BorderStyle.Single, Crt.WHITE, Crt.BLUE, 'YModem-G Send Status (Hit CTRL+X to abort)', ContentAlignment.TopLeft);
+            this.lblFileCount = new CrtLabel(this.pnlMain, 2, 2, 56, 'Sending file 1 of ' + this._FileCount.toString(), ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.lblFileName = new CrtLabel(this.pnlMain, 2, 4, 56, 'File Name: ' + this._Files[0].name, ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.lblFileSize = new CrtLabel(this.pnlMain, 2, 5, 56, 'File Size: ' + StringUtils.AddCommas(this._Files[0].size) + ' bytes', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.lblFileSent = new CrtLabel(this.pnlMain, 2, 6, 56, 'File Sent: 0 bytes', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.pbFileSent = new CrtProgressBar(this.pnlMain, 2, 7, 56, ProgressBarStyle.Continuous);
+            this.lblTotalSize = new CrtLabel(this.pnlMain, 2, 9, 56, 'Total Size: ' + StringUtils.AddCommas(this._TotalBytes) + ' bytes', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.lblTotalSent = new CrtLabel(this.pnlMain, 2, 10, 56, 'Total Sent: 0 bytes', ContentAlignment.Left, Crt.YELLOW, Crt.BLUE);
+            this.pbTotalSent = new CrtProgressBar(this.pnlMain, 2, 11, 56, ProgressBarStyle.Continuous);
             this.pbTotalSent.Maximum = this._TotalBytes;
-            this.lblStatus = new CrtLabel(this.pnlMain, 2, 13, 56, 'Status: Transferring file(s)', 9 /* Left */, Crt.WHITE, Crt.BLUE);
+            this.lblStatus = new CrtLabel(this.pnlMain, 2, 13, 56, 'Status: Transferring file(s)', ContentAlignment.Left, Crt.WHITE, Crt.BLUE);
         }
     };
     return YModemSend;

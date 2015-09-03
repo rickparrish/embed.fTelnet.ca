@@ -80,5 +80,7 @@ function PreInit() {
     }
         
     fTelnet.ButtonBarVisible = (GetQueryStringValue('TopButtons') != 'false');
-    fTelnet.VirtualKeyboardVisible = (GetQueryStringValue('VirtualKeyboard') != 'off');
+    if (GetQueryStringValue('VirtualKeyboard') != 'auto') {
+      fTelnet.VirtualKeyboardVisible = (GetQueryStringValue('VirtualKeyboard') != 'off');
+    }
 }

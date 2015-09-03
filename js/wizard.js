@@ -19,10 +19,6 @@ $('#cboProxyServer').change(function () {
     Update();
 });
 
-$('#cboTopButtons').change(function () {
-    Update();
-});
-
 $('#cboVirtualKeyboard').change(function () {
     Update();
 });
@@ -106,12 +102,10 @@ function Update() {
     fTelnetScript += ' &nbsp; &nbsp; fTelnet.Emulation = "' + $('#cboEmulation').val() + '";<br />';
     IframeUrl += '&Emulation=' + $('#cboEmulation').val();
     
-    // Show top buttons
-    fTelnetScript += ' &nbsp; &nbsp; fTelnet.ButtonBarVisible = ' + $('#cboTopButtons').val() + ';<br />';
-    IframeUrl += '&TopButtons=' + $('#cboTopButtons').val();
-
     // Virtual keyboard
-    fTelnetScript += ' &nbsp; &nbsp; fTelnet.VirtualKeyboardVisible = ' + ($('#cboVirtualKeyboard').val() != 'off') + ';<br />';
+    if ($('#cboVirtualKeyboard').val() != 'auto') {
+      fTelnetScript += ' &nbsp; &nbsp; fTelnet.VirtualKeyboardVisible = ' + ($('#cboVirtualKeyboard').val() != 'off') + ';<br />';
+    }
     IframeUrl += '&VirtualKeyboard=' + $('#cboVirtualKeyboard').val();
     
     // CSS

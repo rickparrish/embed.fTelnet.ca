@@ -98,18 +98,11 @@
 
         <h2 id="Use">How to use</h2>
         <div class="well">
-            <p>Using fTelnet is almost as easy as installing it was.  First you need to include the correct files.  Assuming you have an index.html in your document root, and fTelnet in a subdirectory called fTelnet, you can do that by putting this in your &lt;head> section:</p>
-            <code>
-                &lt;!-- CSS used to style the buttons/statusbar/keyboard/etc --><br />
-                &lt;link href="fTelnet/fTelnet.css" rel="stylesheet"><br />
-                &lt;link href="" rel="stylesheet" id="fTelnetKeyboardCss">
-                <br />
-                &lt;!-- Javascript used to power fTelnet --><br />
-                &lt;script src="fTelnet/fTelnet.min.js" id="fTelnetScript">&lt;/script><br />
-            </code>
-            <p>Now that you have the support files loading, you need to create a placeholder where you'll render the client, and then initialize it:</p>
+            <p>Using fTelnet is almost as easy as installing it was.  First you need to include the correct files.  Assuming you have an index.html in your document root, and fTelnet in a subdirectory called fTelnet, you can do that by putting this in your &lt;body> section where you want the client to appear:</p>
             <code>
                 &lt;div id="fTelnetContainer">&lt;/div><br />
+                &lt;!-- Javascript used to power fTelnet --><br />
+                &lt;script src="fTelnet/fTelnet.min.js" id="fTelnetScript">&lt;/script><br />
                 &lt;script><br />
                 &nbsp; &nbsp; fTelnet.Init();
                 &lt;/script><br />
@@ -162,8 +155,7 @@
                     <td>boolean</td>
                     <td>true</td>
                     <td>
-                        <p><strong>true: </strong> The connect/disconnect/download/upload/etc button bar is visible</p>
-                        <p><strong>false: </strong> The button bar is hidden</p>
+                        <p><strong>This variable no longer does anything -- the button bar was replaced with a pop-up menu in August 2015</strong></p>
                     </td>
                 </tr>
                 <tr>
@@ -174,6 +166,15 @@
                         <p><strong>rlogin: </strong> You're going to be making an rlogin connection (see other RLogin* settings below)</p>
                         <p><strong>tcp: </strong> You're going to be making a raw tcp connection (no protocol will be used)</p>
                         <p><strong>telnet: </strong> You're going to be making a telnet connection</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Emulation</td>
+                    <td>string</td>
+                    <td>ansi-bbs</td>
+                    <td>
+                        <p><strong>ansi-bbs: </strong> The default, and probably only value you'll ever want to use</p>
+                        <p><strong>RIP: </strong> Enable RIPscript mode.  Still very experimental, I wouldn't use this in production</p>
                     </td>
                 </tr>
                 <tr>
@@ -292,6 +293,7 @@
                     <td>
                         <p><strong>true: </strong> The status bar is visible</p>
                         <p><strong>false: </strong> The status bar is hidden</p>
+                        <p><strong>NOTE: </strong> The menu buttons and connection status is displayed in the status bar, so I highly recommend leaving it visible</p>
                     </td>
                 </tr>
                 <tr>
@@ -313,15 +315,6 @@
         <h2 id="IE8">Internet Explorer 8 (and older) Support</h2>
         <div class="well">
             <p>Internet Explorer 8 (and older) do not support the Canvas element, and while there are polyfills, none of them have support for the features fTelnet needs.  So unfortunately IE8 (and older) will never be supported.</p>
-            <p>To prevent javascript errors from being shown to IE8 (and older) visitors, you should include this snippet on your page:</p>
-            <code>
-                &lt;!-- Stop IE8 and below from complaining about Object.defineProperty --><br />
-                &lt;!--[if lt IE 9]><br />
-                &nbsp; &nbsp; &lt;script><br />
-                &nbsp; &nbsp; &nbsp; &nbsp; Object.defineProperty = function () { /* Do Nothing */ };<br />
-                &nbsp; &nbsp; &lt;/script><br />
-                &lt;![endif]--><br />
-            </code>
         </div>
         <hr />
 
