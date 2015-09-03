@@ -27,8 +27,9 @@
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="https://my.ftelnet.ca">My fTelnet</a></li>
-                    <li><a href="http://ftelnet.ca">ftelnet.ca</a></li>
+                    <li><a href="http://my.ftelnet.ca">My fTelnet</a></li>
+                    <li><a href="http://proxy.ftelnet.ca">fTelnet Proxies</a></li>
+                    <li><a href="https://www.ftelnet.ca">fTelnet Homepage</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
@@ -37,44 +38,30 @@
     <!-- Begin page content -->
     <div class="container">
 
-        <div class="well">
-            <p>Want to embed My fTelnet on your own website?  Just fill in the boxes below to get a customized &lt;iframe&gt; snippet!</p>
-            <p>For additional usage options, you can also check out <a href="http://ftelnet.ca" target="_blank">http://ftelnet.ca</a> (check the Downloads page).</p>
+        <div class="well col-sm-9 col-sm-offset-1 col-md-7 col-md-offset-2 col-lg-6 col-lg-offset-3">
+            <p>Want to embed My fTelnet on your own website?  Just fill in the boxes below, and at the bottom of the page you'll be given two options for embedding.</p>
+            <p>For additional usage options, you can also check out <a href="https://www.ftelnet.ca" target="_blank">https://www.ftelnet.ca</a> (check the Downloads page).</p>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="txtHostname">Hostname</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Hostname" data-content="Do you seriously not know what to put in this box?"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <input type="text" class="form-control" id="txtHostname" placeholder="Hostname or IP address">
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Should be self-explanatory what this is for!
-                    </div>
-                </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="txtPort">Port</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Port" data-content="If you run your own proxy, enter the proxy server's port (usually 1123).  If you're using one of my public proxies (which you'll select below), enter your telnet server port (usually 23).  NOTE: My public proxies have a restricted list of ports they work with.  Contact me if you use a non-standard port and I'll whitelist it for you."><span class="glyphicon glyphicon-info-sign"></span></a>
                     <input type="text" class="form-control" id="txtPort" placeholder="Port (usually 23 with proxy or 1123 without)">
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        If you run your own proxy, enter the proxy server's port (usually 1123).<br />
-                        If you're using one of my public proxies, enter your telnet server port.<br />
-                        <strong>NOTE:</strong> My public proxies only allow port <strong>23</strong>
-                        by default -- if you need any other port, either run your own proxy, or 
-                        <a href="http://ftelnet.ca/contact" target="_blank">contact me</a>
-                        to get your non-standard hostname:port combination whitelisted.
-                    </div>
-                </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboProxyServer">Proxy Server</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Proxy Server" data-content="If you run FleckProxy, websockify, or Synchronet's websocketservice.js, then select the 'I run my own proxy' option"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboProxyServer">
                         <optgroup label="Don't connect through a public proxy">
                             <option value="none" selected="selected">I run my own proxy</option>
@@ -95,130 +82,103 @@
                             <option value="us-fl:1123:11235">United States (Florida): proxy-us-fl.ftelnet.ca</option>
                             <option value="us-ga:1123:11235">United States (Georgia): proxy-us-ga.ftelnet.ca</option>
                             <option value="us-nj:1123:11235">United States (New Jersey): proxy-us-nj.ftelnet.ca</option>
+                            <option value="us-tx:21910:21911">United States (Texas): proxy-us-tx.ftelnet.ca</option>
                         </optgroup>
                     </select>
-                </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        If you run <a href="https://github.com/kanaka/websockify" target="_blank">websockify</a>,
-                        <a href="https://github.com/rickparrish/FleckProxy" target="_blank">FleckProxy</a>, or Synchronet's <a href="http://ftelnet.ca/websocketservice.js" target="_blank">websocketservice.js</a>, then
-                        select the <strong>I run my own proxy</strong> option.
-                    </div>
                 </div>
             </div>
             
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboAutoConnect">Auto Connect?</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Auto Connect?" data-content="Automatically connect after fTelnet loads?"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboAutoConnect">
                         <option value="false">No</option>
                         <option value="true">Yes</option>
                     </select>
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Automatically connect when the client loads?
-                    </div>
-                </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboConnectionType">Connection Type</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Connection Type" data-content="Only telnet for now, might support rlogin in the future"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboConnectionType">
                         <option value="telnet">Telnet</option>
                     </select>
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Only telnet for now, may have an option for rlogin in the future.
-                    </div>
-                </div>
             </div>
             
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboEmulation">Emulation</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Emulation" data-content="Most likely you want ansi-bbs, but if you run a C64 or RIP capable BBS then choose one of the other options"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboEmulation">
                         <option value="ansi-bbs" selected="selected">ansi-bbs</option>
                         <option value="c64">Commodore 64</option>
+                        <option value="RIP">RIP</option>
                     </select>
-                </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Most likely you want the default <strong>ansi-bbs</strong>.
-                    </div>
                 </div>
             </div>
             
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboTopButtons">Show Top Buttons?</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Show Top Buttons?" data-content="Show the top button bar (with Connect, Disconnect, Download, Upload, Keyboard, etc, buttons?"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboTopButtons">
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Show the button bar (with Connect, Disconnect, Download, Update, Keyboard, etc, buttons)?
-                    </div>
-                </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="cboVirtualKeyboard">Show Virtual Keyboard?</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Show Virtual Keyboard?" data-content="Mobile phones/tablets will likely need the virtual keyboard, so I highly recommend you show it"><span class="glyphicon glyphicon-info-sign"></span></a>
                     <select class="form-control" id="cboVirtualKeyboard">
                         <option value="on">Yes</option>
                         <option value="off">No</option>
                     </select>
                 </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Mobile phones/tablets will likely need the virtual keyboard, so I highly recommend you show it.
-                    </div>
-                </div>
             </div>
             
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="txtCSS">CSS</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="CSS" data-content="Don't like my default styling?  Just download the sample file, modify it, upload it to your webserver, and then enter the full url (including http://) here"><span class="glyphicon glyphicon-info-sign"></span></a>
+                    &nbsp; (<a href="http://embed.ftelnet.ca/ftelnet/ftelnet.css" target="_blank">sample file</a>)
                     <input type="text" class="form-control" id="txtCSS" placeholder="Url to your CSS file">
-                </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Don't like my default styling?  Just modify my <a href="ftelnet/ftelnet.css" target="_blank">ftelnet.css</a>, 
-                        upload it to your webserver, and then enter the full url to it in this box.
-                    </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="form-group col-sm-6">
+                <div class="form-group col-xs-12">
                     <label class="control-label" for="txtSplashScreen">Splash Screen</label>
+                    &nbsp; <a href="javascript:void(0);" class="text-primary" data-container="body" data-toggle="popover" data-placement="bottom" title="Splash Screen" data-content="Don't like my default splash screen?  Just download the sample file, modify it, upload it to your webserver, and then enter the full url (including http://) here.  Check the javascript console if it doesn't work for you, or contact me if you still have troubles"><span class="glyphicon glyphicon-info-sign"></span></a>
+                    &nbsp; (<a href="http://embed.ftelnet.ca/js/splashscreen.js" target="_blank">sample file</a>)
                     <input type="text" class="form-control" id="txtSplashScreen" placeholder="Url to your splashscreen.js file">
-                </div>
-
-                <div class="form-group col-sm-6">
-                    <div class="alert alert-success">
-                        Don't like my default splash screen?  Just modify my <a href="js/splashscreen.js" target="_blank">splashscreen.js</a>, 
-                        upload it to your webserver, and then enter the full url to it in this box.  If your modified splashscreen.js doesn't
-                        work, check your javascript console for errors that indicate what might have gone wrong.
-                    </div>
                 </div>
             </div>
 
-            <p>Your snippet (modify height as you see fit):</p>
-            <p class="text-success" id="lblIframe">Please enter a hostname!</p>
-            <p><a href="javascript:alert('Please enter a hostname!');" id="hlTest" target="_blank">Click here to test your settings in a new tab/window</a></p>
+            <div id="pnlSnippet" class="hide">
+                <hr />
+                
+                <h3>First off, test your settings</h3>
+                <p><a href="javascript:void(0);" id="hlTest" target="_blank" class="text-success">Click here to test your settings in a new tab/window</a></p>
+                
+                <h3>Next, pick your embed method</h3>
+
+                <h4>javascript</h4>
+                <p class="text-success" id="lblJavascript"></p>
+                
+                <h4>iframe</h4>
+                <p class="text-success" id="lblIframe"></p>
+                
+                <h3>Lastly, use it</h3>
+                
+                <p class="text-success">Just copy/paste the snippet for the embed method of your choice into the position where you would like fTelnet to appear on your webpage</p>
+            </div>
         </div>
     </div>
 

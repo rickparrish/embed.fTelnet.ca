@@ -4,6 +4,8 @@ if (GetQueryStringValue('Hostname') == '') {
 }
 
 $(document).ready(function () {
+    document.title = GetQueryStringValue('Hostname') + ':' + GetQueryStringValue('Port') + ' | fTelnet Embedded';
+    
     // Load the remote css, if necessary
     if (GetQueryStringValue('CSS') != '') {
         document.getElementById('EmbedCSS').href = decodeURIComponent(GetQueryStringValue('CSS'));
@@ -43,12 +45,10 @@ function GetQueryStringValue(variable)
 }
 
 function PostInit() {
-    switch (GetQueryStringValue('Emulation')) {
-        case 'c64':
-            Crt.C64 = true;
-            Crt.SetFont("C64-Lower");
-            Crt.SetScreenSize(40, 25);
-            break;
+    if (GetQueryStringValue('Emulation') == 'c64') {
+        Crt.C64 = true;
+        Crt.SetFont("C64-Lower");
+        Crt.SetScreenSize(40, 25);
     }
 
     // Check for auto connect
@@ -73,6 +73,10 @@ function PreInit() {
         }
         fTelnet.ProxyPort = (GetQueryStringValue('ProxyPort') == '') ? '1123' : GetQueryStringValue('ProxyPort');
         fTelnet.ProxyPortSecure = (GetQueryStringValue('ProxyPortSecure') == '') ? '11235' : GetQueryStringValue('ProxyPortSecure');
+    }
+    
+    if (GetQueryStringValue('Emulation') == 'RIP') {
+        fTelnet.Emulation = 'RIP';
     }
         
     fTelnet.ButtonBarVisible = (GetQueryStringValue('TopButtons') != 'false');

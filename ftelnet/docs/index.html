@@ -23,6 +23,8 @@
             <li><a href="#Install">How to install</a></li>
             <li><a href="#Use">How to use</a></li>
             <li><a href="#Customize">How to customize</a></li>
+            <li><a href="#IE8">Internet Explorer 8 (and older) support</a></li>
+            <li><a href="#Problems">Common problems</a></li>
             <li><a href="#Help">I need more help</a></li>
         </ul>
 
@@ -168,7 +170,11 @@
                     <td>ConnectionType</td>
                     <td>string</td>
                     <td>telnet</td>
-                    <td><strong>telnet: </strong> It's the only option for now, so don't change this!</td>
+                    <td>
+                        <p><strong>rlogin: </strong> You're going to be making an rlogin connection (see other RLogin* settings below)</p>
+                        <p><strong>tcp: </strong> You're going to be making a raw tcp connection (no protocol will be used)</p>
+                        <p><strong>telnet: </strong> You're going to be making a telnet connection</p>
+                    </td>
                 </tr>
                 <tr>
                     <td>Enter</td>
@@ -235,6 +241,33 @@
                     </td>
                 </tr>
                 <tr>
+                    <td>RLoginClientUsername</td>
+                    <td>string</td>
+                    <td><i>blank</i></td>
+                    <td>
+                        <p>The string to send for the client-user-name portion of the connection establishment packet</p>
+                        <p>If using Synchronet's auto login feature, this should be your password</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>RLoginServerUsername</td>
+                    <td>string</td>
+                    <td><i>blank</i></td>
+                    <td>
+                        <p>The string to send for the server-user-name portion of the connection establishment packet</p>
+                        <p>If using Synchronet's auto login feature, this should be your username</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>RLoginTerminalType</td>
+                    <td>string</td>
+                    <td><i>blank</i></td>
+                    <td>
+                        <p>The string to send for the terminal-type/speed portion of the connection establishment packet</p>
+                        <p>If you leave this blank, the default of ansi-bbs/BitsPerSecond (ie ansi-bbs/57600) will be used</p>
+                    </td>
+                </tr>
+                <tr>
                     <td>ScreenColumns</td>
                     <td>number</td>
                     <td>80</td>
@@ -277,6 +310,46 @@
         <a href="#TOC">Back to top</a>
         <hr />
 
+        <h2 id="IE8">Internet Explorer 8 (and older) Support</h2>
+        <div class="well">
+            <p>Internet Explorer 8 (and older) do not support the Canvas element, and while there are polyfills, none of them have support for the features fTelnet needs.  So unfortunately IE8 (and older) will never be supported.</p>
+            <p>To prevent javascript errors from being shown to IE8 (and older) visitors, you should include this snippet on your page:</p>
+            <code>
+                &lt;!-- Stop IE8 and below from complaining about Object.defineProperty --><br />
+                &lt;!--[if lt IE 9]><br />
+                &nbsp; &nbsp; &lt;script><br />
+                &nbsp; &nbsp; &nbsp; &nbsp; Object.defineProperty = function () { /* Do Nothing */ };<br />
+                &nbsp; &nbsp; &lt;/script><br />
+                &lt;![endif]--><br />
+            </code>
+        </div>
+        <hr />
+
+        <h2 id="Problems">Common Problems</h2>
+        <div class="well">
+            <p>There's a few things that are easy to miss that make a big difference between fTelnet working and not working.  So a few of them are:</p>
+
+            <h3>I don't see the client anywhere</h3>
+            <blockquote>Did you call <strong>fTelnet.Init();</strong> at the bottom of your page/in an on document ready event?</blockquote>
+
+            <h3>I get a popup error that says "fTelnet Error: Element with id="fTelnetContainer" was not found"</h3>
+            <blockquote>You need a placeholder element (usually a div) with <strong>id="fTelnetContainer"</strong> on your page somewhere.  When you call fTelnet.Init(), it'll put the fTelnet client into that placeholder element.</blockquote>
+
+            <h3>The button bar links/status bar look plain</h3>
+            <blockquote>Did you add a reference to <strong>ftelnet.css</strong>?</blockquote>
+
+            <h3>The virtual keyboard looks ugly</h3>
+            <blockquote>Did you add the placholder stylesheet element with the <strong>id="fTelnetKeyboardCss"</strong>?  And also use <strong>id="fTelnetScript"</strong> when referencing the <strong>ftelnet.min.js</strong> script?</blockquote>
+
+            <h3>I get an error/don't see anything with Internet Explorer 8 and older</h3>
+            <blockquote>Did you add the <strong>&lt;!-- Stop IE8 and below from complaining about Object.defineProperty --></strong> code to your page?  That fixes the error.  It still doesn't fix the client though, IE8 and older don't support Canvas, so all you'll see is "fTelnet Error: Internet Explorer < 9 is not supported."</blockquote>
+
+            <h3>Uploading and downloading don't work</h3>
+            <blockquote>Those features work for me in all the desktop browsers (well not IE9, but it doesn't use real WebSockets), so if you're using a desktop browser get ahold of me and let me know what browser+version.  I haven't had as much luck with the mobile browsers though, so don't bother reporting problems there because there's probably not much I can do.</blockquote>
+        </div>
+        <a href="#TOC">Back to top</a>
+        <hr />
+
         <h2 id="Help">I need more help</h2>
         <div class="well">
             <p>First, re-read this document</p>
@@ -287,8 +360,8 @@
         <a href="#TOC">Back to top</a>
         <hr />
 
-            <p class="footer"><a href="https://www.ftelnet.ca" target="_blank">fTelnet</a> is copyright &copy; <a href="https://www.rickparrish.ca" target="_blank">Rick Parrish</a> of <a href="https://www.randm.ca" target="_blank">R&amp;M Software</a></p>
-        </div>
+        <p class="footer"><a href="https://www.ftelnet.ca" target="_blank">fTelnet</a> is copyright &copy; <a href="https://www.rickparrish.ca" target="_blank">Rick Parrish</a> of <a href="https://www.randm.ca" target="_blank">R&amp;M Software</a></p>
+    </div>
 
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>

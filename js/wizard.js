@@ -44,69 +44,91 @@ $('#txtSplashScreen').keyup(function () {
 });
 
 function Update() {
-    // Clean up the hostname in case someony copy/pastes it in there with extra spaces
+    var fTelnetAutoConnect = '';
+    var fTelnetCss = '';
+    var fTelnetScript = '';
+    var IframeUrl = '//embed.ftelnet.ca/';
+
+    // Clean up the hostname in case someone copy/pastes it in there with extra spaces
     $('#txtHostname').val($.trim($('#txtHostname').val()));
     
     // Ensure we have a hostname
     if ($('#txtHostname').val() == '') {
-        $('#lblIframe').html('Please enter a hostname!');
-        $('#hlTest').attr("href", "javascript:alert('Please enter a hostname!');");
+        $('#pnlSnippet').addClass('hide');
         return;
+    } else {
+        $('#pnlSnippet').removeClass('hide');
     }
 
     // Hostname
-    var Values = 'Hostname=' + $('#txtHostname').val();
+    fTelnetScript += ' &nbsp; &nbsp; fTelnet.Hostname = "' + $('#txtHostname').val() + '";<br />';
+    IframeUrl += '?Hostname=' + $('#txtHostname').val();
     
     // Port
     if ($('#txtPort').val() == '') {
         // No port, use default
         if ($('#cboProxyServer').val() == 'none') {
             // No proxy, use 1123
-            Values += '&Port=1123';
+            fTelnetScript += ' &nbsp; &nbsp; fTelnet.Port = 1123;<br />';
+            IframeUrl += '&Port=1123';
         } else {
             // Proxy, use 23
-            Values += '&Port=23';
+            fTelnetScript += ' &nbsp; &nbsp; fTelnet.Port = 23;<br />';
+            IframeUrl += '&Port=23';
         }
     } else {
-        Values += '&Port=' + $('#txtPort').val();
+        fTelnetScript += ' &nbsp; &nbsp; fTelnet.Port = ' + $('#txtPort').val() + ';<br />';
+        IframeUrl += '&Port=' + $('#txtPort').val();
     }
     
     // Proxy
     if ($('#cboProxyServer').val() != 'none') {
-        var HostPort = $('#cboProxyServer').val().split(':');
-        Values += '&Proxy=proxy-' + HostPort[0] + '.ftelnet.ca';
-        Values += '&ProxyPort=' + HostPort[1];
-        Values += '&ProxyPortSecure=' + HostPort[2];
+        var HostPorts = $('#cboProxyServer').val().split(':');
+        fTelnetScript += ' &nbsp; &nbsp; fTelnet.ProxyHostname = "proxy-' + HostPorts[0] + '.ftelnet.ca";<br />';
+        fTelnetScript += ' &nbsp; &nbsp; fTelnet.ProxyPort = ' + HostPorts[1] + ';<br />';
+        fTelnetScript += ' &nbsp; &nbsp; fTelnet.ProxyPortSecure = ' + HostPorts[2] + ';<br />';
+        IframeUrl += '&Proxy=proxy-' + HostPorts[0] + '.ftelnet.ca';
+        IframeUrl += '&ProxyPort=' + HostPorts[1];
+        IframeUrl += '&ProxyPortSecure=' + HostPorts[2];
     }
     
     // Auto connect
-    Values += '&AutoConnect=' + $('#cboAutoConnect').val();
+    if ($('#cboAutoConnect').val() == 'true') {
+        fTelnetAutoConnect = '<br /> &nbsp; &nbsp; fTelnet.Connect();';
+    }
+    IframeUrl += '&AutoConnect=' + $('#cboAutoConnect').val();
     
     // Connection type
-    Values += '&ConnectionType=' + $('#cboConnectionType').val();
+    fTelnetScript += ' &nbsp; &nbsp; fTelnet.ConnectionType = "' + $('#cboConnectionType').val() + '";<br />';
+    IframeUrl += '&ConnectionType=' + $('#cboConnectionType').val();
     
     // Emulation
-    Values += '&Emulation=' + $('#cboEmulation').val();
+    fTelnetScript += ' &nbsp; &nbsp; fTelnet.Emulation = "' + $('#cboEmulation').val() + '";<br />';
+    IframeUrl += '&Emulation=' + $('#cboEmulation').val();
     
     // Show top buttons
-    Values += '&TopButtons=' + $('#cboTopButtons').val();
+    fTelnetScript += ' &nbsp; &nbsp; fTelnet.ButtonBarVisible = ' + $('#cboTopButtons').val() + ';<br />';
+    IframeUrl += '&TopButtons=' + $('#cboTopButtons').val();
 
     // Virtual keyboard
-    Values += '&VirtualKeyboard=' + $('#cboVirtualKeyboard').val();
+    fTelnetScript += ' &nbsp; &nbsp; fTelnet.VirtualKeyboardVisible = ' + ($('#cboVirtualKeyboard').val() != 'off') + ';<br />';
+    IframeUrl += '&VirtualKeyboard=' + $('#cboVirtualKeyboard').val();
     
     // CSS
     if ($('#txtCSS').val() != '') {
-        Values += '&CSS=' + encodeURIComponent($('#txtCSS').val());
+        fTelnetCss = '&lt;link id="fTelnetCss" type="text/css" rel="stylesheet" href="' + $('#txtCSS').val() + '" /&gt;<br />';
+        IframeUrl += '&CSS=' + encodeURIComponent($('#txtCSS').val());
     }
 
     // Splash screen
     if ($('#txtSplashScreen').val() != '') {
-        Values += '&SplashScreen=' + encodeURIComponent($('#txtSplashScreen').val());
+        fTelnetScript += ' &nbsp; &nbsp; fTelnet.SplashScreen = "' + $('#txtSplashScreen').val() + '";<br />';
+        IframeUrl += '&SplashScreen=' + encodeURIComponent($('#txtSplashScreen').val());
     }
 
-    // Build the url and full tag, and update the page
-    var Url = '//embed.ftelnet.ca/?' + Values;
-    var Tag = '&lt;iframe src="' + Url + '" width="100%" height="1000"&gt;&lt;/iframe&gt;';
-    $('#lblIframe').html(Tag);
-    $('#hlTest').attr("href", Url);
+    // Update the page with the snippets
+    $('#hlTest').attr("href", IframeUrl);
+    $('#lblJavascript').html(fTelnetCss + '&lt;div id="fTelnetContainer"&gt;&lt;/div&gt;<br />&lt;script src="//embed.ftelnet.ca/ftelnet/ftelnet.min.js" id="fTelnetScript"&gt;&lt;/script&gt;<br />&lt;script&gt;<br />' + fTelnetScript + ' &nbsp; &nbsp; fTelnet.Init();' + fTelnetAutoConnect + '<br />&lt;/script&gt;');
+    $('#lblIframe').html('&lt;iframe src="' + IframeUrl + '" width="100%" height="1000"&gt;&lt;/iframe&gt;');
+    
 }
