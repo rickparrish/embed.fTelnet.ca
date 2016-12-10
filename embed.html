@@ -1,42 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-
     <title>My fTelnet</title>
-
-    <link href="ftelnet/ftelnet.css?v=2015-09-02" rel="stylesheet" type="text/css" />
-    <link href="" rel="stylesheet" id="fTelnetKeyboardCss">
-
-    <link href="css/embed.css?v=2015-09-02" rel="stylesheet" id="EmbedCSS">
 </head>
 <body>
-    <div id="fTelnetContainer"></div>
-
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/jquery-2.1.1.min.js"><\/script>')</script>
-    
-    <!-- Add support for WebSocket to IE9 -->
-    <!--[if lt IE 10]>
-        <script type="text/javascript" src="ftelnet/swfobject.js"></script>
-        <script type="text/javascript" src="ftelnet/web_socket.js"></script>
-        <script>
-            // Let the library know where WebSocketMain.swf is:
-            WEB_SOCKET_SWF_LOCATION = "ftelnet/WebSocketMain.swf";
-        </script>
-    <![endif]-->
-    <!-- Stop IE8 and below from complaining about Object.defineProperty -->
-    <!--[if lt IE 9]>
-        <script>
-            Object.defineProperty = function () { /* Do Nothing */ };
-        </script>
-    <![endif]-->
-
-    <script src="ftelnet/ftelnet.min.js?v=2015-09-02" id="fTelnetScript"></script>
-
-    <script src="js/embed.js?v=2015-09-02"></script>
+    <p>Your embed url is deprecated.  Please update it</p>
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -46,6 +14,7 @@
 
       ga('create', 'UA-4602017-10', 'auto');
       ga('send', 'pageview');
+      location.href='/' + window.location.search;
     </script>
 </body>
 </html>

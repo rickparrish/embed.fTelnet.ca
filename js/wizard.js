@@ -43,6 +43,7 @@ function Update() {
     var fTelnetAutoConnect = '';
     var fTelnetCss = '';
     var fTelnetScript = '';
+    var fTelnetSplashScreen = '';
     var IframeUrl = '//' + window.location.hostname + '/';
 
     // Clean up the hostname in case someone copy/pastes it in there with extra spaces
@@ -116,13 +117,13 @@ function Update() {
 
     // Splash screen
     if ($('#txtSplashScreen').val() != '') {
-        fTelnetScript += ' &nbsp; &nbsp; fTelnet.SplashScreen = "' + $('#txtSplashScreen').val() + '";<br />';
+        fTelnetSplashScreen = '&lt;script src="' + $('#txtSplashScreen').val() + '"&gt;&lt;/script&gt;<br />';
         IframeUrl += '&SplashScreen=' + encodeURIComponent($('#txtSplashScreen').val());
     }
 
     // Update the page with the snippets
     $('#hlTest').attr("href", IframeUrl);
-    $('#lblJavascript').html(fTelnetCss + '&lt;div id="fTelnetContainer"&gt;&lt;/div&gt;<br />&lt;script src="//' + window.location.hostname + '/ftelnet/ftelnet.min.js" id="fTelnetScript"&gt;&lt;/script&gt;<br />&lt;script&gt;<br />' + fTelnetScript + ' &nbsp; &nbsp; fTelnet.Init();' + fTelnetAutoConnect + '<br />&lt;/script&gt;');
+    $('#lblJavascript').html(fTelnetCss + '&lt;div id="fTelnetContainer"&gt;&lt;/div&gt;<br />&lt;!-- Looks weird, but this ensures your users always get the latest version of fTelnet and not an old version from their cache --&gt;<br />&lt;script&gt;document.write(\'&lt;script src="//embed.ftelnet.ca/js/ftelnet-loader.js?v=\' + (new Date()).getTime() + \'"&gt;&lt;\\/script&gt;\');&lt;/script&gt;<br />' + fTelnetSplashScreen + '&lt;script&gt;<br />' + fTelnetScript + ' &nbsp; &nbsp; fTelnet.Init();' + fTelnetAutoConnect + '<br />&lt;/script&gt;');
     $('#lblIframe').html('&lt;iframe src="' + IframeUrl + '" width="100%" height="1000"&gt;&lt;/iframe&gt;');
     
 }

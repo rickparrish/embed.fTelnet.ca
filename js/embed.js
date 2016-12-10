@@ -1,6 +1,6 @@
 // Redirect to wizard if there are no querystring parameters
 if (GetQueryStringValue('Hostname') == '') {
-    location.href = "wizard.html";
+    location.href = "/wizard";
 }
 
 $(document).ready(function () {
